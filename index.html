@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Mendokoro Survey — With Receipt (Buttons Only)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --font:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --accent:#0e9ba4; 
+  --accent-dk:#0c8a92;
+  --ink:#101010; --muted:#6b7280; --paper:#fff; --bg:#fff; --line:#e5e7eb;
+  --ease:cubic-bezier(.22,.61,.36,1); --header-h:64px;
+  --coupon-red:#ff1f28; --coupon-ink:#151515;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);
+  line-height:1.6; opacity:0; transform:translateY(6px); animation:fadeIn .35s ease forwards;
+}
+body.lock{ overflow:hidden }  /* lock scroll on landing */
+body:not(.lock){ overflow:auto }
+@keyframes fadeIn{to{opacity:1;transform:none}}
+
+/* ================== HEADER ================== */
+.site-header{
+  position:fixed;inset:0 0 auto 0;height:var(--header-h);display:none;align-items:center;z-index:4;
+  background:#ffffffd9;border-bottom:1px solid var(--line);backdrop-filter:saturate(180%) blur(6px);opacity:0
+}
+.site-header.show{display:flex;animation:hdr .22s var(--ease) forwards}
+@keyframes hdr{to{opacity:1}}
+.nav{max-width:1200px;margin:0 auto;padding:0 16px;width:100%;display:flex;justify-content:space-between;align-items:center;height:100%}
+.brand-img{height:32px}
+.brand-right{text-align:right}
+.brand-name{font:800 16px/1 var(--font)}
+.brand-sub{font:800 11px/1 var(--font); color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
+
+/* ================== Subtle BG ================== */
+.bg{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+  background:radial-gradient(1200px 360px at 50% -120px, rgba(14,155,164,.10), transparent 65%);
+}
+.scroller{position:absolute; inset:0; width:200%; height:100%; display:flex; animation:fuji-x 90s linear infinite}
+@keyframes fuji-x{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+.belt{position:relative; width:50%; height:100%}
+.fuji{position:absolute; opacity:.10; filter:grayscale(1)}
+.f1{top:4%;left:8%;width:60px;transform:rotate(-9deg)} .f2{top:9%;left:32%;width:66px;transform:rotate(8deg)}
+.f3{top:2%;left:58%;width:62px;transform:rotate(-16deg)} .f4{top:8%;left:83%;width:68px;transform:rotate(12deg)}
+.f5{top:24%;left:13%;width:66px;transform:rotate(6deg)} .f6{top:21%;left:46%;width:72px;transform:rotate(-14deg)}
+.f7{top:23%;left:74%;width:56px;transform:rotate(14deg)} .f8{top:48%;left:9%;width:60px;transform:rotate(-7deg)}
+.f9{top:44%;left:37%;width:72px;transform:rotate(18deg)} .f10{top:41%;left:63%;width:80px;transform:rotate(-20deg)}
+.f11{top:46%;left:89%;width:62px;transform:rotate(10deg)} .f12{top:69%;left:16%;width:54px;transform:rotate(13deg)}
+.f13{top:63%;left:42%;width:74px;transform:rotate(-9deg)} .f14{top:66%;left:69%;width:66px;transform:rotate(7deg)}
+.f15{top:60%;left:93%;width:60px;transform:rotate(-15deg)} .f16{top:88%;left:27%;width:62px;transform:rotate(-8deg)}
+.f17{top:86%;left:53%;width:60px;transform:rotate(16deg)} .f18{top:90%;left:80%;width:68px;transform:rotate(-5deg)}
+
+/* ================== HERO ================== */
+.hero{
+  position:relative;
+  min-height:100dvh;
+  display:grid; place-items:center;
+  padding:28px 16px;
+  text-align:center;
+  overflow:hidden; /* clip hero art to hero only */
+}
+.wrap{max-width:960px; margin:0 auto; display:grid; justify-items:center; position:relative; z-index:1}
+.hero-logo{margin:0 0 10px; transform:translateY(6px) scale(.985); opacity:0; animation:logoIn .5s var(--ease) .05s forwards}
+.hero-logo img{width:min(520px,78vw); height:auto; display:block; filter:drop-shadow(0 14px 24px rgba(0,0,0,.10))}
+@keyframes logoIn{to{transform:none; opacity:1}}
+.subtitle{font:700 clamp(13px,2.6vw,16px)/1.2 var(--font); color:var(--muted); opacity:0; transform:translateY(6px); animation:rise .45s ease .1s forwards}
+.accent-underline{width:0; height:3px; margin:10px auto 0; background:linear-gradient(90deg,transparent,var(--accent),transparent); border-radius:999px; opacity:.95; animation:underline .6s ease .18s forwards}
+@keyframes underline{to{width:180px}}
+@keyframes rise{to{opacity:1; transform:none}}
+.strap{display:inline-flex; gap:10px; align-items:center; margin:14px 0 20px; color:var(--accent); font-weight:800; font-size:12px; letter-spacing:.12em; text-transform:uppercase; padding:8px 16px; border:1px solid #cfeff3; border-radius:999px; background:#e9fbfd; opacity:0; transform:translateY(6px); animation:rise .45s ease .22s forwards}
+.lead{color:#4b5563; font-size:clamp(15px,2.4vw,18px); max-width:650px; margin:0 auto 20px; opacity:0; transform:translateY(6px); animation:rise .45s ease .28s forwards}
+
+/* Decorative food photos pinned to corners (behind content) */
+.hero-art{position:absolute; inset:0; z-index:0; pointer-events:none}
+.hero-art img{position:absolute; user-select:none; filter:drop-shadow(0 18px 36px rgba(0,0,0,.18))}
+.ramen-art{
+  left: -24px; bottom: -24px;
+  width: min(420px, 62vw);
+  transform: rotate(0deg);
+}
+.gyoza-art{
+  right: -20px; bottom: -18px;
+  width: min(300px, 50vw);
+  transform: rotate(-6deg);
+}
+/* give breathing room so CTA never collides with the images on small screens */
+.hero{ padding-bottom: clamp(120px, 36vw, 240px) }
+
+/* tighter sizes on very small screens */
+@media (max-width: 420px){
+  .ramen-art{ left:-18px; bottom:-18px; width:72vw }
+  .gyoza-art{ right:-14px; bottom:-14px; width:58vw }
+}
+
+/* CTA */
+.cta{
+  position:relative; isolation:isolate; display:inline-flex; align-items:center; gap:12px;
+  padding:14px 28px; border-radius:16px; font:800 16px/1 var(--font); color:#fff; text-decoration:none;
+  background:var(--accent); border:1px solid rgba(0,0,0,.06);
+  box-shadow:0 16px 32px color-mix(in srgb,var(--accent) 28%, transparent);
+  transition:transform .18s ease, box-shadow .18s ease, color .18s ease; overflow:hidden
+}
+.cta::after{content:""; position:absolute; inset:0; z-index:-1; background:var(--accent-dk); transform:scaleX(0); transform-origin:left center; transition:transform .35s ease; border-radius:inherit}
+.cta:hover{transform:translateY(-1px); box-shadow:0 20px 40px color-mix(in srgb,var(--accent) 36%, transparent)}
+.cta:hover::after{transform:scaleX(1)}
+
+/* ================== FLOW container (unchanged) ================== */
+.container{display:none; min-height:100dvh; padding:calc(var(--header-h) + 16px) 16px 32px; position:relative; z-index:1;
+  display:grid; place-items:center; align-content:center; justify-content:center;}
+.shell{width:min(900px,100%)}
+.panel{background:var(--paper); border:1px solid var(--line); border-radius:20px; box-shadow:0 16px 48px rgba(0,0,0,.08); overflow:hidden}
+
+/* ================== Gate / Survey / Reward (unchanged) ================== */
+.section{padding:18px}
+.grid{display:grid; gap:12px}
+label{display:block;font:800 14px/1 var(--font);margin:16px 0 6px}
+.req{ color:#DF1F26; margin-left:4px }
+input[type="text"], input[type="email"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);font-size:15px;background:#fff}
+input::placeholder{color:#9aa2ae}
+input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(14,155,164,.15)}
+.row{display:flex; gap:12px; flex-wrap:wrap}
+.row .col{flex:1 1 240px}
+.checks{margin-top:10px; display:grid; gap:10px}
+.check{display:flex; gap:10px; align-items:flex-start}
+.check input{accent-color:var(--accent); width:16px; height:16px; margin-top:2px}
+.check div{font-size:13px; line-height:1.45; color:var(--ink)}
+.check small{color:#DF1F26; display:block; margin-top:2px; font-size:11.5px}
+.actions{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:18px}
+.hint{color:var(--muted); font-size:12px}
+.foot{margin-top:14px; color:var(--muted); font-size:12px}
+.err{ color:#b91c1c; font-size:12px; margin-top:8px; display:none }
+.err.show{ display:block }
+
+.survey-head{display:flex; align-items:center; gap:12px; position:sticky; top:0; background:var(--paper); padding:6px 2px 10px; z-index:2}
+.stepchip{font:800 12px var(--font); color:var(--accent); padding:6px 10px; border-radius:999px; background:#e9fbfd; border:1px solid #b9edf1}
+.progress{flex:1; height:8px; background:#e6f6f7; border-radius:999px; overflow:hidden}
+.bar{height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-dk)); transition:width .25s var(--ease)}
+.cardQ{
+  margin-top:8px; padding:18px; border:1px solid var(--line); border-radius:16px; background:#fff;
+  box-shadow:0 6px 16px rgba(0,0,0,.05); animation:stepIn .24s var(--ease);
+}
+@keyframes stepIn{ from{ opacity:0; transform:translateY(6px)} to{ opacity:1; transform:none}}
+.qnum{font:800 12px var(--font); color:#0b6f76; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px}
+.qtitle{margin:0 0 10px; font:800 clamp(18px,3.8vw,22px)/1.25 var(--font)}
+.qhelp{color:var(--muted); font-size:13px; margin:-2px 0 10px}
+
+.opt-grid{
+  --col-min:140px;
+  display:grid; gap:10px; margin-top:6px;
+  grid-template-columns: repeat(auto-fit, minmax(var(--col-min), 1fr));
+  max-width:680px; margin-inline:auto;
+  justify-items:stretch; align-items:stretch;
+}
+.opt{
+  position:relative; isolation:isolate; display:flex; align-items:center; justify-content:center; text-align:center;
+  border:1px solid var(--line); background:#fff; color:#111;
+  padding:0 14px; border-radius:12px; font:800 14px var(--font); cursor:pointer;
+  min-height:48px; overflow:hidden; word-break:break-word; white-space:normal;
+  transition:.12s var(--ease);
+}
+.opt::after{content:""; position:absolute; inset:0; z-index:-1; background:var(--accent); transform:scaleX(0); transform-origin:left center; transition:transform .28s ease; border-radius:inherit}
+.opt:hover{transform:translateY(-1px)}
+.opt:hover::after{transform:scaleX(1)}
+.opt:hover{color:#fff}
+.opt.sel{color:#fff; border-color:var(--accent)}
+.opt.sel::after{transform:scaleX(1)}
+
+.controls{display:flex; gap:10px; justify-content:center; align-items:center; padding-top:12px; border-top:1px dashed var(--line); margin-top:14px}
+.btn{
+  position:relative; isolation:isolate;
+  display:inline-block; padding:12px 18px; border-radius:12px; font:800 14px/1 var(--font); color:#fff;
+  background:var(--accent); border:1px solid rgba(0,0,0,.06); cursor:pointer;
+  box-shadow:0 10px 18px color-mix(in srgb,var(--accent) 38%, transparent);
+  overflow:hidden; transition:transform .18s ease, box-shadow .18s ease, color .18s ease;
+}
+.btn::after{content:""; position:absolute; inset:0; z-index:-1; background:var(--accent-dk); transform:scaleX(0); transform-origin:left center; transition:transform .35s ease; border-radius:inherit}
+.btn:hover{transform:translateY(-1px)}
+.btn:hover::after{transform:scaleX(1)}
+.btn.alt{background:#e9fbfd; color:#0b6f76; box-shadow:none}
+.btn[disabled]{opacity:.55; cursor:not-allowed; filter:grayscale(.35)}
+.state{color:#b45309; font-size:12px; text-align:center; min-height:1em; margin-top:4px}
+
+/* ================== Reward ticket ================== */
+.section.reward-section{padding:18px}
+.coupon-wrap{ display:grid; gap:16px; justify-items:center; text-align:center; margin:8px 0 6px; padding-inline:12px }
+.ticket{
+  position:relative; width:100%; max-width:680px; margin:0 auto; background:#fff; border-radius:20px; 
+  box-shadow:0 18px 60px rgba(0,0,0,.16); padding:22px; overflow:hidden;
+  outline:2px dashed var(--coupon-red); outline-offset:-8px;
+  --cut:22px;
+  background:
+    radial-gradient(circle var(--cut) at left 50%, transparent 99%, #fff 100%) left center/var(--cut) 100% no-repeat,
+    radial-gradient(circle var(--cut) at right 50%, transparent 99%, #fff 100%) right center/var(--cut) 100% no-repeat;
+}
+.ticket-head{ display:flex; gap:10px; align-items:center; justify-content:center; }
+.ticket-head img{ height:40px }
+.ticket-sub{ color:#6b7280; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.14em; }
+.ticket-title{ font:800 clamp(18px,4.2vw,26px)/1.1 var(--font); margin:10px 0 2px; }
+.ticket-code{
+  font:800 clamp(22px,5vw,30px)/1 var(--font); letter-spacing:2px; color:var(--coupon-ink);
+  background:#fff5f6; border:2px dashed var(--coupon-red); padding:12px 16px; border-radius:14px; display:inline-block; margin-top:10px;
+}
+.ticket-foot{ color:#6b7280; font-size:12px; margin-top:8px }
+.coupon-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:4px }
+.btn{ border:1px solid rgba(0,0,0,.06) }
+
+  
+/* ============== Loading overlay ============== */
+.overlay{
+  position:fixed; inset:0; display:grid; place-items:center;
+  background:rgba(255,255,255,.65); backdrop-filter:blur(8px) saturate(120%);
+  opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:50;
+}
+.overlay.show{ opacity:1; pointer-events:auto; }
+.loader{ display:grid; place-items:center; gap:10px; text-align:center; color:#334155; font-weight:700; font-size:14px }
+.loader img{ height:64px; width:auto; filter:drop-shadow(0 10px 18px rgba(0,0,0,.16)); animation:pulse 1.2s ease-in-out infinite }
+@keyframes pulse{ 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.06) } }
+</style>
+</head>
+<body class="lock">
+
+<!-- Background -->
+<div class="bg" aria-hidden="true">
+  <div class="scroller">
+    <div class="belt">
+      <img class="fuji f1" src="./assets/img/mtfuji.png" alt=""><img class="fuji f2" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f3" src="./assets/img/mtfuji.png" alt=""><img class="fuji f4" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f5" src="./assets/img/mtfuji.png" alt=""><img class="fuji f6" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f7" src="./assets/img/mtfuji.png" alt=""><img class="fuji f8" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f9" src="./assets/img/mtfuji.png" alt=""><img class="fuji f10" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f11" src="./assets/img/mtfuji.png" alt=""><img class="fuji f12" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f13" src="./assets/img/mtfuji.png" alt=""><img class="fuji f14" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f15" src="./assets/img/mtfuji.png" alt=""><img class="fuji f16" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f17" src="./assets/img/mtfuji.png" alt=""><img class="fuji f18" src="./assets/img/mtfuji.png" alt="">
+    </div>
+    <div class="belt">
+      <img class="fuji f1" src="./assets/img/mtfuji.png" alt=""><img class="fuji f2" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f3" src="./assets/img/mtfuji.png" alt=""><img class="fuji f4" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f5" src="./assets/img/mtfuji.png" alt=""><img class="fuji f6" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f7" src="./assets/img/mtfuji.png" alt=""><img class="fuji f8" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f9" src="./assets/img/mtfuji.png" alt=""><img class="fuji f10" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f11" src="./assets/img/mtfuji.png" alt=""><img class="fuji f12" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f13" src="./assets/img/mtfuji.png" alt=""><img class="fuji f14" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f15" src="./assets/img/mtfuji.png" alt=""><img class="fuji f16" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f17" src="./assets/img/mtfuji.png" alt=""><img class="fuji f18" src="./assets/img/mtfuji.png" alt="">
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header id="hdr" class="site-header" aria-hidden="true">
+  <nav class="nav">
+    <img class="brand-img" src="./assets/img/nhlogo.png" alt="Nippon Hasha">
+    <div class="brand-right">
+      <div class="brand-name">Mendokoro</div>
+      <div class="brand-sub">Food Truck Survey</div>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <!-- decorative corner images -->
+  <div class="hero-art" aria-hidden="true">
+    <img class="ramen-art" src="./assets/img/mendo-ramen.png" alt="">
+    <img class="gyoza-art" src="./assets/img/gyoza.png" alt="">
+  </div>
+
+  <div class="wrap">
+    <div class="hero-logo"><img src="./assets/img/mendokorologo.png" alt="Mendokoro Ramenba"></div>
+    <div class="subtitle">A Nippon Hasha Brand</div>
+    <div class="accent-underline" aria-hidden="true"></div>
+    <div class="strap">Food Truck Survey</div>
+    <p class="lead">Help us improve and get a small treat from us on your next visit!</p>
+    <a href="#start" id="startBtn" class="cta">Start Survey →</a>
+  </div>
+</section>
+
+<!-- FLOW -->
+<div class="container" id="start" style="display:none">
+  <main class="shell panel">
+    <!-- Gate -->
+    <section id="stepGate" class="section" role="form">
+      <h1 style="font:800 clamp(20px,3.6vw,26px)/1.18 var(--font); margin:2px 0">Start your survey</h1>
+      <p class="hint" style="margin-bottom:10px">Enter your details to proceed.</p>
+
+      <form id="gateForm" novalidate>
+        <label for="receipt">Receipt Number<span class="req" aria-hidden="true">*</span></label>
+        <input id="receipt" name="receipt" type="text" inputmode="text" maxlength="18"
+               placeholder="e.g., MDKB-123456-789101" required aria-describedby="receiptHelp receiptErr">
+        <div id="receiptHelp" class="hint">Format: <code>AAAA-000000-000000</code>.</div>
+        <div id="receiptErr" class="err">Invalid receipt format or brand code.</div>
+
+        <div class="row">
+          <div class="col">
+            <label for="email">Email<span class="req" aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+          </div>
+          <div class="col">
+            <label for="name">Name <span class="hint">(optional)</span></label>
+            <input id="name" name="name" type="text" placeholder="Juan Dela Cruz">
+          </div>
+        </div>
+
+        <div class="checks" aria-label="Consent options">
+          <label class="check">
+            <input id="dpa" name="dpa" type="checkbox" required>
+            <div>I agree to the Philippine Data Privacy Act and consent to the processing of my responses for service improvement.<small>Required to proceed.</small></div>
+          </label>
+          <label class="check">
+            <input id="promo" name="promo" type="checkbox">
+            <div>I’d like to receive emails about promotions and updates.<small>Optional.</small></div>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="continueBtn" class="cta" type="submit" disabled>Continue →</button>
+          <span id="stateMsg" class="hint" aria-live="polite">Fill the required fields to continue.</span>
+        </div>
+
+        <p class="foot">By continuing, you acknowledge Nippon Hasha’s policies and terms of service.</p>
+      </form>
+    </section>
+
+    <!-- Survey -->
+    <section id="stepSurvey" class="section" style="display:none">
+      <div class="survey-head">
+        <div id="stepChip" class="stepchip">Question 1 of 10</div>
+        <div class="progress"><div id="bar" class="bar"></div></div>
+      </div>
+
+      <div id="qwrap"></div>
+
+      <div class="controls">
+        <button id="backBtn" class="btn alt" type="button">← Back</button>
+        <button id="nextBtn" class="btn" type="button" disabled>Next →</button>
+        <button id="submitBtn" class="btn" type="button" style="display:none" disabled>Submit →</button>
+      </div>
+      <div id="stateQ" class="state" aria-live="polite"></div>
+    </section>
+
+    <!-- Reward -->
+    <section id="stepReward" class="section reward-section" style="display:none">
+      <div class="coupon-wrap">
+        <div class="ticket" id="ticket">
+          <div class="ticket-head">
+            <img src="./assets/img/mendokorologo.png" alt="Mendokoro">
+          </div>
+          <div class="ticket-sub">A Nippon Hasha Brand</div>
+          <div class="ticket-title">Thank you for your time! use this code to claim your FREE 3 PIECE GYOZA on us!</div>
+          <div id="rewardCode" class="ticket-code">—</div>
+          <div class="ticket-foot">Show this at the truck to redeem.</div>
+          <div class="ticket-foot">One-time use.</div>
+        </div>
+        <div class="coupon-actions">
+          <button id="copyBtn" class="btn" type="button">Copy Code</button>
+          <button id="saveImgBtn" class="btn" type="button">Save Coupon</button>
+        </div>
+      </div>
+      <canvas id="couponCanvas" width="1200" height="640" style="display:none"></canvas>
+    </section>
+  </main>
+</div>
+
+
+<!-- Loading overlay -->
+<div class="overlay" id="overlay">
+  <div class="loader">
+    <img src="./assets/img/mendokorologo.png" alt="Loading">
+    Storing your details…
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+<!-- QUESTIONS -->
+<script id="QUESTIONS_JSON" type="application/json">[
+  {"id":"q1","type":"buttons","prompt":"Do you enjoy your dining experience with our Blue Truck Pop-up?","options":["Yes","No"]},
+  {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Social Media","Mall","Friend","Passerby"]},
+  {"id":"q3","type":"buttons","prompt":"Have you been to one of our Branches before?","options":["Yes","No"]},
+  {"id":"q3a","type":"buttons","prompt":"If Yes, Which Branch?","options":["MOA","Rockwell","Molito","Panay","Arton Strip"]},
+  {"id":"q3b","type":"buttons","prompt":"If No, Would you like to try the one nearest to you?","options":["Yes","No"]},
+  {"id":"q4","type":"buttons","prompt":"Where do you want to see our Blue Truck next?","options":["City","Mall"]},
+  {"id":"q5","type":"buttons","prompt":"Are you working near or living near here?","options":["Working","Living"]},
+  {"id":"q6","type":"buttons","prompt":"Does the food and service achieve the value for your money?","options":["Yes","No"]},
+  {"id":"q7","type":"buttons","prompt":"What other brands of Ramen House have you tried?","options":["Nagi","Kuroda"]},
+  {"id":"q8","type":"buttons","prompt":"How likely would you recommend our Brand to your friends and family?","options":["Very Likely","Fair","Unlikely"]},
+  {"id":"q9","type":"buttons","prompt":"What is/are your favorite cuisine?","options":["Japanese","Korean","Pinoy"]},
+  {"id":"q10","type":"buttons","prompt":"Would you love to hear more about us and where we are headed?","options":["Yes","No"]}
+]</script>
+
+<script>
+/* ---------- Supabase ---------- */
+const SUPABASE_URL = 'https://xkzicpfxlvgovugumspr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhremljcGZ4bHZnb3Z1Z3Vtc3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyODI1MzAsImV4cCI6MjA3Mjg1ODUzMH0.8xykX92QwVWccQyOz60ONb_CirdbGcKvQD8FjO8RJrA';
+const sb = window.supabase?.createClient?.(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ---------- Landing → Flow ---------- */
+const hero=document.getElementById('hero'), container=document.querySelector('.container'), hdr=document.getElementById('hdr');
+document.getElementById('startBtn').addEventListener('click',e=>{
+  e.preventDefault();
+  hero.style.transition='opacity .22s var(--ease), transform .22s var(--ease)';
+  hero.style.opacity='0'; hero.style.transform='translateY(-6px)';
+  setTimeout(()=>{
+    hero.style.display='none';
+    container.style.display='grid';
+    hdr.classList.add('show'); hdr.removeAttribute('aria-hidden');
+    document.body.classList.remove('lock'); // unlock scrolling only after entering flow
+  }, 180);
+});
+
+/* ---------- Gate logic ---------- */
+const gateForm=document.getElementById('gateForm');
+const receiptEl=document.getElementById('receipt'), emailEl=document.getElementById('email'), nameEl=document.getElementById('name');
+const dpaEl=document.getElementById('dpa'), promoEl=document.getElementById('promo');
+const continueBtn=document.getElementById('continueBtn'), stateMsg=document.getElementById('stateMsg'), receiptErr=document.getElementById('receiptErr');
+const overlay=document.getElementById('overlay');
+
+(function(){
+  const pattern = /^[A-Z]{4}-\d{6}-\d{6}$/;
+  const allowedTwo = /^(MD|YS|MR|KZ)/;
+  function formatReceipt(raw){
+    const clean = raw.replace(/[^a-zA-Z0-9]/g,'').toUpperCase();
+    const brand = clean.replace(/[^A-Z]/g,'').slice(0,4);
+    const nums  = clean.replace(/[^0-9]/g,'').slice(0,12);
+    const part1 = brand, part2 = nums.slice(0,6), part3 = nums.slice(6,12);
+    let out = part1;
+    if(part1.length===4 && part2.length>0) out += '-' + part2;
+    if(part1.length===4 && part2.length===6 && part3.length>0) out += '-' + part3;
+    return out;
+  }
+  function validateReceipt(){
+    const v = receiptEl.value.trim();
+    const okPattern = pattern.test(v);
+    const okBrand = allowedTwo.test(v.slice(0,2));
+    const ok = okPattern && okBrand;
+    receiptEl.setCustomValidity(ok ? '' : 'Format must be AAAA-000000-000000 with MD/YS/MR/KZ prefix.');
+    receiptErr.classList.toggle('show', !ok && v.length>0);
+    return ok;
+  }
+  receiptEl.addEventListener('input', ()=>{
+    const before=receiptEl.value, caret=receiptEl.selectionStart;
+    receiptEl.value = formatReceipt(receiptEl.value);
+    if(receiptEl.value.length>before.length && receiptEl.value[caret]==='-'){
+      receiptEl.setSelectionRange(caret+1, caret+1);
+    }
+    validateReceipt(); updateGate();
+  });
+  receiptEl.addEventListener('blur', validateReceipt);
+
+  emailEl.addEventListener('input', ()=>{ emailEl.setCustomValidity(''); updateGate(); });
+  emailEl.addEventListener('invalid', ()=>{
+    if(emailEl.validity.typeMismatch || emailEl.validity.valueMissing){
+      emailEl.setCustomValidity('Please enter a valid email (e.g., you@example.com).');
+    }
+  });
+
+  dpaEl.addEventListener('change', updateGate);
+
+  function updateGate(){
+    const okRec = validateReceipt();
+    const okEmail = emailEl.validity.valid;
+    const okDpa = dpaEl.checked;
+    const ok = okRec && okEmail && okDpa;
+    continueBtn.disabled = !ok;
+    stateMsg.textContent = ok ? 'All set! You can now start your survey.' : 'Fill the required fields to continue.';
+  }
+  document.addEventListener('DOMContentLoaded', updateGate);
+})();
+
+/* ---------- Survey model & rendering (buttons only) ---------- */
+const QUESTIONS = JSON.parse(document.getElementById('QUESTIONS_JSON').textContent||'[]');
+const stepSurvey=document.getElementById('stepSurvey'), stepGate=document.getElementById('stepGate'), stepReward=document.getElementById('stepReward');
+const qwrap=document.getElementById('qwrap'), bar=document.getElementById('bar'), chip=document.getElementById('stepChip');
+const nextBtn=document.getElementById('nextBtn'), backBtn=document.getElementById('backBtn'), submitBtn=document.getElementById('submitBtn'), stateQ=document.getElementById('stateQ');
+const surveyState={idx:0,answers:{}};
+
+function setProgress(){
+  const total=QUESTIONS.length;
+  chip.textContent=`Question ${Math.min(surveyState.idx+1,total)} of ${total}`;
+  bar.style.width=((surveyState.idx+1)/Math.max(1,total))*100+'%';
+}
+function validStep(){
+  const q=QUESTIONS[surveyState.idx]; const v=surveyState.answers[q.id];
+  return (v!==undefined && v!==null && String(v).trim()!=='');
+}
+function updateStepButtons(){
+  const last = surveyState.idx===QUESTIONS.length-1;
+  nextBtn.style.display= last ? 'none' : 'inline-block';
+  submitBtn.style.display= last ? 'inline-block' : 'none';
+  nextBtn.disabled = !validStep();
+  submitBtn.disabled = !validStep();
+  backBtn.style.display = surveyState.idx===0 ? 'none' : 'inline-block';
+  stateQ.textContent = validStep() ? '' : 'Select an answer to continue.';
+  setProgress();
+}
+function renderButtons(q){
+  const grid=document.createElement('div'); grid.className='opt-grid';
+  const current = surveyState.answers[q.id] || '';
+  (q.options||[]).forEach(opt=>{
+    const b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=opt;
+    if(current===opt) b.classList.add('sel');
+    b.onclick=()=>{
+      surveyState.answers[q.id]=opt;
+      [...grid.children].forEach(c=>c.classList.remove('sel'));
+      b.classList.add('sel');
+      updateStepButtons();
+      setTimeout(()=>goNextOrSubmit(), 160);
+    };
+    grid.appendChild(b);
+  });
+  return grid;
+}
+function renderQ(){
+  const q=QUESTIONS[surveyState.idx]; if(!q) return;
+  qwrap.innerHTML='';
+  const card=document.createElement('div'); card.className='cardQ';
+  const num=document.createElement('div'); num.className='qnum'; num.textContent=`Question ${surveyState.idx+1}`;
+  const title=document.createElement('h3'); title.className='qtitle'; title.textContent=q.prompt;
+  card.appendChild(num); card.appendChild(title);
+  card.appendChild(renderButtons(q));
+  qwrap.appendChild(card);
+  updateStepButtons();
+}
+function goNextOrSubmit(){
+  if(surveyState.idx < QUESTIONS.length-1){ surveyState.idx++; renderQ(); }
+  else if(validStep()){ submitBtn.click(); }
+}
+
+/* ---------- Gate submit ---------- */
+gateForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(continueBtn.disabled) return;
+  overlay.classList.add('show');
+
+  let gateRowId = null;
+  try{
+    if(sb){
+      const { data, error } = await sb.from('submissions').insert([{
+        brand:'Mendokoro', flow:'with_receipt', has_receipt:true,
+        receipt_no:receiptEl.value.trim(), email:emailEl.value.trim(), name:nameEl.value.trim()||null,
+        consent:dpaEl.checked, subscribed:promoEl.checked
+      }]).select().single();
+      if(error) throw error;
+      gateRowId = data?.id || null;
+    }
+  }catch(err){ console.warn('Gate save skipped/failed:', err?.message); }
+
+  setTimeout(()=>{
+    overlay.classList.remove('show');
+    stepGate.style.display='none';
+    stepSurvey.style.display='block';
+    surveyState.idx=0; surveyState.answers={};
+    renderQ(); setProgress();
+    stepSurvey.dataset.gateId = gateRowId || '';
+  }, 600);
+});
+
+/* Navigation */
+backBtn.onclick=()=>{ 
+  if(surveyState.idx>0){ surveyState.idx--; renderQ(); } 
+  else { stepSurvey.style.display='none'; stepGate.style.display='block'; } 
+};
+nextBtn.onclick=()=>{ if(validStep()){ surveyState.idx++; renderQ(); } };
+
+/* Submit survey */
+function rewardCode(prefix="MDG"){
+  const chars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"; let c="";
+  for(let i=0;i<6;i++) c+=chars[Math.floor(Math.random()*36)];
+  return `${prefix}-${c}`;
+}
+submitBtn.onclick=async()=>{
+  if(!validStep()) return;
+  submitBtn.disabled=true; submitBtn.textContent='Submitting…';
+  try{
+    const code=rewardCode('MDG'); 
+    document.getElementById('rewardCode').textContent=code;
+
+    if(sb){
+      const gateId = stepSurvey.dataset.gateId || null;
+      if(gateId){
+        await sb.from('submissions').update([{ answers:surveyState.answers, reward_code:code }]).eq('id', gateId);
+      }else{
+        await sb.from('submissions').insert([{
+          brand:'Mendokoro', flow:'with_receipt', has_receipt:true,
+          receipt_no:receiptEl.value.trim(), email:emailEl.value.trim(), name:nameEl.value.trim()||null,
+          consent:dpaEl.checked, subscribed:promoEl.checked, answers:surveyState.answers, reward_code:code
+        }]);
+      }
+    }
+
+    stepSurvey.style.display='none'; 
+    stepReward.style.display='block';
+  }catch(e){
+    alert('Error saving. Please try again.');
+    submitBtn.disabled=false; submitBtn.textContent='Submit →';
+  }
+};
+
+/* Copy + Save coupon */
+document.getElementById('copyBtn').onclick=async()=>{
+  try{ await navigator.clipboard.writeText(document.getElementById('rewardCode').textContent); }catch{}
+};
+document.getElementById('saveImgBtn').onclick=()=> exportCoupon();
+
+/* Export coupon as PNG (optional: add gyoza faintly on the right) */
+async function exportCoupon(){
+  const canvas=document.getElementById('couponCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,W,H);
+
+  const grd=ctx.createRadialGradient(160,140,40,160,140,240);
+  grd.addColorStop(0,'rgba(255,31,40,0.20)'); grd.addColorStop(1,'rgba(255,31,40,0)');
+  ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(170,150,180,0,Math.PI*2); ctx.fill();
+  const grd2=ctx.createRadialGradient(W-160,H-160,40,W-160,H-160,260);
+  grd2.addColorStop(0,'rgba(255,31,40,0.20)'); grd2.addColorStop(1,'rgba(255,31,40,0)');
+  ctx.fillStyle=grd2; ctx.beginPath(); ctx.arc(W-170,H-170,200,0,Math.PI*2); ctx.fill();
+
+  roundedRect(ctx, 36,36, W-72, H-72, 34);
+  ctx.save(); ctx.strokeStyle='#ff1f28'; ctx.lineWidth=6; ctx.setLineDash([18,14]); ctx.stroke(); ctx.restore();
+
+  ctx.save(); ctx.globalCompositeOperation='destination-out';
+  drawCircle(ctx, 36, H/2, 26); drawCircle(ctx, W-36, H/2, 26);
+  ctx.restore();
+
+  const logo = await loadImage('./assets/img/mendokorologo.png').catch(()=>null);
+  if(logo){ const lw=260, lh=260*logo.height/logo.width; ctx.drawImage(logo, W/2 - lw/2, 80, lw, lh); }
+
+  // faint gyoza plate on right
+  const gyoza = await loadImage('./assets/img/gyoza.png').catch(()=>null);
+  if(gyoza){
+    const gw = 360, gh = 360*gyoza.height/gyoza.width;
+    ctx.save(); ctx.globalAlpha = 0.15;
+    ctx.drawImage(gyoza, W-80-gw, 70, gw, gh);
+    ctx.restore();
+  }
+
+  ctx.fillStyle='#151515'; ctx.textAlign='center';
+  ctx.font='800 46px Montserrat, sans-serif'; ctx.fillText('FREE 3 PIECE GYOZA FROM US!', W/2, 360);
+  ctx.font='700 20px Montserrat, sans-serif'; ctx.fillStyle='#6b7280';
+  ctx.fillText('Show this at the truck to redeem • One-time use', W/2, 394);
+
+  const code=document.getElementById('rewardCode').textContent || 'MDG-XXXXXX';
+  const pillW = Math.max(380, ctx.measureText(code).width + 80);
+  const pillX=W/2 - pillW/2, pillY=420, pillH=78, r=18;
+  ctx.fillStyle='#fff5f6'; roundedRect(ctx, pillX, pillY, pillW, pillH, r); ctx.fill();
+  ctx.save(); ctx.setLineDash([12,10]); ctx.lineWidth=3; ctx.strokeStyle='#ff1f28'; roundedRect(ctx, pillX, pillY, pillW, pillH, r); ctx.stroke(); ctx.restore();
+  ctx.font='800 36px Montserrat, sans-serif'; ctx.fillStyle='#151515'; ctx.fillText(code, W/2, pillY+50);
+
+  const url=canvas.toDataURL('image/png');
+  const a=document.createElement('a');
+  a.href=url; a.download=`mendokoro-coupon-${code}.png`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function roundedRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function drawCircle(ctx,x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
+function loadImage(src){
+  return new Promise((res,rej)=>{ const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>res(im); im.onerror=rej; im.src=src; });
+}
+</script>
+</body>
+</html>
