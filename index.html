@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Mendokoro Survey — With Receipt (Buttons Only)</title>
+<title>Mendokoro / Yushoken — Food Truck Survey</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -38,17 +38,18 @@ body:not(.lock){ overflow:auto }
 .nav{max-width:1200px;margin:0 auto;padding:0 16px;width:100%;display:flex;justify-content:space-between;align-items:center;height:100%}
 .brand-img{height:32px}
 .brand-right{text-align:right}
-.brand-name{font:800 16px/1 var(--font)}
+.brand-name{font:800 15px/1 var(--font)}
 .brand-sub{font:800 11px/1 var(--font); color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
 
 /* ================== Subtle BG ================== */
 .bg{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
   background:radial-gradient(1200px 360px at 50% -120px, rgba(14,155,164,.10), transparent 65%);
 }
+/* light mt. fuji drift */
 .scroller{position:absolute; inset:0; width:200%; height:100%; display:flex; animation:fuji-x 90s linear infinite}
 @keyframes fuji-x{from{transform:translateX(0)} to{transform:translateX(-50%)}}
 .belt{position:relative; width:50%; height:100%}
-.fuji{position:absolute; opacity:.10; filter:grayscale(1)}
+.fuji{position:absolute; opacity:.08; filter:grayscale(1)}
 .f1{top:4%;left:8%;width:60px;transform:rotate(-9deg)} .f2{top:9%;left:32%;width:66px;transform:rotate(8deg)}
 .f3{top:2%;left:58%;width:62px;transform:rotate(-16deg)} .f4{top:8%;left:83%;width:68px;transform:rotate(12deg)}
 .f5{top:24%;left:13%;width:66px;transform:rotate(6deg)} .f6{top:21%;left:46%;width:72px;transform:rotate(-14deg)}
@@ -59,47 +60,27 @@ body:not(.lock){ overflow:auto }
 .f15{top:60%;left:93%;width:60px;transform:rotate(-15deg)} .f16{top:88%;left:27%;width:62px;transform:rotate(-8deg)}
 .f17{top:86%;left:53%;width:60px;transform:rotate(16deg)} .f18{top:90%;left:80%;width:68px;transform:rotate(-5deg)}
 
+/* very subtle food plates hugging corners (blur + soft mask) */
+.food-bg{position:fixed; inset:0; pointer-events:none; z-index:0}
+.food-bg img{position:absolute; user-select:none; filter:blur(1px) drop-shadow(0 18px 36px rgba(0,0,0,.12)); opacity:.22; transform:rotate(0)}
+.food-bg .left-bowl{left:-80px; bottom:-60px; width:min(520px,70vw); mask-image:linear-gradient(180deg, transparent 0 8%, #000 24% 76%, transparent 100%); -webkit-mask-image:linear-gradient(180deg, transparent 0 8%, #000 24% 76%, transparent 100%)}
+.food-bg .right-gyoza{right:-60px; bottom:-40px; width:min(380px,55vw); transform:rotate(-6deg); mask-image:linear-gradient(180deg, transparent 0 8%, #000 24% 76%, transparent 100%); -webkit-mask-image:linear-gradient(180deg, transparent 0 8%, #000 24% 76%, transparent 100%)}
+
 /* ================== HERO ================== */
 .hero{
-  position:relative;
-  min-height:100dvh;
-  display:grid; place-items:center;
-  padding:28px 16px;
-  text-align:center;
-  overflow:hidden; /* clip hero art to hero only */
+  position:relative; min-height:100dvh; display:grid; place-items:center;
+  padding:28px 16px; text-align:center; overflow:hidden;
 }
 .wrap{max-width:960px; margin:0 auto; display:grid; justify-items:center; position:relative; z-index:1}
 .hero-logo{margin:0 0 10px; transform:translateY(6px) scale(.985); opacity:0; animation:logoIn .5s var(--ease) .05s forwards}
 .hero-logo img{width:min(520px,78vw); height:auto; display:block; filter:drop-shadow(0 14px 24px rgba(0,0,0,.10))}
 @keyframes logoIn{to{transform:none; opacity:1}}
-.subtitle{font:700 clamp(13px,2.6vw,16px)/1.2 var(--font); color:var(--muted); opacity:0; transform:translateY(6px); animation:rise .45s ease .1s forwards}
+.subtitle{font:800 clamp(13px,2.6vw,16px)/1.2 var(--font); color:var(--muted); opacity:0; transform:translateY(6px); animation:rise .45s ease .1s forwards}
 .accent-underline{width:0; height:3px; margin:10px auto 0; background:linear-gradient(90deg,transparent,var(--accent),transparent); border-radius:999px; opacity:.95; animation:underline .6s ease .18s forwards}
-@keyframes underline{to{width:180px}}
+@keyframes underline{to{width:220px}}
 @keyframes rise{to{opacity:1; transform:none}}
 .strap{display:inline-flex; gap:10px; align-items:center; margin:14px 0 20px; color:var(--accent); font-weight:800; font-size:12px; letter-spacing:.12em; text-transform:uppercase; padding:8px 16px; border:1px solid #cfeff3; border-radius:999px; background:#e9fbfd; opacity:0; transform:translateY(6px); animation:rise .45s ease .22s forwards}
 .lead{color:#4b5563; font-size:clamp(15px,2.4vw,18px); max-width:650px; margin:0 auto 20px; opacity:0; transform:translateY(6px); animation:rise .45s ease .28s forwards}
-
-/* Decorative food photos pinned to corners (behind content) */
-.hero-art{position:absolute; inset:0; z-index:0; pointer-events:none}
-.hero-art img{position:absolute; user-select:none; filter:drop-shadow(0 18px 36px rgba(0,0,0,.18))}
-.ramen-art{
-  left: -24px; bottom: -24px;
-  width: min(420px, 62vw);
-  transform: rotate(0deg);
-}
-.gyoza-art{
-  right: -20px; bottom: -18px;
-  width: min(300px, 50vw);
-  transform: rotate(-6deg);
-}
-/* give breathing room so CTA never collides with the images on small screens */
-.hero{ padding-bottom: clamp(120px, 36vw, 240px) }
-
-/* tighter sizes on very small screens */
-@media (max-width: 420px){
-  .ramen-art{ left:-18px; bottom:-18px; width:72vw }
-  .gyoza-art{ right:-14px; bottom:-14px; width:58vw }
-}
 
 /* CTA */
 .cta{
@@ -113,13 +94,13 @@ body:not(.lock){ overflow:auto }
 .cta:hover{transform:translateY(-1px); box-shadow:0 20px 40px color-mix(in srgb,var(--accent) 36%, transparent)}
 .cta:hover::after{transform:scaleX(1)}
 
-/* ================== FLOW container (unchanged) ================== */
+/* ================== FLOW ================== */
 .container{display:none; min-height:100dvh; padding:calc(var(--header-h) + 16px) 16px 32px; position:relative; z-index:1;
   display:grid; place-items:center; align-content:center; justify-content:center;}
 .shell{width:min(900px,100%)}
 .panel{background:var(--paper); border:1px solid var(--line); border-radius:20px; box-shadow:0 16px 48px rgba(0,0,0,.08); overflow:hidden}
 
-/* ================== Gate / Survey / Reward (unchanged) ================== */
+/* ================== Shared form styles ================== */
 .section{padding:18px}
 .grid{display:grid; gap:12px}
 label{display:block;font:800 14px/1 var(--font);margin:16px 0 6px}
@@ -129,6 +110,9 @@ input::placeholder{color:#9aa2ae}
 input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(14,155,164,.15)}
 .row{display:flex; gap:12px; flex-wrap:wrap}
 .row .col{flex:1 1 240px}
+.dflex{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.small-hint{color:#6b7280; font-size:12px}
+
 .checks{margin-top:10px; display:grid; gap:10px}
 .check{display:flex; gap:10px; align-items:flex-start}
 .check input{accent-color:var(--accent); width:16px; height:16px; margin-top:2px}
@@ -212,8 +196,9 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .ticket-foot{ color:#6b7280; font-size:12px; margin-top:8px }
 .coupon-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:4px }
 .btn{ border:1px solid rgba(0,0,0,.06) }
+/* gyoza thumbnail on ticket */
+.ticket-ill{ position:absolute; right:-6px; top:16px; width:160px; opacity:.18; transform:rotate(-6deg); pointer-events:none }
 
-  
 /* ============== Loading overlay ============== */
 .overlay{
   position:fixed; inset:0; display:grid; place-items:center;
@@ -256,12 +241,18 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
   </div>
 </div>
 
+<!-- subtle food plates fixed in corners -->
+<div class="food-bg" aria-hidden="true">
+  <img class="left-bowl" src="./assets/img/mendo-ramen.png" alt="">
+  <img class="right-gyoza" src="./assets/img/gyoza.png" alt="">
+</div>
+
 <!-- Header -->
 <header id="hdr" class="site-header" aria-hidden="true">
   <nav class="nav">
     <img class="brand-img" src="./assets/img/nhlogo.png" alt="Nippon Hasha">
     <div class="brand-right">
-      <div class="brand-name">Mendokoro</div>
+      <div class="brand-name">Mendokoro • Yushoken</div>
       <div class="brand-sub">Food Truck Survey</div>
     </div>
   </nav>
@@ -269,14 +260,9 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 
 <!-- HERO -->
 <section class="hero" id="hero">
-  <!-- decorative corner images -->
-  <div class="hero-art" aria-hidden="true">
-    <img class="ramen-art" src="./assets/img/mendo-ramen.png" alt="">
-    <img class="gyoza-art" src="./assets/img/gyoza.png" alt="">
-  </div>
-
   <div class="wrap">
     <div class="hero-logo"><img src="./assets/img/mendokorologo.png" alt="Mendokoro Ramenba"></div>
+    <div class="hero-logo"><img src="./assets/img/yushokenlogo.png" alt="Ramen Yushoken"></div>
     <div class="subtitle">A Nippon Hasha Brand</div>
     <div class="accent-underline" aria-hidden="true"></div>
     <div class="strap">Food Truck Survey</div>
@@ -297,7 +283,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
         <label for="receipt">Receipt Number<span class="req" aria-hidden="true">*</span></label>
         <input id="receipt" name="receipt" type="text" inputmode="text" maxlength="18"
                placeholder="e.g., MDKB-123456-789101" required aria-describedby="receiptHelp receiptErr">
-        <div id="receiptHelp" class="hint">Format: <code>AAAA-000000-000000</code>.</div>
+        <div id="receiptHelp" class="hint">Format: <code>AAAA-000000-000000</code>. Brand prefixes allowed: MD (Mendokoro), YS (Yushoken), MR, KZ.</div>
         <div id="receiptErr" class="err">Invalid receipt format or brand code.</div>
 
         <div class="row">
@@ -352,14 +338,15 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
     <section id="stepReward" class="section reward-section" style="display:none">
       <div class="coupon-wrap">
         <div class="ticket" id="ticket">
+          <img class="ticket-ill" src="./assets/img/gyoza.png" alt="">
           <div class="ticket-head">
             <img src="./assets/img/mendokorologo.png" alt="Mendokoro">
+            <img src="./assets/img/yushokenlogo.png" alt="Yushoken">
           </div>
           <div class="ticket-sub">A Nippon Hasha Brand</div>
-          <div class="ticket-title">Thank you for your time! use this code to claim your FREE 3 PIECE GYOZA on us!</div>
+          <div class="ticket-title">Thank you for your time! Use this code to claim your FREE 3-PIECE GYOZA on us!</div>
           <div id="rewardCode" class="ticket-code">—</div>
-          <div class="ticket-foot">Show this at the truck to redeem.</div>
-          <div class="ticket-foot">One-time use.</div>
+          <div class="ticket-foot">Show this at the truck to redeem • One-time use</div>
         </div>
         <div class="coupon-actions">
           <button id="copyBtn" class="btn" type="button">Copy Code</button>
@@ -376,25 +363,43 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 <div class="overlay" id="overlay">
   <div class="loader">
     <img src="./assets/img/mendokorologo.png" alt="Loading">
+    <img src="./assets/img/yushokenlogo.png" alt="Loading">
+
     Storing your details…
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 
-<!-- QUESTIONS -->
+<!-- QUESTIONS (updated) -->
 <script id="QUESTIONS_JSON" type="application/json">[
-  {"id":"q1","type":"buttons","prompt":"Do you enjoy your dining experience with our Blue Truck Pop-up?","options":["Yes","No"]},
-  {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Social Media","Mall","Friend","Passerby"]},
-  {"id":"q3","type":"buttons","prompt":"Have you been to one of our Branches before?","options":["Yes","No"]},
-  {"id":"q3a","type":"buttons","prompt":"If Yes, Which Branch?","options":["MOA","Rockwell","Molito","Panay","Arton Strip"]},
-  {"id":"q3b","type":"buttons","prompt":"If No, Would you like to try the one nearest to you?","options":["Yes","No"]},
-  {"id":"q4","type":"buttons","prompt":"Where do you want to see our Blue Truck next?","options":["City","Mall"]},
-  {"id":"q5","type":"buttons","prompt":"Are you working near or living near here?","options":["Working","Living"]},
-  {"id":"q6","type":"buttons","prompt":"Does the food and service achieve the value for your money?","options":["Yes","No"]},
-  {"id":"q7","type":"buttons","prompt":"What other brands of Ramen House have you tried?","options":["Nagi","Kuroda"]},
-  {"id":"q8","type":"buttons","prompt":"How likely would you recommend our Brand to your friends and family?","options":["Very Likely","Fair","Unlikely"]},
+  {"id":"q1","type":"buttons","prompt":"Did you enjoy your Blue Truck Pop-up experience?","options":["Yes","No"]},
+
+  {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Social Media","Mall","Friend","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
+
+  {"id":"q3","type":"buttons","prompt":"Have you been to one of our branches before?","options":["Yes","No"]},
+  {"id":"q3a","type":"buttons","prompt":"If yes, which branch?","options":["MOA","Rockwell","Molito","Panay","Katipunan"]},
+
+  {"id":"q3b","type":"buttons","prompt":"If no, would you like to try the one nearest to you?","options":["Yes","No"]},
+
+  {"id":"q4","type":"buttons","prompt":"Where do you want to see our Blue Truck next?","options":["City","Mall"],"followups":[
+      {"when":"City","id":"q4_city","type":"text","placeholder":"Type a city in the Philippines","suggestKey":"cities","required":true},
+      {"when":"Mall","id":"q4_mall","type":"text","placeholder":"Optional: which mall?","suggestKey":"malls","required":false}
+  ]},
+
+  {"id":"q5","type":"buttons","prompt":"Are you working near or living near here?","options":["Working","Living"],"followups":[
+      {"when":"Working","id":"q5_place","type":"text","placeholder":"Which office / company?","suggestKey":"places","required":true},
+      {"when":"Living","id":"q5_place","type":"text","placeholder":"Which village / subdivision?","suggestKey":"places","required":true}
+  ]},
+
+  {"id":"q6","type":"buttons","prompt":"Does the food and service achieve value for money?","options":["Yes","No"]},
+
+  {"id":"q7","type":"text","prompt":"What other ramen brands have you tried? (e.g., Nagi, Kuroda, Ippudo)","placeholder":"Type brand(s)","suggestKey":"brands","required":true},
+
+  {"id":"q8","type":"buttons","prompt":"How likely would you recommend our brand to friends and family?","options":["Very Likely","Fair","Unlikely"]},
+
   {"id":"q9","type":"buttons","prompt":"What is/are your favorite cuisine?","options":["Japanese","Korean","Pinoy"]},
+
   {"id":"q10","type":"buttons","prompt":"Would you love to hear more about us and where we are headed?","options":["Yes","No"]}
 ]</script>
 
@@ -427,7 +432,7 @@ const overlay=document.getElementById('overlay');
 
 (function(){
   const pattern = /^[A-Z]{4}-\d{6}-\d{6}$/;
-  const allowedTwo = /^(MD|YS|MR|KZ)/;
+  const allowedTwo = /^(MD|YS|MR|KZ)/; // includes Yushoken (YS)
   function formatReceipt(raw){
     const clean = raw.replace(/[^a-zA-Z0-9]/g,'').toUpperCase();
     const brand = clean.replace(/[^A-Z]/g,'').slice(0,4);
@@ -477,12 +482,23 @@ const overlay=document.getElementById('overlay');
   document.addEventListener('DOMContentLoaded', updateGate);
 })();
 
-/* ---------- Survey model & rendering (buttons only) ---------- */
+/* ---------- Survey model/rendering (buttons + text + conditionals + history suggestions) ---------- */
 const QUESTIONS = JSON.parse(document.getElementById('QUESTIONS_JSON').textContent||'[]');
 const stepSurvey=document.getElementById('stepSurvey'), stepGate=document.getElementById('stepGate'), stepReward=document.getElementById('stepReward');
 const qwrap=document.getElementById('qwrap'), bar=document.getElementById('bar'), chip=document.getElementById('stepChip');
 const nextBtn=document.getElementById('nextBtn'), backBtn=document.getElementById('backBtn'), submitBtn=document.getElementById('submitBtn'), stateQ=document.getElementById('stateQ');
 const surveyState={idx:0,answers:{}};
+
+/* simple local history for suggestions */
+const storeKey='mdk_suggest_history';
+const suggestHistory=JSON.parse(localStorage.getItem(storeKey)||'{}');
+function pushHistory(key,val){
+  if(!key||!val) return;
+  const arr = Array.isArray(suggestHistory[key]) ? suggestHistory[key] : [];
+  if(!arr.includes(val)) arr.unshift(val);
+  suggestHistory[key]=arr.slice(0,20);
+  localStorage.setItem(storeKey, JSON.stringify(suggestHistory));
+}
 
 function setProgress(){
   const total=QUESTIONS.length;
@@ -490,8 +506,30 @@ function setProgress(){
   bar.style.width=((surveyState.idx+1)/Math.max(1,total))*100+'%';
 }
 function validStep(){
-  const q=QUESTIONS[surveyState.idx]; const v=surveyState.answers[q.id];
-  return (v!==undefined && v!==null && String(v).trim()!=='');
+  const q=QUESTIONS[surveyState.idx]; 
+  if(!q) return false;
+  const v=surveyState.answers[q.id];
+  if(q.type==='text'){
+    return !!(v && String(v).trim()!=='');
+  }
+  if(q.type==='buttons'){
+    const picked = v && v.choice;
+    if(!picked) return false;
+    // if "others" or followup is required, ensure text is provided
+    if(q.otherText && picked==='Others'){
+      const tx = surveyState.answers[q.otherId]?.trim();
+      return !!tx;
+    }
+    if(Array.isArray(q.followups)){
+      const f = q.followups.find(x=>x.when===picked);
+      if(f && f.required){
+        const t = surveyState.answers[f.id]?.trim();
+        return !!t;
+      }
+    }
+    return true;
+  }
+  return !!v;
 }
 function updateStepButtons(){
   const last = surveyState.idx===QUESTIONS.length-1;
@@ -500,26 +538,93 @@ function updateStepButtons(){
   nextBtn.disabled = !validStep();
   submitBtn.disabled = !validStep();
   backBtn.style.display = surveyState.idx===0 ? 'none' : 'inline-block';
-  stateQ.textContent = validStep() ? '' : 'Select an answer to continue.';
+  stateQ.textContent = validStep() ? '' : 'Answer to continue.';
   setProgress();
 }
+
+function mkDatalist(id, key){
+  const dl=document.createElement('datalist');
+  dl.id=id;
+  const items = (suggestHistory[key]||[]);
+  items.forEach(v=>{ const o=document.createElement('option'); o.value=v; dl.appendChild(o); });
+  return dl;
+}
+
 function renderButtons(q){
+  const wrap=document.createElement('div');
   const grid=document.createElement('div'); grid.className='opt-grid';
-  const current = surveyState.answers[q.id] || '';
+  const current = surveyState.answers[q.id]?.choice || '';
   (q.options||[]).forEach(opt=>{
     const b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=opt;
     if(current===opt) b.classList.add('sel');
     b.onclick=()=>{
-      surveyState.answers[q.id]=opt;
+      surveyState.answers[q.id]={choice:opt};
       [...grid.children].forEach(c=>c.classList.remove('sel'));
       b.classList.add('sel');
+      refreshFollowups(q, wrap); 
       updateStepButtons();
-      setTimeout(()=>goNextOrSubmit(), 160);
     };
     grid.appendChild(b);
   });
-  return grid;
+  wrap.appendChild(grid);
+
+  // "Others" textbox
+  if(q.otherText){
+    const holder=document.createElement('div'); holder.style.marginTop='10px';
+    const input=document.createElement('input');
+    input.type='text'; input.placeholder=q.otherPlaceholder||'Please specify'; input.id=q.otherId;
+    input.addEventListener('input',()=>{ surveyState.answers[q.otherId]=input.value; updateStepButtons(); });
+    holder.appendChild(input);
+    const hint=document.createElement('div'); hint.className='small-hint'; hint.textContent='Shown only if “Others” is chosen.'; holder.appendChild(hint);
+    wrap.appendChild(holder);
+    // show/hide based on selection
+    function toggleOthers(){
+      const isOthers = surveyState.answers[q.id]?.choice==='Others';
+      holder.style.display = isOthers ? 'block' : 'none';
+    }
+    toggleOthers(); wrap.toggleOthers=toggleOthers;
+  }
+
+  // followups area
+  if(Array.isArray(q.followups) && q.followups.length){
+    const fbox=document.createElement('div'); fbox.style.marginTop='10px'; fbox.className='grid';
+    wrap.appendChild(fbox);
+    wrap.fbox=fbox;
+  }
+
+  function refreshFollowups(q, wrap){
+    if(!wrap.fbox) { if(wrap.toggleOthers) wrap.toggleOthers(); return; }
+    wrap.fbox.innerHTML='';
+    const picked = surveyState.answers[q.id]?.choice;
+    const f = q.followups.find(x=>x.when===picked);
+    if(!f){ if(wrap.toggleOthers) wrap.toggleOthers(); return; }
+
+    const label=document.createElement('label'); label.textContent=f.placeholder || 'Please specify';
+    const input=document.createElement('input'); input.type='text'; input.placeholder=f.placeholder||'Please specify';
+    const dlid=`dl-${f.id}`, dl=mkDatalist(dlid, f.suggestKey); input.setAttribute('list', dlid);
+    input.value = surveyState.answers[f.id]||'';
+    input.addEventListener('input', ()=>{ surveyState.answers[f.id]=input.value; updateStepButtons(); });
+    wrap.fbox.appendChild(label); wrap.fbox.appendChild(input); wrap.fbox.appendChild(dl);
+    if(wrap.toggleOthers) wrap.toggleOthers();
+  }
+  wrap.refreshFollowups=()=>refreshFollowups(q,wrap);
+
+  // initial render
+  wrap.refreshFollowups?.();
+  return wrap;
 }
+
+function renderText(q){
+  const box=document.createElement('div'); 
+  const label=document.createElement('div'); label.className='qhelp'; label.textContent=q.help||'';
+  const input=document.createElement('input'); input.type='text'; input.placeholder=q.placeholder||'Type here';
+  const dlid=`dl-${q.id}`, dl=mkDatalist(dlid, q.suggestKey); input.setAttribute('list', dlid);
+  input.value = surveyState.answers[q.id]||'';
+  input.addEventListener('input', ()=>{ surveyState.answers[q.id]=input.value; updateStepButtons(); });
+  box.appendChild(input); box.appendChild(dl); if(q.help) box.appendChild(label);
+  return box;
+}
+
 function renderQ(){
   const q=QUESTIONS[surveyState.idx]; if(!q) return;
   qwrap.innerHTML='';
@@ -527,7 +632,9 @@ function renderQ(){
   const num=document.createElement('div'); num.className='qnum'; num.textContent=`Question ${surveyState.idx+1}`;
   const title=document.createElement('h3'); title.className='qtitle'; title.textContent=q.prompt;
   card.appendChild(num); card.appendChild(title);
-  card.appendChild(renderButtons(q));
+
+  if(q.type==='buttons'){ card.appendChild(renderButtons(q)); }
+  else if(q.type==='text'){ card.appendChild(renderText(q)); }
   qwrap.appendChild(card);
   updateStepButtons();
 }
@@ -546,7 +653,7 @@ gateForm.addEventListener('submit', async (e)=>{
   try{
     if(sb){
       const { data, error } = await sb.from('submissions').insert([{
-        brand:'Mendokoro', flow:'with_receipt', has_receipt:true,
+        brand:'Mendokoro/Yushoken', flow:'with_receipt', has_receipt:true,
         receipt_no:receiptEl.value.trim(), email:emailEl.value.trim(), name:nameEl.value.trim()||null,
         consent:dpaEl.checked, subscribed:promoEl.checked
       }]).select().single();
@@ -585,13 +692,20 @@ submitBtn.onclick=async()=>{
     const code=rewardCode('MDG'); 
     document.getElementById('rewardCode').textContent=code;
 
+    // push suggestion history entries
+    pushHistory('cities', (surveyState.answers['q4_city']||'').trim());
+    pushHistory('malls', (surveyState.answers['q4_mall']||'').trim());
+    pushHistory('places', (surveyState.answers['q5_place']||'').trim());
+    pushHistory('brands', (surveyState.answers['q7']||'').trim());
+    pushHistory('sources', (surveyState.answers['q2_other']||'').trim());
+
     if(sb){
       const gateId = stepSurvey.dataset.gateId || null;
       if(gateId){
         await sb.from('submissions').update([{ answers:surveyState.answers, reward_code:code }]).eq('id', gateId);
       }else{
         await sb.from('submissions').insert([{
-          brand:'Mendokoro', flow:'with_receipt', has_receipt:true,
+          brand:'Mendokoro/Yushoken', flow:'with_receipt', has_receipt:true,
           receipt_no:receiptEl.value.trim(), email:emailEl.value.trim(), name:nameEl.value.trim()||null,
           consent:dpaEl.checked, subscribed:promoEl.checked, answers:surveyState.answers, reward_code:code
         }]);
@@ -612,7 +726,7 @@ document.getElementById('copyBtn').onclick=async()=>{
 };
 document.getElementById('saveImgBtn').onclick=()=> exportCoupon();
 
-/* Export coupon as PNG (optional: add gyoza faintly on the right) */
+/* Export coupon as PNG (faint gyoza added) */
 async function exportCoupon(){
   const canvas=document.getElementById('couponCanvas');
   const ctx=canvas.getContext('2d');
@@ -676,6 +790,9 @@ function drawCircle(ctx,x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx
 function loadImage(src){
   return new Promise((res,rej)=>{ const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>res(im); im.onerror=rej; im.src=src; });
 }
+
+/* ----- render first question on enter from gate ----- */
+const stepChip=document.getElementById('stepChip');
 </script>
 </body>
 </html>
