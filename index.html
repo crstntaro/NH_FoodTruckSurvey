@@ -24,7 +24,7 @@ body{
   margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);
   line-height:1.6; opacity:0; transform:translateY(6px); animation:fadeIn .35s ease forwards;
 }
-body.lock{ overflow:hidden }  /* lock scroll on landing */
+body.lock{ overflow:hidden }
 body:not(.lock){ overflow:auto }
 @keyframes fadeIn{to{opacity:1;transform:none}}
 
@@ -45,7 +45,6 @@ body:not(.lock){ overflow:auto }
 .bg{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
   background:radial-gradient(1200px 360px at 50% -120px, rgba(14,155,164,.10), transparent 65%);
 }
-/* light mt. fuji drift */
 .scroller{position:absolute; inset:0; width:200%; height:100%; display:flex; animation:fuji-x 90s linear infinite}
 @keyframes fuji-x{from{transform:translateX(0)} to{transform:translateX(-50%)}}
 .belt{position:relative; width:50%; height:100%}
@@ -60,17 +59,14 @@ body:not(.lock){ overflow:auto }
 .f15{top:60%;left:93%;width:60px;transform:rotate(-15deg)} .f16{top:88%;left:27%;width:62px;transform:rotate(-8deg)}
 .f17{top:86%;left:53%;width:60px;transform:rotate(16deg)} .f18{top:90%;left:80%;width:68px;transform:rotate(-5deg)}
 
-/* very subtle food plates hugging corners (blur + soft mask) */
+/* subtle food plates in corners */
 .food-bg{position:fixed; inset:0; pointer-events:none; z-index:0}
-.food-bg img{position:absolute; user-select:none; filter:blur(1px) drop-shadow(0 18px 36px rgba(0,0,0,.12)); opacity:.22; transform:rotate(0)}
-.food-bg .left-bowl{left:-80px; bottom:-60px; width:min(520px,70vw); mask-image:linear-gradient(180deg, transparent 0 8%, #000 24% 76%, transparent 100%); -webkit-mask-image:linear-gradient(180deg, transparent 0 8%, #000 24% 76%, transparent 100%)}
-.food-bg .right-gyoza{right:-60px; bottom:-40px; width:min(380px,55vw); transform:rotate(-6deg); mask-image:linear-gradient(180deg, transparent 0 8%, #000 24% 76%, transparent 100%); -webkit-mask-image:linear-gradient(180deg, transparent 0 8%, #000 24% 76%, transparent 100%)}
+.food-bg img{position:absolute; user-select:none; filter:blur(1px) drop-shadow(0 18px 36px rgba(0,0,0,.12)); opacity:.22}
+.food-bg .left-bowl{left:-80px; bottom:-60px; width:min(520px,70vw)}
+.food-bg .right-gyoza{right:-60px; bottom:-40px; width:min(380px,55vw); transform:rotate(-6deg)}
 
 /* ================== HERO ================== */
-.hero{
-  position:relative; min-height:100dvh; display:grid; place-items:center;
-  padding:28px 16px; text-align:center; overflow:hidden;
-}
+.hero{ position:relative; min-height:100dvh; display:grid; place-items:center; padding:28px 16px; text-align:center; overflow:hidden; }
 .wrap{max-width:960px; margin:0 auto; display:grid; justify-items:center; position:relative; z-index:1}
 .hero-logo{margin:0 0 10px; transform:translateY(6px) scale(.985); opacity:0; animation:logoIn .5s var(--ease) .05s forwards}
 .hero-logo img{width:min(520px,78vw); height:auto; display:block; filter:drop-shadow(0 14px 24px rgba(0,0,0,.10))}
@@ -110,46 +106,38 @@ input::placeholder{color:#9aa2ae}
 input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(14,155,164,.15)}
 .row{display:flex; gap:12px; flex-wrap:wrap}
 .row .col{flex:1 1 240px}
-.dflex{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
 .small-hint{color:#6b7280; font-size:12px}
 
 .checks{margin-top:10px; display:grid; gap:10px}
 .check{display:flex; gap:10px; align-items:flex-start}
 .check input{accent-color:var(--accent); width:16px; height:16px; margin-top:2px}
-.check div{font-size:13px; line-height:1.45; color:var(--ink)}
+.check div{font-size:13px; line-height:1.45; color:#111}
 .check small{color:#DF1F26; display:block; margin-top:2px; font-size:11.5px}
 .actions{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:18px}
-.hint{color:var(--muted); font-size:12px}
-.foot{margin-top:14px; color:var(--muted); font-size:12px}
+.hint{color:#6b7280; font-size:12px}
+.foot{margin-top:14px; color:#6b7280; font-size:12px}
 .err{ color:#b91c1c; font-size:12px; margin-top:8px; display:none }
 .err.show{ display:block }
 
 .survey-head{display:flex; align-items:center; gap:12px; position:sticky; top:0; background:var(--paper); padding:6px 2px 10px; z-index:2}
-.stepchip{font:800 12px var(--font); color:var(--accent); padding:6px 10px; border-radius:999px; background:#e9fbfd; border:1px solid #b9edf1}
+.stepchip{font:800 12px var(--font); color:#0b6f76; padding:6px 10px; border-radius:999px; background:#e9fbfd; border:1px solid #b9edf1}
 .progress{flex:1; height:8px; background:#e6f6f7; border-radius:999px; overflow:hidden}
 .bar{height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-dk)); transition:width .25s var(--ease)}
-.cardQ{
-  margin-top:8px; padding:18px; border:1px solid var(--line); border-radius:16px; background:#fff;
-  box-shadow:0 6px 16px rgba(0,0,0,.05); animation:stepIn .24s var(--ease);
-}
+.cardQ{ margin-top:8px; padding:18px; border:1px solid var(--line); border-radius:16px; background:#fff;
+  box-shadow:0 6px 16px rgba(0,0,0,.05); animation:stepIn .24s var(--ease); }
 @keyframes stepIn{ from{ opacity:0; transform:translateY(6px)} to{ opacity:1; transform:none}}
 .qnum{font:800 12px var(--font); color:#0b6f76; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px}
 .qtitle{margin:0 0 10px; font:800 clamp(18px,3.8vw,22px)/1.25 var(--font)}
-.qhelp{color:var(--muted); font-size:13px; margin:-2px 0 10px}
+.qhelp{color:#6b7280; font-size:13px; margin:-2px 0 10px}
 
-.opt-grid{
-  --col-min:140px;
-  display:grid; gap:10px; margin-top:6px;
+.opt-grid{ --col-min:140px; display:grid; gap:10px; margin-top:6px;
   grid-template-columns: repeat(auto-fit, minmax(var(--col-min), 1fr));
-  max-width:680px; margin-inline:auto;
-  justify-items:stretch; align-items:stretch;
-}
+  max-width:680px; margin-inline:auto; }
 .opt{
   position:relative; isolation:isolate; display:flex; align-items:center; justify-content:center; text-align:center;
   border:1px solid var(--line); background:#fff; color:#111;
   padding:0 14px; border-radius:12px; font:800 14px var(--font); cursor:pointer;
-  min-height:48px; overflow:hidden; word-break:break-word; white-space:normal;
-  transition:.12s var(--ease);
+  min-height:48px; overflow:hidden; word-break:break-word; white-space:normal; transition:.12s var(--ease);
 }
 .opt::after{content:""; position:absolute; inset:0; z-index:-1; background:var(--accent); transform:scaleX(0); transform-origin:left center; transition:transform .28s ease; border-radius:inherit}
 .opt:hover{transform:translateY(-1px)}
@@ -173,7 +161,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .btn[disabled]{opacity:.55; cursor:not-allowed; filter:grayscale(.35)}
 .state{color:#b45309; font-size:12px; text-align:center; min-height:1em; margin-top:4px}
 
-/* ================== Reward ticket ================== */
+/* Reward ticket */
 .section.reward-section{padding:18px}
 .coupon-wrap{ display:grid; gap:16px; justify-items:center; text-align:center; margin:8px 0 6px; padding-inline:12px }
 .ticket{
@@ -195,11 +183,9 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 }
 .ticket-foot{ color:#6b7280; font-size:12px; margin-top:8px }
 .coupon-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:4px }
-.btn{ border:1px solid rgba(0,0,0,.06) }
-/* gyoza thumbnail on ticket */
 .ticket-ill{ position:absolute; right:-6px; top:16px; width:160px; opacity:.18; transform:rotate(-6deg); pointer-events:none }
 
-/* ============== Loading overlay ============== */
+/* Loading overlay */
 .overlay{
   position:fixed; inset:0; display:grid; place-items:center;
   background:rgba(255,255,255,.65); backdrop-filter:blur(8px) saturate(120%);
@@ -209,6 +195,20 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .loader{ display:grid; place-items:center; gap:10px; text-align:center; color:#334155; font-weight:700; font-size:14px }
 .loader img{ height:64px; width:auto; filter:drop-shadow(0 10px 18px rgba(0,0,0,.16)); animation:pulse 1.2s ease-in-out infinite }
 @keyframes pulse{ 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.06) } }
+
+/* Typeahead dropdown */
+.typeahead{
+  position:relative;
+}
+.ta-list{
+  position:absolute; left:0; right:0; top:calc(100% + 4px);
+  background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,.08);
+  max-height:220px; overflow:auto; z-index:10; display:none;
+}
+.ta-item{
+  padding:10px 12px; cursor:pointer; font-size:14px;
+}
+.ta-item:hover, .ta-item.active{ background:#e9fbfd; color:#0b6f76; }
 </style>
 </head>
 <body class="lock">
@@ -262,7 +262,6 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 <section class="hero" id="hero">
   <div class="wrap">
     <div class="hero-logo"><img src="./assets/img/mendokorologo.png" alt="Mendokoro Ramenba"></div>
-    <div class="hero-logo"><img src="./assets/img/yushokenlogo.png" alt="Ramen Yushoken"></div>
     <div class="subtitle">A Nippon Hasha Brand</div>
     <div class="accent-underline" aria-hidden="true"></div>
     <div class="strap">Food Truck Survey</div>
@@ -320,7 +319,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
     <!-- Survey -->
     <section id="stepSurvey" class="section" style="display:none">
       <div class="survey-head">
-        <div id="stepChip" class="stepchip">Question 1 of 10</div>
+        <div id="stepChip" class="stepchip">Question 1 of 12</div>
         <div class="progress"><div id="bar" class="bar"></div></div>
       </div>
 
@@ -341,7 +340,6 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
           <img class="ticket-ill" src="./assets/img/gyoza.png" alt="">
           <div class="ticket-head">
             <img src="./assets/img/mendokorologo.png" alt="Mendokoro">
-            <img src="./assets/img/yushokenlogo.png" alt="Yushoken">
           </div>
           <div class="ticket-sub">A Nippon Hasha Brand</div>
           <div class="ticket-title">Thank you for your time! Use this code to claim your FREE 3-PIECE GYOZA on us!</div>
@@ -363,22 +361,20 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 <div class="overlay" id="overlay">
   <div class="loader">
     <img src="./assets/img/mendokorologo.png" alt="Loading">
-    <img src="./assets/img/yushokenlogo.png" alt="Loading">
-
     Storing your details…
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 
-<!-- QUESTIONS (updated) -->
+<!-- QUESTIONS (updated per feedback) -->
 <script id="QUESTIONS_JSON" type="application/json">[
   {"id":"q1","type":"buttons","prompt":"Did you enjoy your Blue Truck Pop-up experience?","options":["Yes","No"]},
 
   {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Social Media","Mall","Friend","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
 
   {"id":"q3","type":"buttons","prompt":"Have you been to one of our branches before?","options":["Yes","No"]},
-  {"id":"q3a","type":"buttons","prompt":"If yes, which branch?","options":["MOA","Rockwell","Molito","Panay","Katipunan"]},
+  {"id":"q3a","type":"buttons","prompt":"If yes, which branch?","options":["Cebu","Ortigas","Pasay","Rockwell","Alabang","Panay","Katipunan"]},
 
   {"id":"q3b","type":"buttons","prompt":"If no, would you like to try the one nearest to you?","options":["Yes","No"]},
 
@@ -394,7 +390,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 
   {"id":"q6","type":"buttons","prompt":"Does the food and service achieve value for money?","options":["Yes","No"]},
 
-  {"id":"q7","type":"text","prompt":"What other ramen brands have you tried? (e.g., Nagi, Kuroda, Ippudo)","placeholder":"Type brand(s)","suggestKey":"brands","required":true},
+  {"id":"q7","type":"text","prompt":"What other ramen brands have you tried?","placeholder":"e.g., Nagi, Kuroda, Ippudo","suggestKey":"brands","required":true},
 
   {"id":"q8","type":"buttons","prompt":"How likely would you recommend our brand to friends and family?","options":["Very Likely","Fair","Unlikely"]},
 
@@ -419,7 +415,7 @@ document.getElementById('startBtn').addEventListener('click',e=>{
     hero.style.display='none';
     container.style.display='grid';
     hdr.classList.add('show'); hdr.removeAttribute('aria-hidden');
-    document.body.classList.remove('lock'); // unlock scrolling only after entering flow
+    document.body.classList.remove('lock');
   }, 180);
 });
 
@@ -432,7 +428,7 @@ const overlay=document.getElementById('overlay');
 
 (function(){
   const pattern = /^[A-Z]{4}-\d{6}-\d{6}$/;
-  const allowedTwo = /^(MD|YS|MR|KZ)/; // includes Yushoken (YS)
+  const allowedTwo = /^(MD|YS|MR|KZ)/;
   function formatReceipt(raw){
     const clean = raw.replace(/[^a-zA-Z0-9]/g,'').toUpperCase();
     const brand = clean.replace(/[^A-Z]/g,'').slice(0,4);
@@ -482,22 +478,121 @@ const overlay=document.getElementById('overlay');
   document.addEventListener('DOMContentLoaded', updateGate);
 })();
 
-/* ---------- Survey model/rendering (buttons + text + conditionals + history suggestions) ---------- */
+/* ---------- Typeahead (no big dropdown, suggests as you type) ---------- */
+const PH_CITIES = [
+  // NCR (16 + 1)
+  "Caloocan","Las Piñas","Makati","Malabon","Mandaluyong","Manila","Marikina",
+  "Muntinlupa","Navotas","Parañaque","Pasay","Pasig","Quezon City","San Juan",
+  "Taguig","Valenzuela","Pateros",
+
+  // Luzon (excluding NCR)
+  "Alaminos","Angeles","Antipolo","Bacoor","Balanga","Batac","Batangas City","Baguio",
+  "Cabanatuan","Cabuyao","Candon","Cauayan","Cavite City","Dagupan","Dasmariñas",
+  "Gapan","General Trias","Iriga","Laoag","Legazpi","Ligao","Lipa","Lucena",
+  "Malolos","Meycauayan","Naga","Olongapo","Palayan","Puerto Princesa",
+  "San Carlos (Pangasinan)","San Fernando (La Union)","San Fernando (Pampanga)",
+  "San Jose (Nueva Ecija)","San Jose del Monte","San Pablo","Santa Rosa",
+  "Santiago","Sorsogon City","Tabuk","Tacurong","Tarlac City","Tayabas","Trece Martires",
+  "Vigan",
+
+  // Visayas
+  "Bacolod","Bago","Bais","Bayawan","Baybay","Borongan","Calbayog","Catbalogan",
+  "Cebu City","Danao","Dumaguete","Guihulngan","Iloilo City","Kananga (Ormoc merged?)","Kananga no","Kabankalan",
+  "Lapu-Lapu","Maasin","Mandaue","Ormoc","Passi","Roxas City","Silay","Sipalay",
+  "Tagbilaran","Tacloban","Talisay (Cebu)","Talisay (Negros Occidental)","Toledo",
+  "Victorias",
+
+  // Mindanao
+  "Butuan","Cabadbaran","Cagayan de Oro","Cotabato City","Davao City","Digos",
+  "Dipolog","Dapitan","El Salvador","Gingoog","General Santos","Iligan","Isabela City",
+  "Kidapawan","Koronadal","Mati","Malaybalay","Marawi","Oroquieta","Ozamiz","Pagadian",
+  "Panabo","Samal","San Carlos (Negros Occidental)","Surigao City","Tagum",
+  "Tangub","Tandag","Valencia","Zamboanga City"
+];
+
+function attachTypeahead(input, list, onPick){
+  const wrap = document.createElement('div');
+  wrap.className = 'typeahead';
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(input);
+  const ul = document.createElement('div'); ul.className='ta-list'; wrap.appendChild(ul);
+  let active = -1;
+
+  function render(q){
+    const qv = q.trim().toLowerCase();
+    const seen = new Set();
+    const fromHistory = (suggestHistory.cities||[]).filter(x=>x && x.toLowerCase().startsWith(qv));
+    const base = list.filter(x=>x.toLowerCase().startsWith(qv));
+    const items = [...fromHistory, ...base].filter(x=>{ if(seen.has(x)) return false; seen.add(x); return true; }).slice(0,20);
+    ul.innerHTML='';
+    active = -1;
+    if(!qv || items.length===0){ ul.style.display='none'; return; }
+    items.forEach((txt,i)=>{
+      const it=document.createElement('div'); it.className='ta-item'; it.textContent=txt;
+      it.addEventListener('mousedown', e=>{ e.preventDefault(); pick(txt); });
+      ul.appendChild(it);
+    });
+    ul.style.display='block';
+  }
+  function highlight(){
+    [...ul.children].forEach((c,i)=> c.classList.toggle('active', i===active));
+  }
+  function pick(val){
+    input.value = val;
+    ul.style.display='none';
+    onPick?.(val);
+  }
+
+  input.addEventListener('input', ()=> render(input.value));
+  input.addEventListener('focus', ()=> render(input.value));
+  input.addEventListener('blur', ()=> setTimeout(()=>ul.style.display='none', 100));
+  input.addEventListener('keydown', e=>{
+    const n = ul.children.length;
+    if(!n) return;
+    if(e.key==='ArrowDown'){ active = (active+1)%n; highlight(); e.preventDefault(); }
+    else if(e.key==='ArrowUp'){ active = (active-1+n)%n; highlight(); e.preventDefault(); }
+    else if(e.key==='Enter' && active>-1){ e.preventDefault(); pick(ul.children[active].textContent); }
+  });
+}
+
+/* ---------- Survey model/rendering ---------- */
 const QUESTIONS = JSON.parse(document.getElementById('QUESTIONS_JSON').textContent||'[]');
 const stepSurvey=document.getElementById('stepSurvey'), stepGate=document.getElementById('stepGate'), stepReward=document.getElementById('stepReward');
 const qwrap=document.getElementById('qwrap'), bar=document.getElementById('bar'), chip=document.getElementById('stepChip');
 const nextBtn=document.getElementById('nextBtn'), backBtn=document.getElementById('backBtn'), submitBtn=document.getElementById('submitBtn'), stateQ=document.getElementById('stateQ');
 const surveyState={idx:0,answers:{}};
 
-/* simple local history for suggestions */
+/* local suggestion history */
 const storeKey='mdk_suggest_history';
 const suggestHistory=JSON.parse(localStorage.getItem(storeKey)||'{}');
 function pushHistory(key,val){
   if(!key||!val) return;
   const arr = Array.isArray(suggestHistory[key]) ? suggestHistory[key] : [];
   if(!arr.includes(val)) arr.unshift(val);
-  suggestHistory[key]=arr.slice(0,20);
+  suggestHistory[key]=arr.slice(0,40);
   localStorage.setItem(storeKey, JSON.stringify(suggestHistory));
+}
+
+/* normalize for DB */
+function normalizeAnswers(raw) {
+  const out = {};
+  out.q1 = (raw.q1?.choice || raw.q1 || "").toString();
+  out.q2_choice = (raw.q2?.choice || "").toString();
+  out.q2_other  = (raw.q2_other || "").trim();
+  out.q3 = (raw.q3?.choice || raw.q3 || "").toString();
+  out.q3_branch = (raw.q3a?.choice || raw.q3a || "").toString();
+  out.q3b = (raw.q3b?.choice || raw.q3b || "").toString();
+  out.q4 = (raw.q4?.choice || raw.q4 || "").toString();
+  out.q4_city = (raw.q4_city || "").trim();
+  out.q4_mall = (raw.q4_mall || "").trim();
+  out.q5 = (raw.q5?.choice || raw.q5 || "").toString();
+  out.q5_place = (raw.q5_place || "").trim();
+  out.q6 = (raw.q6?.choice || raw.q6 || "").toString();
+  out.q7_brands = (raw.q7 || "").trim();
+  out.q8 = (raw.q8?.choice || raw.q8 || "").toString();
+  out.q9 = (raw.q9?.choice || raw.q9 || "").toString();
+  out.q10 = (raw.q10?.choice || raw.q10 || "").toString();
+  return out;
 }
 
 function setProgress(){
@@ -509,13 +604,10 @@ function validStep(){
   const q=QUESTIONS[surveyState.idx]; 
   if(!q) return false;
   const v=surveyState.answers[q.id];
-  if(q.type==='text'){
-    return !!(v && String(v).trim()!=='');
-  }
+  if(q.type==='text') return !!(v && String(v).trim()!=='');
   if(q.type==='buttons'){
     const picked = v && v.choice;
     if(!picked) return false;
-    // if "others" or followup is required, ensure text is provided
     if(q.otherText && picked==='Others'){
       const tx = surveyState.answers[q.otherId]?.trim();
       return !!tx;
@@ -540,14 +632,6 @@ function updateStepButtons(){
   backBtn.style.display = surveyState.idx===0 ? 'none' : 'inline-block';
   stateQ.textContent = validStep() ? '' : 'Answer to continue.';
   setProgress();
-}
-
-function mkDatalist(id, key){
-  const dl=document.createElement('datalist');
-  dl.id=id;
-  const items = (suggestHistory[key]||[]);
-  items.forEach(v=>{ const o=document.createElement('option'); o.value=v; dl.appendChild(o); });
-  return dl;
 }
 
 function renderButtons(q){
@@ -577,7 +661,6 @@ function renderButtons(q){
     holder.appendChild(input);
     const hint=document.createElement('div'); hint.className='small-hint'; hint.textContent='Shown only if “Others” is chosen.'; holder.appendChild(hint);
     wrap.appendChild(holder);
-    // show/hide based on selection
     function toggleOthers(){
       const isOthers = surveyState.answers[q.id]?.choice==='Others';
       holder.style.display = isOthers ? 'block' : 'none';
@@ -600,11 +683,16 @@ function renderButtons(q){
     if(!f){ if(wrap.toggleOthers) wrap.toggleOthers(); return; }
 
     const label=document.createElement('label'); label.textContent=f.placeholder || 'Please specify';
+    const fieldWrap=document.createElement('div'); fieldWrap.className='typeahead';
     const input=document.createElement('input'); input.type='text'; input.placeholder=f.placeholder||'Please specify';
-    const dlid=`dl-${f.id}`, dl=mkDatalist(dlid, f.suggestKey); input.setAttribute('list', dlid);
     input.value = surveyState.answers[f.id]||'';
     input.addEventListener('input', ()=>{ surveyState.answers[f.id]=input.value; updateStepButtons(); });
-    wrap.fbox.appendChild(label); wrap.fbox.appendChild(input); wrap.fbox.appendChild(dl);
+    fieldWrap.appendChild(input); wrap.fbox.appendChild(label); wrap.fbox.appendChild(fieldWrap);
+
+    // Attach typeahead to CITY only (others rely on history)
+    if(f.id==='q4_city'){
+      attachTypeahead(input, PH_CITIES, (v)=>{ surveyState.answers[f.id]=v; updateStepButtons(); });
+    }
     if(wrap.toggleOthers) wrap.toggleOthers();
   }
   wrap.refreshFollowups=()=>refreshFollowups(q,wrap);
@@ -616,12 +704,10 @@ function renderButtons(q){
 
 function renderText(q){
   const box=document.createElement('div'); 
-  const label=document.createElement('div'); label.className='qhelp'; label.textContent=q.help||'';
   const input=document.createElement('input'); input.type='text'; input.placeholder=q.placeholder||'Type here';
-  const dlid=`dl-${q.id}`, dl=mkDatalist(dlid, q.suggestKey); input.setAttribute('list', dlid);
   input.value = surveyState.answers[q.id]||'';
   input.addEventListener('input', ()=>{ surveyState.answers[q.id]=input.value; updateStepButtons(); });
-  box.appendChild(input); box.appendChild(dl); if(q.help) box.appendChild(label);
+  box.appendChild(input);
   return box;
 }
 
@@ -692,22 +778,25 @@ submitBtn.onclick=async()=>{
     const code=rewardCode('MDG'); 
     document.getElementById('rewardCode').textContent=code;
 
-    // push suggestion history entries
+    // push suggestion history
     pushHistory('cities', (surveyState.answers['q4_city']||'').trim());
     pushHistory('malls', (surveyState.answers['q4_mall']||'').trim());
     pushHistory('places', (surveyState.answers['q5_place']||'').trim());
     pushHistory('brands', (surveyState.answers['q7']||'').trim());
     pushHistory('sources', (surveyState.answers['q2_other']||'').trim());
 
+    const answersClean = normalizeAnswers(surveyState.answers);
+
     if(sb){
       const gateId = stepSurvey.dataset.gateId || null;
+      const payload = { answers:answersClean, reward_code:code };
       if(gateId){
-        await sb.from('submissions').update([{ answers:surveyState.answers, reward_code:code }]).eq('id', gateId);
+        await sb.from('submissions').update(payload).eq('id', gateId);
       }else{
         await sb.from('submissions').insert([{
           brand:'Mendokoro/Yushoken', flow:'with_receipt', has_receipt:true,
           receipt_no:receiptEl.value.trim(), email:emailEl.value.trim(), name:nameEl.value.trim()||null,
-          consent:dpaEl.checked, subscribed:promoEl.checked, answers:surveyState.answers, reward_code:code
+          consent:dpaEl.checked, subscribed:promoEl.checked, ...payload
         }]);
       }
     }
@@ -750,7 +839,6 @@ async function exportCoupon(){
   const logo = await loadImage('./assets/img/mendokorologo.png').catch(()=>null);
   if(logo){ const lw=260, lh=260*logo.height/logo.width; ctx.drawImage(logo, W/2 - lw/2, 80, lw, lh); }
 
-  // faint gyoza plate on right
   const gyoza = await loadImage('./assets/img/gyoza.png').catch(()=>null);
   if(gyoza){
     const gw = 360, gh = 360*gyoza.height/gyoza.width;
@@ -790,9 +878,6 @@ function drawCircle(ctx,x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx
 function loadImage(src){
   return new Promise((res,rej)=>{ const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>res(im); im.onerror=rej; im.src=src; });
 }
-
-/* ----- render first question on enter from gate ----- */
-const stepChip=document.getElementById('stepChip');
 </script>
 </body>
 </html>
