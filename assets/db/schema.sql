@@ -43,14 +43,21 @@ create table if not exists public.survey_submissions (
   q4_mall text,
   q5 text,
   q5_place text,
-  q6 text,
   q7_food smallint,
+  q7_food_comment text,
   q7_service smallint,
+  q7_service_comment text,
   q7_price smallint,
+  q7_price_comment text,
   q8_nps smallint,
+  q8_comment text,
+  q8_comment_type text,
   q10_return smallint,
+  q10_return_comment text,
+  q10_return_comment_type text,
   q9_choices text[],
   q9_other text,
+  q9_comment text,
   q10 text
 );
 
@@ -80,4 +87,3 @@ drop policy if exists "allow returning via anon" on public.survey_submissions;
 create policy "allow returning via anon" on public.survey_submissions
   for select
   using ( auth.uid() is null ); -- allow returning/reads from client key, but block authenticated users
-

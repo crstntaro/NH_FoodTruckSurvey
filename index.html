@@ -125,6 +125,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .bar{height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-dk)); transition:width .25s var(--ease)}
 .cardQ{ margin-top:8px; padding:18px; border:1px solid var(--line); border-radius:16px; background:#fff;
   box-shadow:0 6px 16px rgba(0,0,0,.05); animation:stepIn .24s var(--ease); }
+.cardQ.card-nps{padding:0;border:none;box-shadow:none;background:transparent}
 @keyframes stepIn{ from{ opacity:0; transform:translateY(6px)} to{ opacity:1; transform:none}}
 .qnum{font:800 12px var(--font); color:#0b6f76; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px}
 .qtitle{margin:0 0 10px; font:800 clamp(18px,3.8vw,22px)/1.25 var(--font)}
@@ -150,12 +151,44 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .slider-value{font:800 18px/1 var(--font);color:var(--accent)}
 .slider-scale{width:100%;display:flex;justify-content:space-between;font:700 11px/1 var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 .slider-track{width:100%;max-width:640px;display:grid;gap:6px}
-.slider-track input[type="range"]{width:100%;appearance:none;height:6px;border-radius:999px;background:#e6f6f7;outline:none}
+.slider-track input[type="range"]{--pct:0%;width:100%;appearance:none;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--accent) 0%,var(--accent) var(--pct),#e6f6f7 var(--pct),#e6f6f7 100%);outline:none;transition:background .2s var(--ease)}
 .slider-track input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(14,155,164,.25);cursor:pointer;transition:transform .18s var(--ease)}
 .slider-track input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.06)}
 .slider-track input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(14,155,164,.25);cursor:pointer;transition:transform .18s var(--ease)}
 .slider-track input[type="range"]::-moz-range-thumb:hover{transform:scale(1.06)}
 .slider-track input[type="range"]::-ms-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(14,155,164,.25);cursor:pointer}
+.slider-comment,.comment-wrap{width:100%;max-width:640px;display:none;gap:6px;margin-top:14px}
+.slider-comment label,.comment-wrap label{font:700 13px/1.3 var(--font);color:#0f172a}
+.slider-comment textarea,.comment-wrap textarea{width:100%;min-height:96px;border-radius:12px;border:1px solid var(--line);padding:12px 14px;font:400 14px/1.5 var(--font);resize:vertical;transition:border-color .18s var(--ease), box-shadow .18s var(--ease)}
+.slider-comment textarea:focus,.comment-wrap textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,155,164,.15);outline:none}
+.slider-comment textarea::placeholder,.comment-wrap textarea::placeholder{color:#9aa2ae}
+.slider-value.placeholder{color:#94a3b8}
+.slider-theme-nps{width:100%;justify-items:stretch}
+.slider-theme-nps .nps-shell{width:100%;max-width:640px;border-radius:28px;background:#fff;box-shadow:0 24px 60px rgba(14,155,164,.18);padding:28px 24px 30px;display:grid;gap:18px;border:1px solid rgba(14,155,164,.16);justify-items:center}
+.slider-theme-nps .nps-question{font:800 18px/1.35 var(--font);color:#0f172a;text-align:center;margin:0}
+.slider-theme-nps .nps-question-number{color:var(--accent);margin-right:6px}
+.slider-theme-nps .nps-score{font:800 40px/1 var(--font);color:var(--accent);text-align:center}
+.slider-theme-nps .nps-slider{position:relative;width:100%;padding:12px 0 6px}
+.slider-theme-nps .nps-slider-lane{position:relative;width:100%;height:12px;border-radius:999px;background:linear-gradient(90deg,rgba(14,155,164,.18) 0%,rgba(14,155,164,.08) 100%)}
+.slider-theme-nps .nps-slider-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 60%, #ffffff 40%) 100%);transition:width .2s var(--ease)}
+.slider-theme-nps .nps-slider-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:var(--accent);border:6px solid #fff;box-shadow:0 18px 36px rgba(14,155,164,.3);display:grid;place-items:center;transition:transform .18s var(--ease)}
+.slider-theme-nps .nps-slider-thumb span{font-size:26px;color:#fff}
+.slider-theme-nps .nps-slider-thumb:active{transform:translate(-50%,-50%) scale(1.05)}
+.slider-theme-nps .nps-slider input[type="range"]{position:absolute;inset:-24px 0 -16px;opacity:0;cursor:pointer;height:calc(100% + 40px)}
+.slider-theme-nps .nps-ticks{width:100%;display:flex;justify-content:space-between;font:700 13px/1 var(--font);color:#cbd5e1}
+.slider-theme-nps .nps-ticks span.active{color:var(--accent)}
+.slider-theme-nps .nps-followups{width:100%;display:none;gap:16px}
+.slider-theme-nps .nps-followups.active{display:grid}
+.slider-theme-nps .nps-followup{display:grid;gap:8px}
+.slider-theme-nps .nps-followup label{font:700 14px/1.4 var(--font);color:#0f172a}
+.slider-theme-nps .nps-followup textarea{width:100%;min-height:110px;border-radius:18px;border:2px solid rgba(14,155,164,.28);padding:16px;font:400 15px/1.5 var(--font);background:#fff;resize:vertical;transition:border-color .18s var(--ease), box-shadow .18s var(--ease)}
+.slider-theme-nps .nps-followup textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(14,155,164,.18);outline:none}
+.slider-theme-nps .nps-followup textarea::placeholder{color:color-mix(in srgb,var(--accent) 35%, #ffffff 65%)}
+.link-followup{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#f8ffff;display:grid;gap:8px;justify-items:flex-start}
+.link-followup p{margin:0;font:700 13px/1.2 var(--font);color:#0b6f76}
+.link-followup-list{display:flex;gap:12px;flex-wrap:wrap}
+.link-followup-list a{font:700 13px/1 var(--font);color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+.link-followup-list a:hover{border-bottom-color:var(--accent)}
 
 .controls{display:flex; gap:10px; justify-content:center; align-items:center; padding-top:12px; border-top:1px dashed var(--line); margin-top:14px}
 .btn{
@@ -292,9 +325,9 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 
       <form id="gateForm" novalidate>
         <label for="receipt">Receipt Number<span class="req" aria-hidden="true">*</span></label>
-        <input id="receipt" name="receipt" type="text" inputmode="text" maxlength="18"
-               placeholder="e.g., MDKB-123456-789101" required aria-describedby="receiptHelp receiptErr">
-        <div id="receiptHelp" class="hint">Format: <code>AAAA-000000-000000</code>. Brand prefixes allowed: MD (Mendokoro), YS (Yushoken).</div>
+        <input id="receipt" name="receipt" type="text" inputmode="numeric" maxlength="18"
+               placeholder="FTPU-123456-789012" required aria-describedby="receiptHelp receiptErr">
+        <div id="receiptHelp" class="hint">Format: <code>FTPU-000000-000000</code>. Only numbers after the prefix.</div>
         <div id="receiptErr" class="err">Invalid receipt format or brand code.</div>
 
         <div class="row">
@@ -384,7 +417,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 <script id="QUESTIONS_JSON" type="application/json">[
   {"id":"q1","type":"buttons","prompt":"Did you enjoy your Blue Truck Pop-up experience?","options":["Yes","No"]},
 
-  {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Official Website","Official Social Media Pages","Content Creator / Influencer","Friend or Family","Passing By","Mall or Event Poster","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
+  {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Official Website","Official Social Media Pages","Content Creator / Influencer","Friend or Family","On-site Discovery","Mall or Event Poster","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
 
   {"id":"q3","type":"buttons","prompt":"Have you been to one of our branches before?","options":["Yes","No"]},
   {"id":"q3a","type":"buttons","prompt":"If yes, which branch?","options":["Cebu","Ortigas","Pasay","Rockwell","Alabang","Panay","Katipunan","None / Not applicable"],"showIf":{"id":"q3","equals":"Yes"}},
@@ -399,19 +432,30 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
       {"when":"Living","id":"q5_place","type":"text","placeholder":"Which village / subdivision?","suggestKey":"places","required":true}
   ]},
 
-  {"id":"q6","type":"buttons","prompt":"Does the food and service achieve value for money?","options":["Yes","No"]},
+  {"id":"q7_food","type":"slider","prompt":"How would you rate our food quality today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"},"commentId":"q7_food_comment","commentPrompt":"Care to share more about the food?","commentPlaceholder":"Optional: let us know your thoughts about the food."},
+  {"id":"q7_service","type":"slider","prompt":"How would you rate our service today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"},"commentId":"q7_service_comment","commentPrompt":"How was the service?","commentPlaceholder":"Optional: tell us about the service."},
+  {"id":"q7_price","type":"slider","prompt":"How would you rate the value for price today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"},"commentId":"q7_price_comment","commentPrompt":"Any thoughts on value for money?","commentPlaceholder":"Optional: share feedback on value."},
 
-  {"id":"q7_food","type":"slider","prompt":"How would you rate our food quality today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"}},
-  {"id":"q7_service","type":"slider","prompt":"How would you rate our service today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"}},
-  {"id":"q7_price","type":"slider","prompt":"How would you rate the value for price today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"}},
+  {"id":"q8","type":"slider","prompt":"How likely is it that you would recommend this pop-up to others?","min":0,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Extremely Likely"},"theme":"nps","buckets":[
+      {"id":"q8_detractor","min":0,"max":6,"label":"What can we do better to improve your satisfaction?","placeholder":"Your feedback…"},
+      {"id":"q8_passive","min":7,"max":8,"label":"What would make you more likely to recommend us?","placeholder":"Price, portion, taste, service…"},
+      {"id":"q8_promoter","min":9,"max":10,"label":"What is the main reason you would recommend us?","placeholder":"Your reason…"}
+  ]},
 
-  {"id":"q8","type":"slider","prompt":"On a scale of 1 to 10, how likely are you to recommend our brand to friends and family?","min":1,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Extremely Likely"}},
+  {"id":"q10_return","type":"slider","prompt":"Based on today's visit, how likely are you to dine with us again soon?","min":1,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Very Likely"},"theme":"nps","buckets":[
+      {"id":"q10_return_low","min":1,"max":4,"label":"What could we improve for next time?","placeholder":"Your feedback…"},
+      {"id":"q10_return_mid","min":5,"max":7,"label":"What would make you more eager to dine again?","placeholder":"Suggestions…"},
+      {"id":"q10_return_high","min":8,"max":10,"label":"Awesome! Any plans or dishes you're excited to try next?","placeholder":"Share with us…"}
+  ]},
 
-  {"id":"q10_return","type":"slider","prompt":"Based on today's visit, how likely are you to dine with us again soon?","min":1,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Very Likely"}},
+  {"id":"q9","type":"buttons","prompt":"Which cuisines are you most interested in?","options":["Filipino","Chinese","Italian","Mexican","South American","Japanese"],"multi":true,"otherText":true,"otherId":"q9_other","otherPlaceholder":"Other cuisine (please specify)","commentId":"q9_comment","commentPlaceholder":"Optional: tell us about your favorite dishes."},
 
-  {"id":"q9","type":"buttons","prompt":"Which cuisines are you most interested in?","options":["Filipino","Chinese","Italian","Mexican","South American","Japanese"],"multi":true,"otherText":true,"otherId":"q9_other","otherPlaceholder":"Other cuisine (please specify)"},
-
-  {"id":"q10","type":"buttons","prompt":"Would you love to hear more about us and where we are headed?","options":["Yes","No"]}
+  {"id":"q10","type":"buttons","prompt":"Would you love to hear more about us and where we are headed?","options":["Yes","No"],"followups":[
+      {"when":"Yes","type":"links","text":"Follow us for updates:","links":[
+        {"label":"Facebook","href":"https://www.facebook.com/mendokororamen"},
+        {"label":"Instagram","href":"https://www.instagram.com/mendokoro_ramenba"}
+      ]}
+  ]}
 ]</script>
 
 <script>
@@ -442,33 +486,61 @@ const continueBtn=document.getElementById('continueBtn'), stateMsg=document.getE
 const overlay=document.getElementById('overlay');
 
 (function(){
-  const pattern = /^[A-Z]{4}-\d{6}-\d{6}$/;
-  const allowedTwo = /^(MD|YS|MR|KZ)/;
+  const prefix='FTPU-';
+  const pattern = /^FTPU-\d{6}-\d{6}$/;
+
+  function ensurePrefix(val){
+    return val.startsWith(prefix) ? val : prefix + val.replace(/^FTPU-?/, '');
+  }
+
   function formatReceipt(raw){
-    const clean = raw.replace(/[^a-zA-Z0-9]/g,'').toUpperCase();
-    const brand = clean.replace(/[^A-Z]/g,'').slice(0,4);
-    const nums  = clean.replace(/[^0-9]/g,'').slice(0,12);
-    const part1 = brand, part2 = nums.slice(0,6), part3 = nums.slice(6,12);
-    let out = part1;
-    if(part1.length===4 && part2.length>0) out += '-' + part2;
-    if(part1.length===4 && part2.length===6 && part3.length>0) out += '-' + part3;
+    const digits = raw.replace(/[^0-9]/g,'').slice(0,12);
+    const first = digits.slice(0,6);
+    const second = digits.slice(6,12);
+    let out = prefix;
+    if(first.length){
+      out += first;
+      if(first.length===6) out += '-';
+    }
+    if(second.length){
+      out += second;
+    }
     return out;
   }
+
   function validateReceipt(){
     const v = receiptEl.value.trim();
-    const okPattern = pattern.test(v);
-    const okBrand = allowedTwo.test(v.slice(0,2));
-    const ok = okPattern && okBrand;
-    receiptEl.setCustomValidity(ok ? '' : 'Format must be AAAA-000000-000000 with MD/YS/MR/KZ prefix.');
-    receiptErr.classList.toggle('show', !ok && v.length>0);
+    const ok = pattern.test(v);
+    receiptEl.setCustomValidity(ok ? '' : 'Format must be FTPU-000000-000000.');
+    receiptErr.classList.toggle('show', !ok && v.length>prefix.length);
     return ok;
   }
-  receiptEl.addEventListener('input', ()=>{
-    const before=receiptEl.value, caret=receiptEl.selectionStart;
-    receiptEl.value = formatReceipt(receiptEl.value);
-    if(receiptEl.value.length>before.length && receiptEl.value[caret]==='-'){
-      receiptEl.setSelectionRange(caret+1, caret+1);
+
+  function setFormatted(val){
+    const formatted = formatReceipt(ensurePrefix(val));
+    receiptEl.value = formatted;
+  }
+
+  setFormatted(receiptEl.value || prefix);
+  receiptEl.addEventListener('focus', ()=>{
+    if(receiptEl.selectionStart < prefix.length){
+      receiptEl.setSelectionRange(prefix.length, prefix.length);
     }
+  });
+
+  receiptEl.addEventListener('keydown', e=>{
+    if((e.key==='Backspace' || e.key==='Delete') && receiptEl.selectionStart <= prefix.length){
+      e.preventDefault();
+      receiptEl.setSelectionRange(prefix.length, prefix.length);
+    }
+  });
+
+  receiptEl.addEventListener('input', ()=>{
+    const caret=receiptEl.selectionStart ?? receiptEl.value.length;
+    setFormatted(receiptEl.value);
+    const newLen = receiptEl.value.length;
+    const newCaret = Math.max(prefix.length, Math.min(newLen, caret < prefix.length ? prefix.length : caret));
+    receiptEl.setSelectionRange(newCaret, newCaret);
     validateReceipt(); updateGate();
   });
   receiptEl.addEventListener('blur', validateReceipt);
@@ -616,8 +688,12 @@ function pruneHiddenAnswers(sourceId){
     if(q.showIf && q.showIf.id===sourceId && !isQuestionVisible(q)){
       delete surveyState.answers[q.id];
       if(q.otherId) delete surveyState.answers[q.otherId];
+      if(q.commentId) delete surveyState.answers[q.commentId];
       if(Array.isArray(q.followups)){
         q.followups.forEach(f=> delete surveyState.answers[f.id]);
+      }
+      if(Array.isArray(q.buckets)){
+        q.buckets.forEach(b=> delete surveyState.answers[b.id]);
       }
     }
   });
@@ -666,11 +742,12 @@ function normalizeAnswers(raw) {
   out.q4_mall = (raw.q4_mall || "").trim();
   out.q5 = (raw.q5?.choice || raw.q5 || "").toString();
   out.q5_place = (raw.q5_place || "").trim();
-  out.q6 = (raw.q6?.choice || raw.q6 || "").toString();
 
   const sliderVal = (val)=>{
-    if(val && typeof val==='object' && val.value!==undefined) return val.value;
-    return val;
+    let candidate = val;
+    if(val && typeof val==='object' && val.value!==undefined) candidate = val.value;
+    const num = Number(candidate);
+    return Number.isFinite(num) ? num : null;
   };
   const foodVal = sliderVal(raw.q7_food);
   const serviceVal = sliderVal(raw.q7_service);
@@ -683,14 +760,50 @@ function normalizeAnswers(raw) {
   out.q7_price = Number.isFinite(priceVal) ? priceVal : null;
   out.q8_nps = Number.isFinite(npsVal) ? npsVal : null;
   out.q10_return = Number.isFinite(returnVal) ? returnVal : null;
+  const foodComment = (raw.q7_food_comment ?? '').toString().trim();
+  const serviceComment = (raw.q7_service_comment ?? '').toString().trim();
+  const priceComment = (raw.q7_price_comment ?? '').toString().trim();
+  out.q7_food_comment = foodComment || null;
+  out.q7_service_comment = serviceComment || null;
+  out.q7_price_comment = priceComment || null;
 
   const q9Obj = raw.q9 && typeof raw.q9==='object' ? raw.q9 : {};
   const q9Choices = Array.isArray(q9Obj.choices) ? q9Obj.choices.filter(Boolean) : [];
   const q9Single = q9Obj.choice || (typeof raw.q9==='string' ? raw.q9 : '');
   out.q9_choices = q9Choices;
   const combined = q9Choices.length ? q9Choices.join(', ') : (q9Single ? q9Single.toString() : '');
-  out.q9 = combined;
-  out.q9_other = (raw.q9_other || "").trim();
+  out.q9 = combined || null;
+  const q9Other = (raw.q9_other || "").trim();
+  out.q9_other = q9Other || null;
+  const cuisineComment = (raw.q9_comment ?? '').toString().trim();
+  out.q9_comment = cuisineComment || null;
+
+  const determineBucket = (value, buckets=[])=>{
+    if(!Number.isFinite(value)) return null;
+    return buckets.find(b=>{
+      const min = Number.isFinite(b.min) ? b.min : -Infinity;
+      const max = Number.isFinite(b.max) ? b.max : Infinity;
+      return value>=min && value<=max;
+    })?.id || null;
+  };
+
+  const q8BucketId = determineBucket(out.q8_nps, [
+    {id:'q8_detractor',min:0,max:6},
+    {id:'q8_passive',min:7,max:8},
+    {id:'q8_promoter',min:9,max:10}
+  ]);
+  const q10BucketId = determineBucket(out.q10_return, [
+    {id:'q10_return_low',min:1,max:4},
+    {id:'q10_return_mid',min:5,max:7},
+    {id:'q10_return_high',min:8,max:10}
+  ]);
+
+  const npsComment = q8BucketId ? (raw[q8BucketId] ?? '').toString().trim() : '';
+  const returnComment = q10BucketId ? (raw[q10BucketId] ?? '').toString().trim() : '';
+  out.q8_comment = npsComment || null;
+  out.q8_comment_type = q8BucketId;
+  out.q10_return_comment = returnComment || null;
+  out.q10_return_comment_type = q10BucketId;
   out.q10 = (raw.q10?.choice || raw.q10 || "").toString();
   return out;
 }
@@ -805,6 +918,7 @@ function renderButtons(q){
       pruneHiddenAnswers(q.id);
       syncButtons();
       refreshFollowups(q, wrap);
+      toggleComment?.();
       updateStepButtons();
     };
     grid.appendChild(b);
@@ -844,6 +958,22 @@ function renderButtons(q){
     const f = q.followups.find(x=>x.when===picked);
     if(!f){ wrap.toggleOthers?.(); return; }
 
+    if(f.type==='links' && Array.isArray(f.links)){
+      const box=document.createElement('div'); box.className='link-followup';
+      const intro=document.createElement('p'); intro.textContent=f.text || 'Follow us here:';
+      box.appendChild(intro);
+      const list=document.createElement('div'); list.className='link-followup-list';
+      f.links.forEach(link=>{
+        const a=document.createElement('a'); a.href=link.href; a.target='_blank'; a.rel='noopener noreferrer';
+        a.textContent=link.label || link.href;
+        list.appendChild(a);
+      });
+      box.appendChild(list);
+      wrap.fbox.appendChild(box);
+      wrap.toggleOthers?.();
+      return;
+    }
+
     const label=document.createElement('label'); label.textContent=f.placeholder || 'Please specify';
     const fieldWrap=document.createElement('div'); fieldWrap.className='typeahead';
     const input=document.createElement('input'); input.type='text'; input.placeholder=f.placeholder||'Please specify';
@@ -859,58 +989,208 @@ function renderButtons(q){
   }
   wrap.refreshFollowups=()=>refreshFollowups(q,wrap);
 
+  let commentWrap; let toggleComment;
+  if(q.commentId){
+    commentWrap=document.createElement('div'); commentWrap.className='comment-wrap';
+    const label=document.createElement('label'); label.setAttribute('for', q.commentId); label.textContent=q.commentPrompt || 'Additional comments (optional)';
+    const textarea=document.createElement('textarea'); textarea.id=q.commentId; textarea.placeholder=q.commentPlaceholder || 'Optional comment';
+    textarea.value = surveyState.answers[q.commentId] || '';
+    textarea.addEventListener('input', ()=>{ surveyState.answers[q.commentId]=textarea.value; });
+    commentWrap.appendChild(label); commentWrap.appendChild(textarea);
+    wrap.appendChild(commentWrap);
+
+    toggleComment=()=>{
+      const selected=getSelected();
+      const hasChoice=q.multi ? selected.length>0 : !!selected;
+      commentWrap.style.display = hasChoice ? 'grid' : 'none';
+      if(!hasChoice){
+        textarea.value='';
+        delete surveyState.answers[q.commentId];
+      }
+    };
+    toggleComment();
+  }
+
   // initial render
   wrap.refreshFollowups?.();
   return wrap;
 }
 
-function renderSlider(q){
+function renderSlider(q, displayIndex){
   const wrap=document.createElement('div'); wrap.className='slider-wrap';
-  const min=parseFloat(q.min ?? 0) || 0;
-  const max=parseFloat(q.max ?? 10) || 10;
-  const step=parseFloat(q.step ?? 1) || 1;
-  const stored = surveyState.answers[q.id];
-  const storedVal = typeof stored==='object' && stored && typeof stored.value==='number' ? stored.value : null;
-  const defaultVal = storedVal!==null ? storedVal : Math.round((min+max)/2);
+  const isNps=q.theme==='nps';
+  if(isNps) wrap.classList.add('slider-theme-nps');
+  else if(q.theme) wrap.classList.add(`slider-theme-${q.theme}`);
 
-  const describe=(val)=>`Score: ${val}/${max}`;
-  const valueLabel=document.createElement('div'); valueLabel.className='slider-value';
-  valueLabel.textContent = storedVal!==null ? describe(storedVal) : `Drag to choose (1-${max})`;
-  wrap.appendChild(valueLabel);
+  const minRaw=parseFloat(q.min ?? '');
+  const maxRaw=parseFloat(q.max ?? '');
+  const stepRaw=parseFloat(q.step ?? '');
+  const min=Number.isFinite(minRaw)?minRaw:0;
+  const max=Number.isFinite(maxRaw)?maxRaw:10;
+  const step=Number.isFinite(stepRaw)?stepRaw:1;
 
-  const track=document.createElement('div'); track.className='slider-track';
+  const storedRaw=surveyState.answers[q.id];
+  let storedVal=null;
+  if(storedRaw && typeof storedRaw==='object' && typeof storedRaw.value==='number') storedVal=storedRaw.value;
+  else if(Number.isFinite(Number(storedRaw))) storedVal=Number(storedRaw);
+  if(storedVal!==null && (storedVal<min || storedVal>max)) storedVal=null;
+
+  const mid=Math.round((min+max)/2);
+  const defaultVal=storedVal!==null?storedVal:(isNps?mid:min);
+  const describe=val=> isNps ? `${val}` : `Score: ${val}/${max}`;
+
   const input=document.createElement('input');
   input.type='range';
   input.min=String(min);
   input.max=String(max);
   input.step=String(step);
-  input.value=String(defaultVal);
-  input.setAttribute('aria-label', q.prompt || 'slider question');
-  track.appendChild(input);
-  wrap.appendChild(track);
 
-  const scale=document.createElement('div'); scale.className='slider-scale';
-  const minSpan=document.createElement('span'); minSpan.textContent=q.labels?.min || String(min);
-  const maxSpan=document.createElement('span'); maxSpan.textContent=q.labels?.max || String(max);
-  scale.appendChild(minSpan); scale.appendChild(maxSpan);
-  wrap.appendChild(scale);
+  let scoreEl=null;
+  let sliderFill=null;
+  let sliderThumb=null;
+  const markerSpans=[];
+  let bucketBox=null;
+  const bucketAreas=[];
+  let valueLabel=null;
+  let commentWrap=null;
+  let sliderPlaceholder=null;
 
-  if(storedVal!==null){
-    surveyState.answers[q.id]={value:storedVal};
+  if(isNps){
+    const shell=document.createElement('div'); shell.className='nps-shell';
+
+    const question=document.createElement('div'); question.className='nps-question';
+    const prefix=Number.isFinite(displayIndex)?`<span class="nps-question-number">${displayIndex})</span>`:'';
+    question.innerHTML=`${prefix} ${q.prompt}`;
+    shell.appendChild(question);
+
+    scoreEl=document.createElement('div'); scoreEl.className='nps-score';
+    shell.appendChild(scoreEl);
+
+    const sliderBlock=document.createElement('div'); sliderBlock.className='nps-slider';
+    const lane=document.createElement('div'); lane.className='nps-slider-lane';
+    sliderFill=document.createElement('div'); sliderFill.className='nps-slider-fill'; lane.appendChild(sliderFill);
+    sliderThumb=document.createElement('div'); sliderThumb.className='nps-slider-thumb'; sliderThumb.innerHTML='<span>🍜</span>';
+    lane.appendChild(sliderThumb);
+    sliderBlock.appendChild(lane);
+    sliderBlock.appendChild(input);
+    shell.appendChild(sliderBlock);
+
+    const ticksWrap=document.createElement('div'); ticksWrap.className='nps-ticks';
+    for(let v=min; v<=max; v+=step){
+      const span=document.createElement('span'); span.textContent=String(v);
+      markerSpans.push(span);
+      ticksWrap.appendChild(span);
+    }
+    shell.appendChild(ticksWrap);
+
+    if(Array.isArray(q.buckets) && q.buckets.length){
+      bucketBox=document.createElement('div'); bucketBox.className='nps-followups';
+      q.buckets.forEach(bucket=>{
+        const area=document.createElement('div'); area.className='nps-followup';
+        area.dataset.bucketId=bucket.id;
+        const label=document.createElement('label'); label.setAttribute('for', bucket.id); label.textContent=bucket.label || 'Tell us more';
+        const textarea=document.createElement('textarea'); textarea.id=bucket.id; textarea.placeholder=bucket.placeholder || 'Your feedback…';
+        textarea.value = surveyState.answers[bucket.id] || '';
+        textarea.addEventListener('input', ()=>{ surveyState.answers[bucket.id]=textarea.value; });
+        area.appendChild(label); area.appendChild(textarea);
+        area.style.display='none';
+        bucketAreas.push({bucket, area});
+        bucketBox.appendChild(area);
+      });
+      shell.appendChild(bucketBox);
+    }
+
+    wrap.appendChild(shell);
+  }else{
+    valueLabel=document.createElement('div'); valueLabel.className='slider-value';
+    sliderPlaceholder=`Drag to choose (${min}-${max})`;
+    if(storedVal===null){
+      valueLabel.textContent=sliderPlaceholder;
+      valueLabel.classList.add('placeholder');
+    }else{
+      valueLabel.textContent=describe(storedVal);
+      valueLabel.classList.remove('placeholder');
+    }
+    wrap.appendChild(valueLabel);
+
+    const trackContainer=document.createElement('div'); trackContainer.className='slider-track';
+    trackContainer.appendChild(input);
+    wrap.appendChild(trackContainer);
+
+    const scale=document.createElement('div'); scale.className='slider-scale';
+    const minSpan=document.createElement('span'); minSpan.textContent=q.labels?.min || String(min);
+    const maxSpan=document.createElement('span'); maxSpan.textContent=q.labels?.max || String(max);
+    scale.appendChild(minSpan); scale.appendChild(maxSpan);
+    wrap.appendChild(scale);
   }
 
-  const update=(val)=>{
-    surveyState.answers[q.id]={value:val};
-    valueLabel.textContent=describe(val);
-    updateStepButtons();
+  if(q.commentId && !isNps){
+    commentWrap=document.createElement('div'); commentWrap.className='slider-comment';
+    const label=document.createElement('label'); label.setAttribute('for', q.commentId); label.textContent=q.commentPrompt || 'Additional comments (optional)';
+    const textarea=document.createElement('textarea'); textarea.id=q.commentId; textarea.placeholder=q.commentPlaceholder || 'Optional comment';
+    textarea.value = surveyState.answers[q.commentId] || '';
+    textarea.addEventListener('input', ()=>{ surveyState.answers[q.commentId]=textarea.value; });
+    commentWrap.appendChild(label); commentWrap.appendChild(textarea);
+    commentWrap.style.display='none';
+    wrap.appendChild(commentWrap);
+  }
+
+  const hasStored = storedVal!==null;
+  const updateBuckets=(val,commit)=>{
+    if(!bucketBox) return;
+    let active=false;
+    bucketAreas.forEach(({bucket, area})=>{
+      const bucketMin=Number.isFinite(bucket.min)?bucket.min:min;
+      const bucketMax=Number.isFinite(bucket.max)?bucket.max:max;
+      const inRange=Number.isFinite(val) && val>=bucketMin && val<=bucketMax;
+      const show = (commit || hasStored) && inRange;
+      area.style.display=show?'grid':'none';
+      if(!show && commit) delete surveyState.answers[bucket.id];
+      if(show) active=true;
+    });
+    bucketBox.classList.toggle('active', active);
   };
 
-  input.addEventListener('input', ()=>{
-    update(Number(input.value));
-  });
-  input.addEventListener('change', ()=>{
-    update(Number(input.value));
-  });
+  const applyValue=(val,commit)=>{
+    if(commit) surveyState.answers[q.id]={value:val};
+    const pct=max>min?((val-min)/(max-min))*100:0;
+    input.value=String(val);
+    input.style.setProperty('--pct', `${pct}%`);
+    if(isNps){
+      if(scoreEl) scoreEl.textContent=describe(val);
+      if(sliderFill) sliderFill.style.width=`${pct}%`;
+      if(sliderThumb) sliderThumb.style.left=`${pct}%`;
+      markerSpans.forEach((span,i)=>{
+        const markerVal=min + i*step;
+        span.classList.toggle('active', Math.abs(markerVal-val)<0.001);
+      });
+    }else if(valueLabel){
+      if(commit){
+        valueLabel.textContent=describe(val);
+        valueLabel.classList.remove('placeholder');
+      }else if(sliderPlaceholder){
+        valueLabel.textContent=sliderPlaceholder;
+        valueLabel.classList.add('placeholder');
+      }
+    }
+    if(commentWrap){
+      const hasValue=commit || storedVal!==null;
+      commentWrap.style.display = hasValue ? 'grid' : 'none';
+    }
+    updateBuckets(val, commit);
+    if(commit) updateStepButtons();
+  };
+
+  input.addEventListener('input', ()=>applyValue(Number(input.value), true));
+  input.addEventListener('change', ()=>applyValue(Number(input.value), true));
+
+  const initialVal=storedVal!==null?storedVal:defaultVal;
+  applyValue(initialVal, storedVal!==null);
+
+  if(storedVal===null){
+    updateBuckets(initialVal, false);
+    if(commentWrap) commentWrap.style.display='none';
+  }
 
   return wrap;
 }
@@ -932,13 +1212,17 @@ function renderQ(){
   const position=Math.max(visible.findIndex(item=>item.id===q.id),0);
   qwrap.innerHTML='';
   const card=document.createElement('div'); card.className='cardQ';
+  const isNps = q.theme==='nps';
+  if(isNps) card.classList.add('card-nps');
   const num=document.createElement('div'); num.className='qnum'; num.textContent=`Question ${position+1}`;
+  if(isNps) num.style.display='none';
   const title=document.createElement('h3'); title.className='qtitle'; title.textContent=q.prompt;
   card.appendChild(num); card.appendChild(title);
+  if(isNps) title.style.display='none';
 
   if(q.type==='buttons'){ card.appendChild(renderButtons(q)); }
   else if(q.type==='text'){ card.appendChild(renderText(q)); }
-  else if(q.type==='slider'){ card.appendChild(renderSlider(q)); }
+  else if(q.type==='slider'){ card.appendChild(renderSlider(q, position+1)); }
   qwrap.appendChild(card);
   updateStepButtons();
 }
