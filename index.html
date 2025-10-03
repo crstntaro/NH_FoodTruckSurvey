@@ -146,6 +146,17 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .opt.sel{color:#fff; border-color:var(--accent)}
 .opt.sel::after{transform:scaleX(1)}
 
+.slider-wrap{display:grid;gap:10px;justify-items:center;margin-top:12px}
+.slider-value{font:800 18px/1 var(--font);color:var(--accent)}
+.slider-scale{width:100%;display:flex;justify-content:space-between;font:700 11px/1 var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.slider-track{width:100%;max-width:640px;display:grid;gap:6px}
+.slider-track input[type="range"]{width:100%;appearance:none;height:6px;border-radius:999px;background:#e6f6f7;outline:none}
+.slider-track input[type="range"]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(14,155,164,.25);cursor:pointer;transition:transform .18s var(--ease)}
+.slider-track input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.06)}
+.slider-track input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(14,155,164,.25);cursor:pointer;transition:transform .18s var(--ease)}
+.slider-track input[type="range"]::-moz-range-thumb:hover{transform:scale(1.06)}
+.slider-track input[type="range"]::-ms-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(14,155,164,.25);cursor:pointer}
+
 .controls{display:flex; gap:10px; justify-content:center; align-items:center; padding-top:12px; border-top:1px dashed var(--line); margin-top:14px}
 .btn{
   position:relative; isolation:isolate;
@@ -373,12 +384,10 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 <script id="QUESTIONS_JSON" type="application/json">[
   {"id":"q1","type":"buttons","prompt":"Did you enjoy your Blue Truck Pop-up experience?","options":["Yes","No"]},
 
-  {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Social Media","Mall","Friend","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
+  {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Official Website","Official Social Media Pages","Content Creator / Influencer","Friend or Family","Passing By","Mall or Event Poster","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
 
   {"id":"q3","type":"buttons","prompt":"Have you been to one of our branches before?","options":["Yes","No"]},
-  {"id":"q3a","type":"buttons","prompt":"If yes, which branch?","options":["Cebu","Ortigas","Pasay","Rockwell","Alabang","Panay","Katipunan"]},
-
-  {"id":"q3b","type":"buttons","prompt":"If no, would you like to try the one nearest to you?","options":["Yes","No"]},
+  {"id":"q3a","type":"buttons","prompt":"If yes, which branch?","options":["Cebu","Ortigas","Pasay","Rockwell","Alabang","Panay","Katipunan","None / Not applicable"],"showIf":{"id":"q3","equals":"Yes"}},
 
   {"id":"q4","type":"buttons","prompt":"Where do you want to see our Blue Truck next?","options":["City","Mall"],"followups":[
       {"when":"City","id":"q4_city","type":"text","placeholder":"Type a city in the Philippines","suggestKey":"cities","required":true},
@@ -392,11 +401,15 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 
   {"id":"q6","type":"buttons","prompt":"Does the food and service achieve value for money?","options":["Yes","No"]},
 
-  {"id":"q7","type":"text","prompt":"What other ramen brands have you tried?","placeholder":"e.g., Nagi, Kuroda, Ippudo","suggestKey":"brands","required":true},
+  {"id":"q7_food","type":"slider","prompt":"How would you rate our food quality today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"}},
+  {"id":"q7_service","type":"slider","prompt":"How would you rate our service today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"}},
+  {"id":"q7_price","type":"slider","prompt":"How would you rate the value for price today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"}},
 
-  {"id":"q8","type":"buttons","prompt":"How likely would you recommend our brand to friends and family?","options":["Very Likely","Fair","Unlikely"]},
+  {"id":"q8","type":"slider","prompt":"On a scale of 1 to 10, how likely are you to recommend our brand to friends and family?","min":1,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Extremely Likely"}},
 
-  {"id":"q9","type":"buttons","prompt":"What is/are your favorite cuisine?","options":["Japanese","Korean","Pinoy"]},
+  {"id":"q10_return","type":"slider","prompt":"Based on today's visit, how likely are you to dine with us again soon?","min":1,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Very Likely"}},
+
+  {"id":"q9","type":"buttons","prompt":"Which cuisines are you most interested in?","options":["Filipino","Chinese","Italian","Mexican","South American","Japanese"],"multi":true,"otherText":true,"otherId":"q9_other","otherPlaceholder":"Other cuisine (please specify)"},
 
   {"id":"q10","type":"buttons","prompt":"Would you love to hear more about us and where we are headed?","options":["Yes","No"]}
 ]</script>
@@ -564,6 +577,71 @@ const qwrap=document.getElementById('qwrap'), bar=document.getElementById('bar')
 const nextBtn=document.getElementById('nextBtn'), backBtn=document.getElementById('backBtn'), submitBtn=document.getElementById('submitBtn'), stateQ=document.getElementById('stateQ');
 const surveyState={idx:0,answers:{}};
 
+function choiceValue(val){
+  if(val && typeof val==='object'){
+    if('value' in val) return val.value;
+    if(Array.isArray(val.choices)) return val.choices;
+    if('choice' in val) return val.choice;
+    return '';
+  }
+  return val ?? '';
+}
+function isQuestionVisible(q){
+  if(!q) return false;
+  const cond=q.showIf;
+  if(!cond) return true;
+  const current=choiceValue(surveyState.answers[cond.id]);
+  if(cond.equals!==undefined){
+    const expected=Array.isArray(cond.equals)?cond.equals:[cond.equals];
+    if(Array.isArray(current)) return current.some(val=>expected.includes(val));
+    return expected.includes(current);
+  }
+  if(cond.notEquals!==undefined){
+    const blocked=Array.isArray(cond.notEquals)?cond.notEquals:[cond.notEquals];
+    if(Array.isArray(current)) return !current.some(val=>blocked.includes(val));
+    return !blocked.includes(current);
+  }
+  if(cond.truthy){
+    if(Array.isArray(current)) return current.length>0;
+    return !!current;
+  }
+  if(cond.falsy){
+    if(Array.isArray(current)) return current.length===0;
+    return !current;
+  }
+  return true;
+}
+function pruneHiddenAnswers(sourceId){
+  QUESTIONS.forEach(q=>{
+    if(q.showIf && q.showIf.id===sourceId && !isQuestionVisible(q)){
+      delete surveyState.answers[q.id];
+      if(q.otherId) delete surveyState.answers[q.otherId];
+      if(Array.isArray(q.followups)){
+        q.followups.forEach(f=> delete surveyState.answers[f.id]);
+      }
+    }
+  });
+}
+function findNextVisibleIndex(startIdx,direction){
+  let idx=startIdx+direction;
+  while(idx>=0 && idx<QUESTIONS.length){
+    if(isQuestionVisible(QUESTIONS[idx])) return idx;
+    idx+=direction;
+  }
+  return idx;
+}
+function nearestVisibleIndex(idx){
+  if(isQuestionVisible(QUESTIONS[idx])) return idx;
+  const forward=findNextVisibleIndex(idx,1);
+  if(forward>=0 && forward<QUESTIONS.length) return forward;
+  const backward=findNextVisibleIndex(idx,-1);
+  if(backward>=0 && backward<QUESTIONS.length) return backward;
+  return 0;
+}
+function visibleQuestions(){
+  return QUESTIONS.filter(isQuestionVisible);
+}
+
 /* local suggestion history */
 const storeKey='mdk_suggest_history';
 const suggestHistory=JSON.parse(localStorage.getItem(storeKey)||'{}');
@@ -583,24 +661,46 @@ function normalizeAnswers(raw) {
   out.q2_other  = (raw.q2_other || "").trim();
   out.q3 = (raw.q3?.choice || raw.q3 || "").toString();
   out.q3_branch = (raw.q3a?.choice || raw.q3a || "").toString();
-  out.q3b = (raw.q3b?.choice || raw.q3b || "").toString();
   out.q4 = (raw.q4?.choice || raw.q4 || "").toString();
   out.q4_city = (raw.q4_city || "").trim();
   out.q4_mall = (raw.q4_mall || "").trim();
   out.q5 = (raw.q5?.choice || raw.q5 || "").toString();
   out.q5_place = (raw.q5_place || "").trim();
   out.q6 = (raw.q6?.choice || raw.q6 || "").toString();
-  out.q7_brands = (raw.q7 || "").trim();
-  out.q8 = (raw.q8?.choice || raw.q8 || "").toString();
-  out.q9 = (raw.q9?.choice || raw.q9 || "").toString();
+
+  const sliderVal = (val)=>{
+    if(val && typeof val==='object' && val.value!==undefined) return val.value;
+    return val;
+  };
+  const foodVal = sliderVal(raw.q7_food);
+  const serviceVal = sliderVal(raw.q7_service);
+  const priceVal = sliderVal(raw.q7_price);
+  const npsVal = sliderVal(raw.q8);
+  const returnVal = sliderVal(raw.q10_return);
+
+  out.q7_food = foodVal!==undefined && foodVal!==null ? String(foodVal) : "";
+  out.q7_service = serviceVal!==undefined && serviceVal!==null ? String(serviceVal) : "";
+  out.q7_price = priceVal!==undefined && priceVal!==null ? String(priceVal) : "";
+  out.q8_nps = npsVal!==undefined && npsVal!==null ? String(npsVal) : "";
+  out.q10_return = returnVal!==undefined && returnVal!==null ? String(returnVal) : "";
+
+  const q9Obj = raw.q9 && typeof raw.q9==='object' ? raw.q9 : {};
+  const q9Choices = Array.isArray(q9Obj.choices) ? q9Obj.choices.filter(Boolean) : [];
+  const q9Single = q9Obj.choice || (typeof raw.q9==='string' ? raw.q9 : '');
+  out.q9_choices = q9Choices;
+  out.q9 = q9Choices.length ? q9Choices.join(', ') : q9Single.toString();
+  out.q9_other = (raw.q9_other || "").trim();
   out.q10 = (raw.q10?.choice || raw.q10 || "").toString();
   return out;
 }
 
 function setProgress(){
-  const total=QUESTIONS.length;
-  chip.textContent=`Question ${Math.min(surveyState.idx+1,total)} of ${total}`;
-  bar.style.width=((surveyState.idx+1)/Math.max(1,total))*100+'%';
+  const visible=visibleQuestions();
+  const current=QUESTIONS[surveyState.idx];
+  const pos=Math.max(visible.findIndex(q=>q.id===current?.id),0);
+  const total=Math.max(visible.length,1);
+  chip.textContent=`Question ${Math.min(pos+1,total)} of ${total}`;
+  bar.style.width=((pos+1)/total)*100+'%';
 }
 function validStep(){
   const q=QUESTIONS[surveyState.idx]; 
@@ -608,63 +708,121 @@ function validStep(){
   const v=surveyState.answers[q.id];
   if(q.type==='text') return !!(v && String(v).trim()!=='');
   if(q.type==='buttons'){
-    const picked = v && v.choice;
-    if(!picked) return false;
-    if(q.otherText && picked==='Others'){
-      const tx = surveyState.answers[q.otherId]?.trim();
-      return !!tx;
+    const selections = q.multi
+      ? (Array.isArray(v?.choices) ? v.choices.filter(Boolean) : [])
+      : (v && v.choice ? [v.choice] : []);
+    if(selections.length===0) return false;
+
+    if(q.otherText){
+      const needsOther = q.multi ? selections.includes('Others') : selections[0]==='Others';
+      if(needsOther){
+        const otherRaw = surveyState.answers[q.otherId];
+        const otherText = typeof otherRaw==='string' ? otherRaw.trim() : '';
+        if(!otherText) return false;
+      }
     }
+
     if(Array.isArray(q.followups)){
-      const f = q.followups.find(x=>x.when===picked);
-      if(f && f.required){
-        const t = surveyState.answers[f.id]?.trim();
-        return !!t;
+      const checkFollowup = (follow)=>{
+        if(!follow.required) return true;
+        const followVal = surveyState.answers[follow.id];
+        const followText = typeof followVal==='string' ? followVal.trim() : '';
+        return !!followText;
+      };
+      if(q.multi){
+        const active = q.followups.filter(f=>selections.includes(f.when));
+        if(active.length){
+          return active.every(checkFollowup);
+        }
+      }else{
+        const match = q.followups.find(f=>f.when===selections[0]);
+        if(match) return checkFollowup(match);
       }
     }
     return true;
   }
+  if(q.type==='slider'){
+    const val = (typeof v==='object' && v) ? v.value : v;
+    return val !== undefined && val !== null && val!=='';
+  }
   return !!v;
 }
 function updateStepButtons(){
-  const last = surveyState.idx===QUESTIONS.length-1;
-  nextBtn.style.display= last ? 'none' : 'inline-block';
-  submitBtn.style.display= last ? 'inline-block' : 'none';
-  nextBtn.disabled = !validStep();
-  submitBtn.disabled = !validStep();
-  backBtn.style.display = surveyState.idx===0 ? 'none' : 'inline-block';
-  stateQ.textContent = validStep() ? '' : 'Answer to continue.';
+  const isValid = validStep();
+  const nextIdx = findNextVisibleIndex(surveyState.idx, 1);
+  const prevIdx = findNextVisibleIndex(surveyState.idx, -1);
+  const last = nextIdx >= QUESTIONS.length;
+  nextBtn.style.display = last ? 'none' : 'inline-block';
+  submitBtn.style.display = last ? 'inline-block' : 'none';
+  nextBtn.disabled = !isValid;
+  submitBtn.disabled = !isValid;
+  backBtn.style.display = prevIdx < 0 ? 'none' : 'inline-block';
+  stateQ.textContent = isValid ? '' : 'Answer to continue.';
   setProgress();
 }
 
 function renderButtons(q){
   const wrap=document.createElement('div');
   const grid=document.createElement('div'); grid.className='opt-grid';
-  const current = surveyState.answers[q.id]?.choice || '';
+  wrap.appendChild(grid);
+
+  const getSelected=()=>{
+    const current=surveyState.answers[q.id];
+    if(q.multi){
+      return Array.isArray(current?.choices) ? current.choices : [];
+    }
+    return current?.choice || '';
+  };
+  const setSelected=(val)=>{
+    if(q.multi){
+      surveyState.answers[q.id]={choices:val};
+    }else{
+      surveyState.answers[q.id]={choice:val};
+    }
+  };
+  const syncButtons=()=>{
+    const selected=getSelected();
+    [...grid.children].forEach(btn=>{
+      const txt=btn.textContent;
+      const isSel=q.multi ? selected.includes(txt) : selected===txt;
+      btn.classList.toggle('sel', isSel);
+    });
+  };
+
   (q.options||[]).forEach(opt=>{
     const b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=opt;
-    if(current===opt) b.classList.add('sel');
     b.onclick=()=>{
-      surveyState.answers[q.id]={choice:opt};
-      [...grid.children].forEach(c=>c.classList.remove('sel'));
-      b.classList.add('sel');
-      refreshFollowups(q, wrap); 
+      if(q.multi){
+        const selections=[...getSelected()];
+        const idx=selections.indexOf(opt);
+        if(idx>-1) selections.splice(idx,1);
+        else selections.push(opt);
+        setSelected(selections);
+      }else{
+        setSelected(opt);
+      }
+      pruneHiddenAnswers(q.id);
+      syncButtons();
+      refreshFollowups(q, wrap);
       updateStepButtons();
     };
     grid.appendChild(b);
   });
-  wrap.appendChild(grid);
+  syncButtons();
 
   // "Others" textbox
   if(q.otherText){
     const holder=document.createElement('div'); holder.style.marginTop='10px';
     const input=document.createElement('input');
     input.type='text'; input.placeholder=q.otherPlaceholder||'Please specify'; input.id=q.otherId;
+    input.value = surveyState.answers[q.otherId] || '';
     input.addEventListener('input',()=>{ surveyState.answers[q.otherId]=input.value; updateStepButtons(); });
     holder.appendChild(input);
     const hint=document.createElement('div'); hint.className='small-hint'; hint.textContent='Shown only if “Others” is chosen.'; holder.appendChild(hint);
     wrap.appendChild(holder);
     function toggleOthers(){
-      const isOthers = surveyState.answers[q.id]?.choice==='Others';
+      const selected=getSelected();
+      const isOthers=q.multi ? selected.includes('Others') : selected==='Others';
       holder.style.display = isOthers ? 'block' : 'none';
     }
     toggleOthers(); wrap.toggleOthers=toggleOthers;
@@ -678,11 +836,12 @@ function renderButtons(q){
   }
 
   function refreshFollowups(q, wrap){
-    if(!wrap.fbox) { if(wrap.toggleOthers) wrap.toggleOthers(); return; }
+    if(!wrap.fbox){ wrap.toggleOthers?.(); return; }
     wrap.fbox.innerHTML='';
+    if(q.multi){ wrap.toggleOthers?.(); return; }
     const picked = surveyState.answers[q.id]?.choice;
     const f = q.followups.find(x=>x.when===picked);
-    if(!f){ if(wrap.toggleOthers) wrap.toggleOthers(); return; }
+    if(!f){ wrap.toggleOthers?.(); return; }
 
     const label=document.createElement('label'); label.textContent=f.placeholder || 'Please specify';
     const fieldWrap=document.createElement('div'); fieldWrap.className='typeahead';
@@ -695,12 +854,63 @@ function renderButtons(q){
     if(f.id==='q4_city'){
       attachTypeahead(input, PH_CITIES, (v)=>{ surveyState.answers[f.id]=v; updateStepButtons(); });
     }
-    if(wrap.toggleOthers) wrap.toggleOthers();
+    wrap.toggleOthers?.();
   }
   wrap.refreshFollowups=()=>refreshFollowups(q,wrap);
 
   // initial render
   wrap.refreshFollowups?.();
+  return wrap;
+}
+
+function renderSlider(q){
+  const wrap=document.createElement('div'); wrap.className='slider-wrap';
+  const min=parseFloat(q.min ?? 0) || 0;
+  const max=parseFloat(q.max ?? 10) || 10;
+  const step=parseFloat(q.step ?? 1) || 1;
+  const stored = surveyState.answers[q.id];
+  const storedVal = typeof stored==='object' && stored && typeof stored.value==='number' ? stored.value : null;
+  const defaultVal = storedVal!==null ? storedVal : Math.round((min+max)/2);
+
+  const describe=(val)=>`Score: ${val}/${max}`;
+  const valueLabel=document.createElement('div'); valueLabel.className='slider-value';
+  valueLabel.textContent = storedVal!==null ? describe(storedVal) : `Drag to choose (1-${max})`;
+  wrap.appendChild(valueLabel);
+
+  const track=document.createElement('div'); track.className='slider-track';
+  const input=document.createElement('input');
+  input.type='range';
+  input.min=String(min);
+  input.max=String(max);
+  input.step=String(step);
+  input.value=String(defaultVal);
+  input.setAttribute('aria-label', q.prompt || 'slider question');
+  track.appendChild(input);
+  wrap.appendChild(track);
+
+  const scale=document.createElement('div'); scale.className='slider-scale';
+  const minSpan=document.createElement('span'); minSpan.textContent=q.labels?.min || String(min);
+  const maxSpan=document.createElement('span'); maxSpan.textContent=q.labels?.max || String(max);
+  scale.appendChild(minSpan); scale.appendChild(maxSpan);
+  wrap.appendChild(scale);
+
+  if(storedVal!==null){
+    surveyState.answers[q.id]={value:storedVal};
+  }
+
+  const update=(val)=>{
+    surveyState.answers[q.id]={value:val};
+    valueLabel.textContent=describe(val);
+    updateStepButtons();
+  };
+
+  input.addEventListener('input', ()=>{
+    update(Number(input.value));
+  });
+  input.addEventListener('change', ()=>{
+    update(Number(input.value));
+  });
+
   return wrap;
 }
 
@@ -714,21 +924,31 @@ function renderText(q){
 }
 
 function renderQ(){
-  const q=QUESTIONS[surveyState.idx]; if(!q) return;
+  surveyState.idx = nearestVisibleIndex(surveyState.idx);
+  const q=QUESTIONS[surveyState.idx];
+  if(!q || !isQuestionVisible(q)) return;
+  const visible=visibleQuestions();
+  const position=Math.max(visible.findIndex(item=>item.id===q.id),0);
   qwrap.innerHTML='';
   const card=document.createElement('div'); card.className='cardQ';
-  const num=document.createElement('div'); num.className='qnum'; num.textContent=`Question ${surveyState.idx+1}`;
+  const num=document.createElement('div'); num.className='qnum'; num.textContent=`Question ${position+1}`;
   const title=document.createElement('h3'); title.className='qtitle'; title.textContent=q.prompt;
   card.appendChild(num); card.appendChild(title);
 
   if(q.type==='buttons'){ card.appendChild(renderButtons(q)); }
   else if(q.type==='text'){ card.appendChild(renderText(q)); }
+  else if(q.type==='slider'){ card.appendChild(renderSlider(q)); }
   qwrap.appendChild(card);
   updateStepButtons();
 }
 function goNextOrSubmit(){
-  if(surveyState.idx < QUESTIONS.length-1){ surveyState.idx++; renderQ(); }
-  else if(validStep()){ submitBtn.click(); }
+  const nextIdx = findNextVisibleIndex(surveyState.idx, 1);
+  if(nextIdx >=0 && nextIdx < QUESTIONS.length){
+    surveyState.idx = nextIdx;
+    renderQ();
+  }else if(validStep()){
+    submitBtn.click();
+  }
 }
 
 /* ---------- Gate submit ---------- */
@@ -761,11 +981,17 @@ gateForm.addEventListener('submit', async (e)=>{
 });
 
 /* Navigation */
-backBtn.onclick=()=>{ 
-  if(surveyState.idx>0){ surveyState.idx--; renderQ(); } 
-  else { stepSurvey.style.display='none'; stepGate.style.display='block'; } 
+backBtn.onclick=()=>{
+  const prevIdx = findNextVisibleIndex(surveyState.idx, -1);
+  if(prevIdx>=0){
+    surveyState.idx = prevIdx;
+    renderQ();
+  }else{
+    stepSurvey.style.display='none';
+    stepGate.style.display='block';
+  }
 };
-nextBtn.onclick=()=>{ if(validStep()){ surveyState.idx++; renderQ(); } };
+nextBtn.onclick=()=>{ if(validStep()) goNextOrSubmit(); };
 
 /* Submit survey */
 function rewardCode(prefix="MDG"){
@@ -784,7 +1010,6 @@ submitBtn.onclick=async()=>{
     pushHistory('cities', (surveyState.answers['q4_city']||'').trim());
     pushHistory('malls', (surveyState.answers['q4_mall']||'').trim());
     pushHistory('places', (surveyState.answers['q5_place']||'').trim());
-    pushHistory('brands', (surveyState.answers['q7']||'').trim());
     pushHistory('sources', (surveyState.answers['q2_other']||'').trim());
 
     const answersClean = normalizeAnswers(surveyState.answers);
