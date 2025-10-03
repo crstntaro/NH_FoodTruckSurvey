@@ -678,17 +678,18 @@ function normalizeAnswers(raw) {
   const npsVal = sliderVal(raw.q8);
   const returnVal = sliderVal(raw.q10_return);
 
-  out.q7_food = foodVal!==undefined && foodVal!==null ? String(foodVal) : "";
-  out.q7_service = serviceVal!==undefined && serviceVal!==null ? String(serviceVal) : "";
-  out.q7_price = priceVal!==undefined && priceVal!==null ? String(priceVal) : "";
-  out.q8_nps = npsVal!==undefined && npsVal!==null ? String(npsVal) : "";
-  out.q10_return = returnVal!==undefined && returnVal!==null ? String(returnVal) : "";
+  out.q7_food = Number.isFinite(foodVal) ? foodVal : null;
+  out.q7_service = Number.isFinite(serviceVal) ? serviceVal : null;
+  out.q7_price = Number.isFinite(priceVal) ? priceVal : null;
+  out.q8_nps = Number.isFinite(npsVal) ? npsVal : null;
+  out.q10_return = Number.isFinite(returnVal) ? returnVal : null;
 
   const q9Obj = raw.q9 && typeof raw.q9==='object' ? raw.q9 : {};
   const q9Choices = Array.isArray(q9Obj.choices) ? q9Obj.choices.filter(Boolean) : [];
   const q9Single = q9Obj.choice || (typeof raw.q9==='string' ? raw.q9 : '');
   out.q9_choices = q9Choices;
-  out.q9 = q9Choices.length ? q9Choices.join(', ') : q9Single.toString();
+  const combined = q9Choices.length ? q9Choices.join(', ') : (q9Single ? q9Single.toString() : '');
+  out.q9 = combined;
   out.q9_other = (raw.q9_other || "").trim();
   out.q10 = (raw.q10?.choice || raw.q10 || "").toString();
   return out;
@@ -1016,7 +1017,7 @@ submitBtn.onclick=async()=>{
 
     if(sb){
       const gateId = stepSurvey.dataset.gateId || null;
-      const payload = { answers:answersClean, reward_code:code };
+      const payload = { answers:answersClean, reward_code:code, ...answersClean };
       if(gateId){
         await sb.from('submissions').update(payload).eq('id', gateId);
       }else{
