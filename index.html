@@ -15,7 +15,8 @@
   --accent-dk:#0c8a92;
   --ink:#101010; --muted:#6b7280; --paper:#fff; --bg:#fff; --line:#e5e7eb;
   --ease:cubic-bezier(.22,.61,.36,1); --header-h:64px;
-  --coupon-red:#ff1f28; --coupon-ink:#151515;
+  --coupon-red: var(--accent); /* now teal */
+  --coupon-ink:#151515;
 }
 
 *{box-sizing:border-box}
@@ -100,7 +101,7 @@ body:not(.lock){ overflow:auto }
 .section{padding:18px}
 .grid{display:grid; gap:12px}
 label{display:block;font:800 14px/1 var(--font);margin:16px 0 6px}
-.req{ color:#DF1F26; margin-left:4px }
+.req{ color:var(--accent); margin-left:4px }
 input[type="text"], input[type="email"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);font-size:15px;background:#fff}
 input::placeholder{color:#9aa2ae}
 input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(14,155,164,.15)}
@@ -112,7 +113,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .check{display:flex; gap:10px; align-items:flex-start}
 .check input{accent-color:var(--accent); width:16px; height:16px; margin-top:2px}
 .check div{font-size:13px; line-height:1.45; color:#111}
-.check small{color:#DF1F26; display:block; margin-top:2px; font-size:11.5px}
+.check small{color:#6b7280; display:block; margin-top:2px; font-size:11.5px}
 .actions{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:18px}
 .hint{color:#6b7280; font-size:12px}
 .foot{margin-top:14px; color:#6b7280; font-size:12px}
@@ -125,7 +126,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .bar{height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-dk)); transition:width .25s var(--ease)}
 .cardQ{ margin-top:8px; padding:18px; border:1px solid var(--line); border-radius:16px; background:#fff;
   box-shadow:0 6px 16px rgba(0,0,0,.05); animation:stepIn .24s var(--ease); }
-.cardQ.card-nps{padding:0;border:none;box-shadow:none;background:transparent}
+.cardQ.card-nps,.cardQ.card-rating{padding:0;border:none;box-shadow:none;background:transparent}
 @keyframes stepIn{ from{ opacity:0; transform:translateY(6px)} to{ opacity:1; transform:none}}
 .qnum{font:800 12px var(--font); color:#0b6f76; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px}
 .qtitle{margin:0 0 10px; font:800 clamp(18px,3.8vw,22px)/1.25 var(--font)}
@@ -147,6 +148,8 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .opt.sel{color:#fff; border-color:var(--accent)}
 .opt.sel::after{transform:scaleX(1)}
 
+.clear-link{ margin-top:6px; font:700 12px var(--font); color:var(--accent); cursor:pointer; text-decoration:underline; display:none }
+
 .slider-wrap{display:grid;gap:10px;justify-items:center;margin-top:12px}
 .slider-value{font:800 18px/1 var(--font);color:var(--accent)}
 .slider-scale{width:100%;display:flex;justify-content:space-between;font:700 11px/1 var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
@@ -163,27 +166,68 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .slider-comment textarea:focus,.comment-wrap textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,155,164,.15);outline:none}
 .slider-comment textarea::placeholder,.comment-wrap textarea::placeholder{color:#9aa2ae}
 .slider-value.placeholder{color:#94a3b8}
-.slider-theme-nps{width:100%;justify-items:stretch}
+
+/* NPS (teal now) */
 .slider-theme-nps .nps-shell{width:100%;max-width:640px;border-radius:28px;background:#fff;box-shadow:0 24px 60px rgba(14,155,164,.18);padding:28px 24px 30px;display:grid;gap:18px;border:1px solid rgba(14,155,164,.16);justify-items:center}
 .slider-theme-nps .nps-question{font:800 18px/1.35 var(--font);color:#0f172a;text-align:center;margin:0}
 .slider-theme-nps .nps-question-number{color:var(--accent);margin-right:6px}
 .slider-theme-nps .nps-score{font:800 40px/1 var(--font);color:var(--accent);text-align:center}
 .slider-theme-nps .nps-slider{position:relative;width:100%;padding:12px 0 6px}
-.slider-theme-nps .nps-slider-lane{position:relative;width:100%;height:12px;border-radius:999px;background:linear-gradient(90deg,rgba(14,155,164,.18) 0%,rgba(14,155,164,.08) 100%)}
-.slider-theme-nps .nps-slider-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 60%, #ffffff 40%) 100%);transition:width .2s var(--ease)}
-.slider-theme-nps .nps-slider-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:var(--accent);border:6px solid #fff;box-shadow:0 18px 36px rgba(14,155,164,.3);display:grid;place-items:center;transition:transform .18s var(--ease)}
-.slider-theme-nps .nps-slider-thumb span{font-size:26px;color:#fff}
+.slider-theme-nps .nps-slider-track{position:relative;width:calc(100% - 72px);margin:0 auto}
+.slider-theme-nps .nps-slider-lane{position:relative;width:100%;height:12px;border-radius:999px;background:linear-gradient(90deg,#cfeff3 0%,#e8fbfd 100%)}
+.slider-theme-nps .nps-slider-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent) 0%,#55c7cf 100%);transition:width .2s var(--ease)}
+.slider-theme-nps .nps-slider-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:#fff;border:6px solid rgba(14,155,164,.85);box-shadow:0 18px 36px rgba(14,155,164,.25);display:grid;place-items:center;transition:transform .18s var(--ease);overflow:hidden}
+.slider-theme-nps .nps-slider-thumb::before{content:"";position:absolute;inset:6px;border-radius:50%;background:#e9fbfd;z-index:-1}
+.slider-theme-nps .nps-slider-thumb img{width:32px;height:32px;object-fit:contain}
+.slider-theme-nps .nps-slider-thumb .thumb-value,
+.slider-theme-rating .rating-slider-thumb .thumb-value{position:absolute;inset:0;display:grid;place-items:center;font:800 18px/1 var(--font);color:var(--accent);text-shadow:0 4px 12px rgba(0,0,0,.18)}
+.slider-theme-nps .nps-slider-thumb .thumb-value.is-empty,
+.slider-theme-rating .rating-slider-thumb .thumb-value.is-empty{color:#9caec2}
 .slider-theme-nps .nps-slider-thumb:active{transform:translate(-50%,-50%) scale(1.05)}
-.slider-theme-nps .nps-slider input[type="range"]{position:absolute;inset:-24px 0 -16px;opacity:0;cursor:pointer;height:calc(100% + 40px)}
+.slider-theme-nps .nps-slider input[type="range"]{position:absolute;inset:-24px 36px -16px 36px;opacity:0;cursor:pointer;height:calc(100% + 40px)}
 .slider-theme-nps .nps-ticks{width:100%;display:flex;justify-content:space-between;font:700 13px/1 var(--font);color:#cbd5e1}
 .slider-theme-nps .nps-ticks span.active{color:var(--accent)}
 .slider-theme-nps .nps-followups{width:100%;display:none;gap:16px}
 .slider-theme-nps .nps-followups.active{display:grid}
 .slider-theme-nps .nps-followup{display:grid;gap:8px}
 .slider-theme-nps .nps-followup label{font:700 14px/1.4 var(--font);color:#0f172a}
-.slider-theme-nps .nps-followup textarea{width:100%;min-height:110px;border-radius:18px;border:2px solid rgba(14,155,164,.28);padding:16px;font:400 15px/1.5 var(--font);background:#fff;resize:vertical;transition:border-color .18s var(--ease), box-shadow .18s var(--ease)}
+.slider-theme-nps .nps-followup textarea{width:100%;min-height:110px;border-radius:18px;border:2px solid #cfeff3;padding:16px;font:400 15px/1.5 var(--font);background:#fff;resize:vertical;transition:border-color .18s var(--ease), box-shadow .18s var(--ease)}
 .slider-theme-nps .nps-followup textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(14,155,164,.18);outline:none}
-.slider-theme-nps .nps-followup textarea::placeholder{color:color-mix(in srgb,var(--accent) 35%, #ffffff 65%)}
+.slider-theme-nps .nps-followup textarea::placeholder{color:#79bec3}
+
+/* Rating slider */
+.slider-theme-rating{width:100%;justify-items:stretch}
+.slider-theme-rating .rating-shell{width:100%;max-width:720px;border-radius:30px;background:#fff;box-shadow:0 28px 66px rgba(14,155,164,.16);padding:28px 28px 36px;border:1px solid rgba(14,155,164,.16);display:grid;gap:18px;justify-items:center}
+.slider-theme-rating .rating-chip{font:800 12px/1 var(--font);color:var(--accent);background:#e9fbfd;border:1px solid #b9edf1;border-radius:999px;padding:6px 14px;width:max-content;letter-spacing:.08em;text-transform:uppercase;justify-self:start}
+.slider-theme-rating .rating-question{margin:0;font:800 clamp(20px,3.8vw,26px)/1.25 var(--font);color:#0f172a;text-align:center}
+.slider-theme-rating .rating-question-number{color:var(--accent);margin-right:6px}
+.slider-theme-rating .rating-score-wrap{display:grid;gap:4px;justify-items:center}
+.slider-theme-rating .rating-score{font:800 clamp(46px,8vw,64px)/1 var(--font);color:var(--accent)}
+.slider-theme-rating .rating-score.is-empty{color:#cbd5e1}
+.slider-theme-rating .rating-score-label{font:700 13px/1.3 var(--font);color:#0f172a;letter-spacing:.14em;text-transform:uppercase}
+.slider-theme-rating .rating-score-label.is-empty{color:#94a3b8}
+.slider-theme-rating .rating-slider{position:relative;width:100%;padding:12px 0 38px}
+.slider-theme-rating .rating-slider-track{position:relative;width:calc(100% - 88px);margin:0 auto}
+.slider-theme-rating .rating-slider-lane{position:relative;width:100%;height:14px;border-radius:999px;background:linear-gradient(90deg,#d9f4f6 0%,#ecfbfd 100%)}
+.slider-theme-rating .rating-slider-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent) 0%,rgba(14,155,164,.65) 100%);transition:width .22s var(--ease)}
+.slider-theme-rating .rating-slider-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:#fff;border:6px solid rgba(14,155,164,.85);box-shadow:0 20px 44px rgba(14,155,164,.22);display:grid;place-items:center;transition:transform .18s var(--ease), border-color .18s var(--ease);overflow:hidden}
+.slider-theme-rating .rating-slider-thumb::before{content:"";position:absolute;inset:6px;border-radius:50%;background:#e9fbfd;z-index:-1}
+.slider-theme-rating .rating-slider-thumb img{width:36px;height:36px;object-fit:contain;opacity:.75}
+.slider-theme-rating .rating-slider-thumb:active{transform:translate(-50%,-50%) scale(1.04)}
+.slider-theme-rating .rating-slider input[type="range"]{position:absolute;inset:-26px 44px -20px 44px;opacity:0;cursor:pointer;height:calc(100% + 46px)}
+.slider-theme-rating .rating-live-label{position:absolute;bottom:-18px;left:0;transform:translate(-50%,0);padding:8px 18px;border-radius:999px;background:#fff;border:1px solid #cfeff3;box-shadow:0 12px 30px rgba(14,155,164,.1);font:800 11px/1 var(--font);letter-spacing:.12em;text-transform:uppercase;color:#0f172a;pointer-events:none;opacity:0;transition:opacity .18s var(--ease)}
+.slider-theme-rating .rating-live-label.show{opacity:1}
+.slider-theme-rating .rating-ticks{width:100%;display:flex;justify-content:space-between;padding:6px 44px 0;font:700 12px/1.2 var(--font);color:#94a3b8;text-transform:uppercase;letter-spacing:.14em}
+.slider-theme-rating .rating-ticks span{white-space:nowrap}
+.slider-theme-rating .rating-ticks span:first-child{align-self:flex-start}
+.slider-theme-rating .rating-ticks span:last-child{align-self:flex-start}
+.slider-theme-rating .rating-followups{display:none;gap:16px;margin-top:6px}
+.slider-theme-rating .rating-followups.active{display:grid}
+.slider-theme-rating .rating-followup{display:grid;gap:8px}
+.slider-theme-rating .rating-followup label{font:700 14px/1.35 var(--font);color:#0f172a}
+.slider-theme-rating .rating-followup textarea{width:100%;min-height:110px;border-radius:20px;border:2px solid #cfeff3;padding:16px;font:400 15px/1.5 var(--font);background:#fff;resize:vertical;transition:border-color .18s var(--ease), box-shadow .18s var(--ease)}
+.slider-theme-rating .rating-followup textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(14,155,164,.18);outline:none}
+.slider-theme-rating .rating-followup textarea::placeholder{color:#79bec3}
 .link-followup{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#f8ffff;display:grid;gap:8px;justify-items:flex-start}
 .link-followup p{margin:0;font:700 13px/1.2 var(--font);color:#0b6f76}
 .link-followup-list{display:flex;gap:12px;flex-wrap:wrap}
@@ -203,9 +247,9 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .btn:hover::after{transform:scaleX(1)}
 .btn.alt{background:#e9fbfd; color:#0b6f76; box-shadow:none}
 .btn[disabled]{opacity:.55; cursor:not-allowed; filter:grayscale(.35)}
-.state{color:#b45309; font-size:12px; text-align:center; min-height:1em; margin-top:4px}
+.state{color:#0b6f76; font-size:12px; text-align:center; min-height:1em; margin-top:4px}
 
-/* Reward ticket */
+/* Reward ticket (now teal outline) */
 .section.reward-section{padding:18px}
 .coupon-wrap{ display:grid; gap:16px; justify-items:center; text-align:center; margin:8px 0 6px; padding-inline:12px }
 .ticket{
@@ -223,7 +267,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .ticket-title{ font:800 clamp(18px,4.2vw,26px)/1.1 var(--font); margin:10px 0 2px; }
 .ticket-code{
   font:800 clamp(22px,5vw,30px)/1 var(--font); letter-spacing:2px; color:var(--coupon-ink);
-  background:#fff5f6; border:2px dashed var(--coupon-red); padding:12px 16px; border-radius:14px; display:inline-block; margin-top:10px;
+  background:#e7fbfd; border:2px dashed var(--coupon-red); padding:12px 16px; border-radius:14px; display:inline-block; margin-top:10px;
 }
 .ticket-foot{ color:#6b7280; font-size:12px; margin-top:8px }
 .coupon-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:4px }
@@ -241,17 +285,13 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 @keyframes pulse{ 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.06) } }
 
 /* Typeahead dropdown */
-.typeahead{
-  position:relative;
-}
+.typeahead{ position:relative; }
 .ta-list{
   position:absolute; left:0; right:0; top:calc(100% + 4px);
   background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,.08);
   max-height:220px; overflow:auto; z-index:10; display:none;
 }
-.ta-item{
-  padding:10px 12px; cursor:pointer; font-size:14px;
-}
+.ta-item{ padding:10px 12px; cursor:pointer; font-size:14px; }
 .ta-item:hover, .ta-item.active{ background:#e9fbfd; color:#0b6f76; }
 </style>
 </head>
@@ -413,7 +453,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 
-<!-- QUESTIONS (updated per feedback) -->
+<!-- QUESTIONS (updated) -->
 <script id="QUESTIONS_JSON" type="application/json">[
   {"id":"q1","type":"buttons","prompt":"Did you enjoy your Blue Truck Pop-up experience?","options":["Yes","No"]},
 
@@ -424,7 +464,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 
   {"id":"q4","type":"buttons","prompt":"Where do you want to see our Blue Truck next?","options":["City","Mall"],"followups":[
       {"when":"City","id":"q4_city","type":"text","placeholder":"Type a city in the Philippines","suggestKey":"cities","required":true},
-      {"when":"Mall","id":"q4_mall","type":"text","placeholder":"Optional: which mall?","suggestKey":"malls","required":false}
+      {"when":"Mall","id":"q4_mall","type":"text","placeholder":"Which mall?","suggestKey":"malls","required":true}
   ]},
 
   {"id":"q5","type":"buttons","prompt":"Are you working near or living near here?","options":["Working","Living"],"followups":[
@@ -432,9 +472,29 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
       {"when":"Living","id":"q5_place","type":"text","placeholder":"Which village / subdivision?","suggestKey":"places","required":true}
   ]},
 
-  {"id":"q7_food","type":"slider","prompt":"How would you rate our food quality today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"},"commentId":"q7_food_comment","commentPrompt":"Care to share more about the food?","commentPlaceholder":"Optional: let us know your thoughts about the food."},
-  {"id":"q7_service","type":"slider","prompt":"How would you rate our service today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"},"commentId":"q7_service_comment","commentPrompt":"How was the service?","commentPlaceholder":"Optional: tell us about the service."},
-  {"id":"q7_price","type":"slider","prompt":"How would you rate the value for price today?","min":1,"max":10,"step":1,"labels":{"min":"Very Dissatisfied","max":"Very Satisfied"},"commentId":"q7_price_comment","commentPrompt":"Any thoughts on value for money?","commentPlaceholder":"Optional: share feedback on value."},
+  {"id":"q7_food","type":"slider","prompt":"How would you rate our food today?","min":1,"max":5,"step":1,"theme":"rating",
+    "scaleLabels":{"1":"Very Poor","2":"Poor","3":"Fair","4":"Good","5":"Excellent"},
+    "buckets":[
+      {"id":"q7_food_low","min":1,"max":2,"label":"What went wrong with the food?","placeholder":"Let us know what to improve."},
+      {"id":"q7_food_mid","min":3,"max":4,"label":"What could make the food better?","placeholder":"Share your suggestions…"},
+      {"id":"q7_food_high","min":5,"max":5,"label":"Awesome! What did you love most?","placeholder":"Tell us your highlight…"}
+    ]},
+
+  {"id":"q7_service","type":"slider","prompt":"How would you rate our service today?","min":1,"max":5,"step":1,"theme":"rating",
+    "scaleLabels":{"1":"Very Poor","2":"Poor","3":"Fair","4":"Good","5":"Excellent"},
+    "buckets":[
+      {"id":"q7_service_low","min":1,"max":2,"label":"What went wrong with the service?","placeholder":"Let us know what to improve."},
+      {"id":"q7_service_mid","min":3,"max":4,"label":"How can we serve you better?","placeholder":"Share your suggestions…"},
+      {"id":"q7_service_high","min":5,"max":5,"label":"Amazing! What stood out in our service?","placeholder":"Tell us your highlight…"}
+    ]},
+
+  {"id":"q7_price","type":"slider","prompt":"How would you rate the value for price today?","min":1,"max":5,"step":1,"theme":"rating",
+    "scaleLabels":{"1":"Very Poor","2":"Poor","3":"Fair","4":"Good","5":"Excellent"},
+    "buckets":[
+      {"id":"q7_price_low","min":1,"max":2,"label":"What felt off about the value?","placeholder":"Tell us what didn’t feel worth it."},
+      {"id":"q7_price_mid","min":3,"max":4,"label":"How could we give you better value?","placeholder":"Share your ideas…"},
+      {"id":"q7_price_high","min":5,"max":5,"label":"Great! What made it worth it?","placeholder":"We’d love to know."}
+    ]},
 
   {"id":"q8","type":"slider","prompt":"How likely is it that you would recommend this pop-up to others?","min":0,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Extremely Likely"},"theme":"nps","buckets":[
       {"id":"q8_detractor","min":0,"max":6,"label":"What can we do better to improve your satisfaction?","placeholder":"Your feedback…"},
@@ -488,6 +548,7 @@ const overlay=document.getElementById('overlay');
 (function(){
   const prefix='FTPU-';
   const pattern = /^FTPU-\d{6}-\d{6}$/;
+  let receiptDirty=false;
 
   function ensurePrefix(val){
     return val.startsWith(prefix) ? val : prefix + val.replace(/^FTPU-?/, '');
@@ -508,11 +569,12 @@ const overlay=document.getElementById('overlay');
     return out;
   }
 
-  function validateReceipt(){
+  function validateReceipt(forceShow=false){
     const v = receiptEl.value.trim();
     const ok = pattern.test(v);
     receiptEl.setCustomValidity(ok ? '' : 'Format must be FTPU-000000-000000.');
-    receiptErr.classList.toggle('show', !ok && v.length>prefix.length);
+    const showErr = forceShow || receiptDirty;
+    receiptErr.classList.toggle('show', showErr && !ok);
     return ok;
   }
 
@@ -536,14 +598,26 @@ const overlay=document.getElementById('overlay');
   });
 
   receiptEl.addEventListener('input', ()=>{
-    const caret=receiptEl.selectionStart ?? receiptEl.value.length;
-    setFormatted(receiptEl.value);
-    const newLen = receiptEl.value.length;
-    const newCaret = Math.max(prefix.length, Math.min(newLen, caret < prefix.length ? prefix.length : caret));
-    receiptEl.setSelectionRange(newCaret, newCaret);
+    receiptDirty = true;
+    const rawVal = receiptEl.value;
+    const caretPos = receiptEl.selectionStart ?? rawVal.length;
+    const digitsBeforeCaret = rawVal.slice(0, caretPos).replace(/[^0-9]/g, '').length;
+
+    setFormatted(rawVal);
+
+    const totalDigits = Math.min(digitsBeforeCaret, 12);
+    const hyphenOffset = totalDigits >= 6 ? 1 : 0;
+    const desiredCaret = prefix.length + totalDigits + hyphenOffset;
+    const maxCaret = Math.max(prefix.length, Math.min(receiptEl.value.length, desiredCaret));
+
+    receiptEl.setSelectionRange(maxCaret, maxCaret);
     validateReceipt(); updateGate();
   });
-  receiptEl.addEventListener('blur', validateReceipt);
+  receiptEl.addEventListener('blur', ()=>{
+    receiptDirty = true;
+    validateReceipt(true);
+    updateGate();
+  });
 
   emailEl.addEventListener('input', ()=>{ emailEl.setCustomValidity(''); updateGate(); });
   emailEl.addEventListener('invalid', ()=>{
@@ -560,41 +634,40 @@ const overlay=document.getElementById('overlay');
     const okDpa = dpaEl.checked;
     const ok = okRec && okEmail && okDpa;
     continueBtn.disabled = !ok;
-    stateMsg.textContent = ok ? 'All set! You can now start your survey.' : 'Fill the required fields to continue.';
+    if(ok){
+      stateMsg.textContent = 'All set! You can now start your survey.';
+    }else{
+      const issues=[];
+      if(!okRec) issues.push('your receipt number');
+      if(!okEmail) issues.push('a valid email');
+      if(!okDpa) issues.push('the privacy consent checkbox');
+      const formatIssues = (items)=>{
+        if(items.length<=1) return items[0] || '';
+        if(items.length===2) return `${items[0]} and ${items[1]}`;
+        return `${items.slice(0,-1).join(', ')}, and ${items[items.length-1]}`;
+      };
+      stateMsg.textContent = `Please complete ${formatIssues(issues)}.`;
+    }
   }
   document.addEventListener('DOMContentLoaded', updateGate);
 })();
 
-/* ---------- Typeahead (no big dropdown, suggests as you type) ---------- */
+/* ---------- Typeahead ---------- */
 const PH_CITIES = [
-  // NCR (16 + 1)
-  "Caloocan","Las Piñas","Makati","Malabon","Mandaluyong","Manila","Marikina",
-  "Muntinlupa","Navotas","Parañaque","Pasay","Pasig","Quezon City","San Juan",
-  "Taguig","Valenzuela","Pateros",
+  "Caloocan","Las Piñas","Makati","Malabon","Mandaluyong","Manila","Marikina","Muntinlupa","Navotas","Parañaque","Pasay","Pasig","Quezon City","San Juan","Taguig","Valenzuela","Pateros",
+  "Alaminos","Angeles","Antipolo","Bacoor","Balanga","Batac","Batangas City","Baguio","Cabanatuan","Cabuyao","Candon","Cauayan","Cavite City","Dagupan","Dasmariñas","Gapan","General Trias","Iriga","Laoag","Legazpi","Ligao","Lipa","Lucena","Malolos","Meycauayan","Naga","Olongapo","Palayan","Puerto Princesa","San Carlos (Pangasinan)","San Fernando (La Union)","San Fernando (Pampanga)","San Jose (Nueva Ecija)","San Jose del Monte","San Pablo","Santa Rosa","Santiago","Sorsogon City","Tabuk","Tacurong","Tarlac City","Tayabas","Trece Martires","Vigan",
+  "Bacolod","Bago","Bais","Bayawan","Baybay","Borongan","Calbayog","Catbalogan","Cebu City","Danao","Dumaguete","Guihulngan","Iloilo City","Kabankalan","Kananga","Lapu-Lapu","Maasin","Mandaue","Ormoc","Passi","Roxas City","Silay","Sipalay","Tagbilaran","Tacloban","Talisay (Cebu)","Talisay (Negros Occidental)","Toledo","Victorias",
+  "Butuan","Cabadbaran","Cagayan de Oro","Cotabato City","Davao City","Digos","Dipolog","Dapitan","El Salvador","Gingoog","General Santos","Iligan","Isabela City","Kidapawan","Koronadal","Mati","Malaybalay","Marawi","Oroquieta","Ozamiz","Pagadian","Panabo","Samal","San Carlos (Negros Occidental)","Surigao City","Tagum","Tangub","Tandag","Valencia","Zamboanga City"
+];
 
-  // Luzon (excluding NCR)
-  "Alaminos","Angeles","Antipolo","Bacoor","Balanga","Batac","Batangas City","Baguio",
-  "Cabanatuan","Cabuyao","Candon","Cauayan","Cavite City","Dagupan","Dasmariñas",
-  "Gapan","General Trias","Iriga","Laoag","Legazpi","Ligao","Lipa","Lucena",
-  "Malolos","Meycauayan","Naga","Olongapo","Palayan","Puerto Princesa",
-  "San Carlos (Pangasinan)","San Fernando (La Union)","San Fernando (Pampanga)",
-  "San Jose (Nueva Ecija)","San Jose del Monte","San Pablo","Santa Rosa",
-  "Santiago","Sorsogon City","Tabuk","Tacurong","Tarlac City","Tayabas","Trece Martires",
-  "Vigan",
-
-  // Visayas
-  "Bacolod","Bago","Bais","Bayawan","Baybay","Borongan","Calbayog","Catbalogan",
-  "Cebu City","Danao","Dumaguete","Guihulngan","Iloilo City","Kananga (Ormoc merged?)","Kananga no","Kabankalan",
-  "Lapu-Lapu","Maasin","Mandaue","Ormoc","Passi","Roxas City","Silay","Sipalay",
-  "Tagbilaran","Tacloban","Talisay (Cebu)","Talisay (Negros Occidental)","Toledo",
-  "Victorias",
-
-  // Mindanao
-  "Butuan","Cabadbaran","Cagayan de Oro","Cotabato City","Davao City","Digos",
-  "Dipolog","Dapitan","El Salvador","Gingoog","General Santos","Iligan","Isabela City",
-  "Kidapawan","Koronadal","Mati","Malaybalay","Marawi","Oroquieta","Ozamiz","Pagadian",
-  "Panabo","Samal","San Carlos (Negros Occidental)","Surigao City","Tagum",
-  "Tangub","Tandag","Valencia","Zamboanga City"
+const PH_MALLS = [
+  "SM Mall of Asia","SM Megamall","SM North EDSA","SM Aura Premier","SM Seaside Cebu","SM City Cebu","SM City Clark","SM City Pampanga",
+  "Glorietta","Greenbelt","Ayala Malls Manila Bay","Ayala Malls Vertis North","Ayala Malls Trinoma","Ayala Center Cebu","Ayala Abreeza",
+  "Uptown Mall BGC","Market! Market!","Bonifacio High Street","Venice Grand Canal Mall",
+  "Robinsons Galleria","Robinsons Magnolia","Robinsons Manila","Robinsons Galleria Cebu",
+  "Power Plant Mall","Shangri-La Plaza","Estancia Mall","Santolan Town Plaza",
+  "Festival Mall","Alabang Town Center","Evia Lifestyle Center","Vista Mall Taguig",
+  "Harbor Point Subic","Marquee Mall","Ayala Malls Solenad","Ayala Malls Circuit"
 ];
 
 function attachTypeahead(input, list, onPick){
@@ -608,8 +681,8 @@ function attachTypeahead(input, list, onPick){
   function render(q){
     const qv = q.trim().toLowerCase();
     const seen = new Set();
-    const fromHistory = (suggestHistory.cities||[]).filter(x=>x && x.toLowerCase().startsWith(qv));
-    const base = list.filter(x=>x.toLowerCase().startsWith(qv));
+    const fromHistory = (suggestHistory[input.dataset.suggestKey]||[]).filter(x=>x && x.toLowerCase().startsWith(qv));
+    const base = list.filter(x=>x.toLowerCase().includes(qv));
     const items = [...fromHistory, ...base].filter(x=>{ if(seen.has(x)) return false; seen.add(x); return true; }).slice(0,20);
     ul.innerHTML='';
     active = -1;
@@ -732,6 +805,20 @@ function pushHistory(key,val){
 /* normalize for DB */
 function normalizeAnswers(raw) {
   const out = {};
+  const sliderVal = (val)=>{
+    let candidate = val;
+    if(val && typeof val==='object' && val.value!==undefined) candidate = val.value;
+    const num = Number(candidate);
+    return Number.isFinite(num) ? num : null;
+  };
+  const determineBucket = (value, buckets=[])=>{
+    if(!Number.isFinite(value)) return null;
+    return buckets.find(b=>{
+      const min = Number.isFinite(b.min) ? b.min : -Infinity;
+      const max = Number.isFinite(b.max) ? b.max : Infinity;
+      return value>=min && value<=max;
+    })?.id || null;
+  };
   out.q1 = (raw.q1?.choice || raw.q1 || "").toString();
   out.q2_choice = (raw.q2?.choice || "").toString();
   out.q2_other  = (raw.q2_other || "").trim();
@@ -743,49 +830,40 @@ function normalizeAnswers(raw) {
   out.q5 = (raw.q5?.choice || raw.q5 || "").toString();
   out.q5_place = (raw.q5_place || "").trim();
 
-  const sliderVal = (val)=>{
-    let candidate = val;
-    if(val && typeof val==='object' && val.value!==undefined) candidate = val.value;
-    const num = Number(candidate);
-    return Number.isFinite(num) ? num : null;
-  };
-  const foodVal = sliderVal(raw.q7_food);
-  const serviceVal = sliderVal(raw.q7_service);
-  const priceVal = sliderVal(raw.q7_price);
-  const npsVal = sliderVal(raw.q8);
-  const returnVal = sliderVal(raw.q10_return);
+  out.q7_food = sliderVal(raw.q7_food);
+  out.q7_service = sliderVal(raw.q7_service);
+  out.q7_price = sliderVal(raw.q7_price);
 
-  out.q7_food = Number.isFinite(foodVal) ? foodVal : null;
-  out.q7_service = Number.isFinite(serviceVal) ? serviceVal : null;
-  out.q7_price = Number.isFinite(priceVal) ? priceVal : null;
-  out.q8_nps = Number.isFinite(npsVal) ? npsVal : null;
-  out.q10_return = Number.isFinite(returnVal) ? returnVal : null;
-  const foodComment = (raw.q7_food_comment ?? '').toString().trim();
-  const serviceComment = (raw.q7_service_comment ?? '').toString().trim();
-  const priceComment = (raw.q7_price_comment ?? '').toString().trim();
-  out.q7_food_comment = foodComment || null;
-  out.q7_service_comment = serviceComment || null;
-  out.q7_price_comment = priceComment || null;
+  const q7FoodBucket = determineBucket(out.q7_food, [
+    {id:'q7_food_low',min:1,max:2},
+    {id:'q7_food_mid',min:3,max:4},
+    {id:'q7_food_high',min:5,max:5}
+  ]);
+  const q7ServiceBucket = determineBucket(out.q7_service, [
+    {id:'q7_service_low',min:1,max:2},
+    {id:'q7_service_mid',min:3,max:4},
+    {id:'q7_service_high',min:5,max:5}
+  ]);
+  const q7PriceBucket = determineBucket(out.q7_price, [
+    {id:'q7_price_low',min:1,max:2},
+    {id:'q7_price_mid',min:3,max:4},
+    {id:'q7_price_high',min:5,max:5}
+  ]);
 
-  const q9Obj = raw.q9 && typeof raw.q9==='object' ? raw.q9 : {};
-  const q9Choices = Array.isArray(q9Obj.choices) ? q9Obj.choices.filter(Boolean) : [];
-  const q9Single = q9Obj.choice || (typeof raw.q9==='string' ? raw.q9 : '');
-  out.q9_choices = q9Choices;
-  const combined = q9Choices.length ? q9Choices.join(', ') : (q9Single ? q9Single.toString() : '');
-  out.q9 = combined || null;
-  const q9Other = (raw.q9_other || "").trim();
-  out.q9_other = q9Other || null;
-  const cuisineComment = (raw.q9_comment ?? '').toString().trim();
-  out.q9_comment = cuisineComment || null;
+  const pickComment = (bucketId)=> (bucketId ? (raw[bucketId] ?? '').toString().trim() : '');
+  const q7FoodComment = pickComment(q7FoodBucket);
+  const q7ServiceComment = pickComment(q7ServiceBucket);
+  const q7PriceComment = pickComment(q7PriceBucket);
 
-  const determineBucket = (value, buckets=[])=>{
-    if(!Number.isFinite(value)) return null;
-    return buckets.find(b=>{
-      const min = Number.isFinite(b.min) ? b.min : -Infinity;
-      const max = Number.isFinite(b.max) ? b.max : Infinity;
-      return value>=min && value<=max;
-    })?.id || null;
-  };
+  out.q7_food_comment = q7FoodComment || null;
+  out.q7_food_comment_type = q7FoodBucket;
+  out.q7_service_comment = q7ServiceComment || null;
+  out.q7_service_comment_type = q7ServiceBucket;
+  out.q7_price_comment = q7PriceComment || null;
+  out.q7_price_comment_type = q7PriceBucket;
+
+  out.q8_nps = sliderVal(raw.q8);
+  out.q10_return = sliderVal(raw.q10_return);
 
   const q8BucketId = determineBucket(out.q8_nps, [
     {id:'q8_detractor',min:0,max:6},
@@ -804,6 +882,18 @@ function normalizeAnswers(raw) {
   out.q8_comment_type = q8BucketId;
   out.q10_return_comment = returnComment || null;
   out.q10_return_comment_type = q10BucketId;
+
+  // Cuisines (multi)
+  const q9Obj = raw.q9 && typeof raw.q9==='object' ? raw.q9 : {};
+  const q9Choices = Array.isArray(q9Obj.choices) ? q9Obj.choices.filter(Boolean) : [];
+  const q9Single = q9Obj.choice || (typeof raw.q9==='string' ? raw.q9 : '');
+  out.q9_choices = q9Choices;
+  const combined = q9Choices.length ? q9Choices.join(', ') : (q9Single ? q9Single.toString() : '');
+  out.q9 = combined || null;
+  const q9Other = (raw.q9_other || "").trim();
+  out.q9_other = q9Other || null;
+  out.q9_comment = (raw.q9_comment ?? '').toString().trim() || null;
+
   out.q10 = (raw.q10?.choice || raw.q10 || "").toString();
   return out;
 }
@@ -853,11 +943,34 @@ function validStep(){
         if(match) return checkFollowup(match);
       }
     }
+
+    // buckets for 5-point buttons
+    if(Array.isArray(q.buckets) && !q.multi){
+      const picked = selections[0];
+      const match = q.buckets.find(b => (b.when||[]).includes(picked));
+      if(match && !(surveyState.answers[match.id]||'').toString().trim()){
+        return false; // require bucket follow-up when visible
+      }
+    }
+
     return true;
   }
   if(q.type==='slider'){
     const val = (typeof v==='object' && v) ? v.value : v;
-    return val !== undefined && val !== null && val!=='';
+    if(val === undefined || val === null || val==='') return false;
+    const numericVal = Number(val);
+    if(Array.isArray(q.buckets) && q.bucketRequired && Number.isFinite(numericVal)){
+      const activeBucket = q.buckets.find(bucket=>{
+        const bMin = Number.isFinite(bucket.min) ? bucket.min : -Infinity;
+        const bMax = Number.isFinite(bucket.max) ? bucket.max : Infinity;
+        return numericVal>=bMin && numericVal<=bMax;
+      });
+      if(activeBucket){
+        const followText = (surveyState.answers[activeBucket.id]||'').toString().trim();
+        if(!followText) return false;
+      }
+    }
+    return true;
   }
   return !!v;
 }
@@ -913,17 +1026,30 @@ function renderButtons(q){
         else selections.push(opt);
         setSelected(selections);
       }else{
-        setSelected(opt);
+        const curr=getSelected();
+        // tap again to unselect (mobile-friendly)
+        if(curr===opt){ surveyState.answers[q.id]={choice:''}; } else { setSelected(opt); }
       }
       pruneHiddenAnswers(q.id);
       syncButtons();
       refreshFollowups(q, wrap);
       toggleComment?.();
       updateStepButtons();
+      clearLink.style.display = q.multi && getSelected().length ? 'inline-block' : 'none';
     };
     grid.appendChild(b);
   });
   syncButtons();
+
+  // Clear selections (helps mobile)
+  const clearLink=document.createElement('div');
+  clearLink.className='clear-link';
+  clearLink.textContent='Clear selections';
+  clearLink.onclick=()=>{
+    if(q.multi){ setSelected([]); } else { setSelected(''); }
+    syncButtons(); refreshFollowups(q,wrap); toggleComment?.(); updateStepButtons(); clearLink.style.display='none';
+  };
+  wrap.appendChild(clearLink);
 
   // "Others" textbox
   if(q.otherText){
@@ -943,48 +1069,67 @@ function renderButtons(q){
     toggleOthers(); wrap.toggleOthers=toggleOthers;
   }
 
-  // followups area
-  if(Array.isArray(q.followups) && q.followups.length){
-    const fbox=document.createElement('div'); fbox.style.marginTop='10px'; fbox.className='grid';
-    wrap.appendChild(fbox);
-    wrap.fbox=fbox;
-  }
+  // followups area (also used for button buckets)
+  const fbox=document.createElement('div'); fbox.style.marginTop='10px'; fbox.className='grid';
+  wrap.appendChild(fbox);
+  wrap.fbox=fbox;
 
   function refreshFollowups(q, wrap){
-    if(!wrap.fbox){ wrap.toggleOthers?.(); return; }
     wrap.fbox.innerHTML='';
-    if(q.multi){ wrap.toggleOthers?.(); return; }
-    const picked = surveyState.answers[q.id]?.choice;
-    const f = q.followups.find(x=>x.when===picked);
-    if(!f){ wrap.toggleOthers?.(); return; }
+    // links followup
+    if(Array.isArray(q.followups) && !q.multi){
+      const picked = surveyState.answers[q.id]?.choice;
+      const f = q.followups.find(x=>x.when===picked);
+      if(f){
+        if(f.type==='links' && Array.isArray(f.links)){
+          const box=document.createElement('div'); box.className='link-followup';
+          const intro=document.createElement('p'); intro.textContent=f.text || 'Follow us here:';
+          box.appendChild(intro);
+          const list=document.createElement('div'); list.className='link-followup-list';
+          f.links.forEach(link=>{
+            const a=document.createElement('a'); a.href=link.href; a.target='_blank'; a.rel='noopener noreferrer';
+            a.textContent=link.label || link.href;
+            list.appendChild(a);
+          });
+          box.appendChild(list);
+          wrap.fbox.appendChild(box);
+        }else{
+          // text followup with typeahead
+          const label=document.createElement('label'); label.textContent=f.placeholder || 'Please specify';
+          const fieldWrap=document.createElement('div'); fieldWrap.className='typeahead';
+          const input=document.createElement('input'); input.type='text'; input.placeholder=f.placeholder||'Please specify';
+          input.dataset.suggestKey = f.suggestKey || '';
+          input.value = surveyState.answers[f.id]||'';
+          input.addEventListener('input', ()=>{ surveyState.answers[f.id]=input.value; updateStepButtons(); });
+          fieldWrap.appendChild(input); wrap.fbox.appendChild(label); wrap.fbox.appendChild(fieldWrap);
 
-    if(f.type==='links' && Array.isArray(f.links)){
-      const box=document.createElement('div'); box.className='link-followup';
-      const intro=document.createElement('p'); intro.textContent=f.text || 'Follow us here:';
-      box.appendChild(intro);
-      const list=document.createElement('div'); list.className='link-followup-list';
-      f.links.forEach(link=>{
-        const a=document.createElement('a'); a.href=link.href; a.target='_blank'; a.rel='noopener noreferrer';
-        a.textContent=link.label || link.href;
-        list.appendChild(a);
-      });
-      box.appendChild(list);
-      wrap.fbox.appendChild(box);
-      wrap.toggleOthers?.();
-      return;
+          if(f.suggestKey==='cities'){
+            attachTypeahead(input, PH_CITIES, (v)=>{ surveyState.answers[f.id]=v; updateStepButtons(); });
+          }else if(f.suggestKey==='malls'){
+            attachTypeahead(input, PH_MALLS, (v)=>{ surveyState.answers[f.id]=v; updateStepButtons(); });
+          }
+        }
+      }
     }
 
-    const label=document.createElement('label'); label.textContent=f.placeholder || 'Please specify';
-    const fieldWrap=document.createElement('div'); fieldWrap.className='typeahead';
-    const input=document.createElement('input'); input.type='text'; input.placeholder=f.placeholder||'Please specify';
-    input.value = surveyState.answers[f.id]||'';
-    input.addEventListener('input', ()=>{ surveyState.answers[f.id]=input.value; updateStepButtons(); });
-    fieldWrap.appendChild(input); wrap.fbox.appendChild(label); wrap.fbox.appendChild(fieldWrap);
-
-    // Attach typeahead to CITY only (others rely on history)
-    if(f.id==='q4_city'){
-      attachTypeahead(input, PH_CITIES, (v)=>{ surveyState.answers[f.id]=v; updateStepButtons(); });
+    // button buckets for 5-point scale (show the relevant textarea)
+    if(Array.isArray(q.buckets) && !q.multi){
+      const picked = (surveyState.answers[q.id]?.choice)||'';
+      const match = q.buckets.find(b => (b.when||[]).includes(picked));
+      if(match){
+        const area=document.createElement('div'); area.className='nps-followup';
+        const label=document.createElement('label'); label.setAttribute('for', match.id); label.textContent=match.label || 'Tell us more';
+        const textarea=document.createElement('textarea'); textarea.id=match.id; textarea.placeholder=match.placeholder || 'Your feedback…';
+        textarea.value = surveyState.answers[match.id] || '';
+        textarea.addEventListener('input', ()=>{ surveyState.answers[match.id]=textarea.value; updateStepButtons(); });
+        area.appendChild(label); area.appendChild(textarea);
+        wrap.fbox.appendChild(area);
+      }else{
+        // clean any previous bucket answers if user switched choices
+        (q.buckets||[]).forEach(b=> delete surveyState.answers[b.id]);
+      }
     }
+
     wrap.toggleOthers?.();
   }
   wrap.refreshFollowups=()=>refreshFollowups(q,wrap);
@@ -1019,7 +1164,9 @@ function renderButtons(q){
 function renderSlider(q, displayIndex){
   const wrap=document.createElement('div'); wrap.className='slider-wrap';
   const isNps=q.theme==='nps';
+  const isRating=q.theme==='rating';
   if(isNps) wrap.classList.add('slider-theme-nps');
+  else if(isRating) wrap.classList.add('slider-theme-rating');
   else if(q.theme) wrap.classList.add(`slider-theme-${q.theme}`);
 
   const minRaw=parseFloat(q.min ?? '');
@@ -1037,7 +1184,15 @@ function renderSlider(q, displayIndex){
 
   const mid=Math.round((min+max)/2);
   const defaultVal=storedVal!==null?storedVal:(isNps?mid:min);
-  const describe=val=> isNps ? `${val}` : `Score: ${val}/${max}`;
+  const ratingLabels=q.scaleLabels || {};
+  const describe=val=>{
+    if(isNps) return `${val}`;
+    if(isRating){
+      const lbl=ratingLabels?.[val];
+      return lbl ? `${lbl}` : `${val}`;
+    }
+    return `Score: ${val}/${max}`;
+  };
 
   const input=document.createElement('input');
   input.type='range';
@@ -1046,13 +1201,16 @@ function renderSlider(q, displayIndex){
   input.step=String(step);
 
   let scoreEl=null;
+  let scoreLabel=null;
   let sliderFill=null;
   let sliderThumb=null;
+  let thumbValueEl=null;
+  let laneEl=null;
+  let liveLabel=null;
   const markerSpans=[];
   let bucketBox=null;
   const bucketAreas=[];
   let valueLabel=null;
-  let commentWrap=null;
   let sliderPlaceholder=null;
 
   if(isNps){
@@ -1067,11 +1225,18 @@ function renderSlider(q, displayIndex){
     shell.appendChild(scoreEl);
 
     const sliderBlock=document.createElement('div'); sliderBlock.className='nps-slider';
+    const track=document.createElement('div'); track.className='nps-slider-track';
     const lane=document.createElement('div'); lane.className='nps-slider-lane';
+    laneEl=lane;
     sliderFill=document.createElement('div'); sliderFill.className='nps-slider-fill'; lane.appendChild(sliderFill);
-    sliderThumb=document.createElement('div'); sliderThumb.className='nps-slider-thumb'; sliderThumb.innerHTML='<span>🍜</span>';
+    sliderThumb=document.createElement('div'); sliderThumb.className='nps-slider-thumb';
+    const thumbImg=document.createElement('img'); thumbImg.src='./assets/img/mendo-ramen.png'; thumbImg.alt='';
+    thumbValueEl=document.createElement('span'); thumbValueEl.className='thumb-value';
+    sliderThumb.appendChild(thumbImg);
+    sliderThumb.appendChild(thumbValueEl);
     lane.appendChild(sliderThumb);
-    sliderBlock.appendChild(lane);
+    track.appendChild(lane);
+    sliderBlock.appendChild(track);
     sliderBlock.appendChild(input);
     shell.appendChild(sliderBlock);
 
@@ -1091,7 +1256,73 @@ function renderSlider(q, displayIndex){
         const label=document.createElement('label'); label.setAttribute('for', bucket.id); label.textContent=bucket.label || 'Tell us more';
         const textarea=document.createElement('textarea'); textarea.id=bucket.id; textarea.placeholder=bucket.placeholder || 'Your feedback…';
         textarea.value = surveyState.answers[bucket.id] || '';
-        textarea.addEventListener('input', ()=>{ surveyState.answers[bucket.id]=textarea.value; });
+        textarea.addEventListener('input', ()=>{ surveyState.answers[bucket.id]=textarea.value; updateStepButtons(); });
+        area.appendChild(label); area.appendChild(textarea);
+        area.style.display='none';
+        bucketAreas.push({bucket, area});
+        bucketBox.appendChild(area);
+      });
+      shell.appendChild(bucketBox);
+    }
+
+    wrap.appendChild(shell);
+  }else if(isRating){
+    const shell=document.createElement('div'); shell.className='rating-shell';
+
+    if(Number.isFinite(displayIndex)){
+      const chip=document.createElement('div'); chip.className='rating-chip';
+      chip.textContent=`Question ${displayIndex}`;
+      shell.appendChild(chip);
+    }
+
+    const question=document.createElement('h3'); question.className='rating-question';
+    const questionNumber=Number.isFinite(displayIndex)?`<span class="rating-question-number">${displayIndex})</span>`:'';
+    question.innerHTML=`${questionNumber} ${q.prompt}`;
+    shell.appendChild(question);
+
+    const scoreWrap=document.createElement('div'); scoreWrap.className='rating-score-wrap';
+    scoreEl=document.createElement('div'); scoreEl.className='rating-score';
+    scoreWrap.appendChild(scoreEl);
+    scoreLabel=document.createElement('div'); scoreLabel.className='rating-score-label';
+    scoreWrap.appendChild(scoreLabel);
+    shell.appendChild(scoreWrap);
+
+    const sliderBlock=document.createElement('div'); sliderBlock.className='rating-slider';
+    const track=document.createElement('div'); track.className='rating-slider-track';
+    const lane=document.createElement('div'); lane.className='rating-slider-lane';
+    laneEl=lane;
+    sliderFill=document.createElement('div'); sliderFill.className='rating-slider-fill'; lane.appendChild(sliderFill);
+    sliderThumb=document.createElement('div'); sliderThumb.className='rating-slider-thumb';
+    const thumbImg=document.createElement('img'); thumbImg.src='./assets/img/mendo-ramen.png'; thumbImg.alt='';
+    thumbValueEl=document.createElement('span'); thumbValueEl.className='thumb-value';
+    sliderThumb.appendChild(thumbImg);
+    sliderThumb.appendChild(thumbValueEl);
+    lane.appendChild(sliderThumb);
+    track.appendChild(lane);
+    sliderBlock.appendChild(track);
+    sliderBlock.appendChild(input);
+    liveLabel=document.createElement('div'); liveLabel.className='rating-live-label';
+    sliderBlock.appendChild(liveLabel);
+    shell.appendChild(sliderBlock);
+
+    const ticksWrap=document.createElement('div'); ticksWrap.className='rating-ticks';
+    const leftLabel=document.createElement('span'); leftLabel.textContent=ratingLabels?.[min] || 'Very Poor';
+    const rightLabel=document.createElement('span'); rightLabel.textContent=ratingLabels?.[max] || 'Excellent';
+    ticksWrap.appendChild(leftLabel);
+    ticksWrap.appendChild(rightLabel);
+    shell.appendChild(ticksWrap);
+
+    if(Array.isArray(q.buckets) && q.buckets.length){
+      bucketBox=document.createElement('div'); bucketBox.className='rating-followups';
+      q.buckets.forEach(bucket=>{
+        const area=document.createElement('div'); area.className='rating-followup';
+        area.dataset.bucketId=bucket.id;
+        const label=document.createElement('label'); label.setAttribute('for', bucket.id);
+        const labelText=bucket.label || 'Tell us more';
+        label.textContent=`${labelText} (optional)`;
+        const textarea=document.createElement('textarea'); textarea.id=bucket.id; textarea.placeholder=bucket.placeholder || 'Your feedback…';
+        textarea.value = surveyState.answers[bucket.id] || '';
+        textarea.addEventListener('input', ()=>{ surveyState.answers[bucket.id]=textarea.value; updateStepButtons(); });
         area.appendChild(label); area.appendChild(textarea);
         area.style.display='none';
         bucketAreas.push({bucket, area});
@@ -1124,17 +1355,6 @@ function renderSlider(q, displayIndex){
     wrap.appendChild(scale);
   }
 
-  if(q.commentId && !isNps){
-    commentWrap=document.createElement('div'); commentWrap.className='slider-comment';
-    const label=document.createElement('label'); label.setAttribute('for', q.commentId); label.textContent=q.commentPrompt || 'Additional comments (optional)';
-    const textarea=document.createElement('textarea'); textarea.id=q.commentId; textarea.placeholder=q.commentPlaceholder || 'Optional comment';
-    textarea.value = surveyState.answers[q.commentId] || '';
-    textarea.addEventListener('input', ()=>{ surveyState.answers[q.commentId]=textarea.value; });
-    commentWrap.appendChild(label); commentWrap.appendChild(textarea);
-    commentWrap.style.display='none';
-    wrap.appendChild(commentWrap);
-  }
-
   const hasStored = storedVal!==null;
   const updateBuckets=(val,commit)=>{
     if(!bucketBox) return;
@@ -1153,17 +1373,64 @@ function renderSlider(q, displayIndex){
 
   const applyValue=(val,commit)=>{
     if(commit) surveyState.answers[q.id]={value:val};
-    const pct=max>min?((val-min)/(max-min))*100:0;
+    const safeVal = Number(val);
+    const range = max>min ? max-min : 1;
+    const ratioRaw = (safeVal - min)/range;
+    const ratio = Number.isFinite(ratioRaw) ? Math.max(0, Math.min(1, ratioRaw)) : 0;
+    let pct = ratio*100;
+    if(laneEl && sliderThumb){
+      const laneWidth = laneEl.clientWidth;
+      const thumbWidth = sliderThumb.offsetWidth;
+      if(laneWidth>0 && thumbWidth>0){
+        const minCenter = thumbWidth/2;
+        const maxCenter = laneWidth - thumbWidth/2;
+        const rawCenter = ratio * laneWidth;
+        const clampedCenter = Math.min(maxCenter, Math.max(minCenter, rawCenter));
+        pct = (clampedCenter / laneWidth) * 100;
+      }
+    }
     input.value=String(val);
     input.style.setProperty('--pct', `${pct}%`);
+
     if(isNps){
       if(scoreEl) scoreEl.textContent=describe(val);
       if(sliderFill) sliderFill.style.width=`${pct}%`;
       if(sliderThumb) sliderThumb.style.left=`${pct}%`;
-      markerSpans.forEach((span,i)=>{
+      if(thumbValueEl){
+        thumbValueEl.textContent=String(val);
+        thumbValueEl.classList.remove('is-empty');
+      }
+      markerSpans.forEach((el,i)=>{
         const markerVal=min + i*step;
-        span.classList.toggle('active', Math.abs(markerVal-val)<0.001);
+        el.classList.toggle('active', Math.abs(markerVal-val)<0.001);
       });
+    }else if(isRating){
+      const answered=!!(surveyState.answers[q.id] && surveyState.answers[q.id].value!==undefined);
+      const displayVal=answered?val:min;
+      const desc=describe(displayVal);
+      if(scoreEl){
+        scoreEl.textContent=String(displayVal);
+        scoreEl.classList.toggle('is-empty', !answered);
+      }
+      if(scoreLabel){
+        scoreLabel.textContent=desc.toUpperCase();
+        scoreLabel.classList.toggle('is-empty', !answered);
+      }
+      if(sliderFill) sliderFill.style.width=answered?`${pct}%`:'0%';
+      if(sliderThumb) sliderThumb.style.left=`${pct}%`;
+      if(thumbValueEl){
+        thumbValueEl.textContent=String(displayVal);
+        thumbValueEl.classList.toggle('is-empty', !answered);
+      }
+      if(liveLabel){
+        if(answered){
+          liveLabel.textContent=describe(val).toUpperCase();
+          liveLabel.style.left=`${pct}%`;
+          liveLabel.classList.add('show');
+        }else{
+          liveLabel.classList.remove('show');
+        }
+      }
     }else if(valueLabel){
       if(commit){
         valueLabel.textContent=describe(val);
@@ -1172,10 +1439,6 @@ function renderSlider(q, displayIndex){
         valueLabel.textContent=sliderPlaceholder;
         valueLabel.classList.add('placeholder');
       }
-    }
-    if(commentWrap){
-      const hasValue=commit || storedVal!==null;
-      commentWrap.style.display = hasValue ? 'grid' : 'none';
     }
     updateBuckets(val, commit);
     if(commit) updateStepButtons();
@@ -1189,7 +1452,6 @@ function renderSlider(q, displayIndex){
 
   if(storedVal===null){
     updateBuckets(initialVal, false);
-    if(commentWrap) commentWrap.style.display='none';
   }
 
   return wrap;
@@ -1213,12 +1475,14 @@ function renderQ(){
   qwrap.innerHTML='';
   const card=document.createElement('div'); card.className='cardQ';
   const isNps = q.theme==='nps';
+  const isRating = q.theme==='rating';
   if(isNps) card.classList.add('card-nps');
+  if(isRating) card.classList.add('card-rating');
   const num=document.createElement('div'); num.className='qnum'; num.textContent=`Question ${position+1}`;
-  if(isNps) num.style.display='none';
+  if(isNps || isRating) num.style.display='none';
   const title=document.createElement('h3'); title.className='qtitle'; title.textContent=q.prompt;
   card.appendChild(num); card.appendChild(title);
-  if(isNps) title.style.display='none';
+  if(isNps || isRating) title.style.display='none';
 
   if(q.type==='buttons'){ card.appendChild(renderButtons(q)); }
   else if(q.type==='text'){ card.appendChild(renderText(q)); }
@@ -1327,7 +1591,7 @@ document.getElementById('copyBtn').onclick=async()=>{
 };
 document.getElementById('saveImgBtn').onclick=()=> exportCoupon();
 
-/* Export coupon as PNG (faint gyoza added) */
+/* Export coupon as PNG (teal glow) */
 async function exportCoupon(){
   const canvas=document.getElementById('couponCanvas');
   const ctx=canvas.getContext('2d');
@@ -1335,14 +1599,14 @@ async function exportCoupon(){
   ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,W,H);
 
   const grd=ctx.createRadialGradient(160,140,40,160,140,240);
-  grd.addColorStop(0,'rgba(255,31,40,0.20)'); grd.addColorStop(1,'rgba(255,31,40,0)');
+  grd.addColorStop(0,'rgba(14,155,164,0.20)'); grd.addColorStop(1,'rgba(14,155,164,0)');
   ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(170,150,180,0,Math.PI*2); ctx.fill();
   const grd2=ctx.createRadialGradient(W-160,H-160,40,W-160,H-160,260);
-  grd2.addColorStop(0,'rgba(255,31,40,0.20)'); grd2.addColorStop(1,'rgba(255,31,40,0)');
+  grd2.addColorStop(0,'rgba(14,155,164,0.20)'); grd2.addColorStop(1,'rgba(14,155,164,0)');
   ctx.fillStyle=grd2; ctx.beginPath(); ctx.arc(W-170,H-170,200,0,Math.PI*2); ctx.fill();
 
   roundedRect(ctx, 36,36, W-72, H-72, 34);
-  ctx.save(); ctx.strokeStyle='#ff1f28'; ctx.lineWidth=6; ctx.setLineDash([18,14]); ctx.stroke(); ctx.restore();
+  ctx.save(); ctx.strokeStyle='rgba(14,155,164,1)'; ctx.lineWidth=6; ctx.setLineDash([18,14]); ctx.stroke(); ctx.restore();
 
   ctx.save(); ctx.globalCompositeOperation='destination-out';
   drawCircle(ctx, 36, H/2, 26); drawCircle(ctx, W-36, H/2, 26);
@@ -1367,8 +1631,8 @@ async function exportCoupon(){
   const code=document.getElementById('rewardCode').textContent || 'MDG-XXXXXX';
   const pillW = Math.max(380, ctx.measureText(code).width + 80);
   const pillX=W/2 - pillW/2, pillY=420, pillH=78, r=18;
-  ctx.fillStyle='#fff5f6'; roundedRect(ctx, pillX, pillY, pillW, pillH, r); ctx.fill();
-  ctx.save(); ctx.setLineDash([12,10]); ctx.lineWidth=3; ctx.strokeStyle='#ff1f28'; roundedRect(ctx, pillX, pillY, pillW, pillH, r); ctx.stroke(); ctx.restore();
+  ctx.fillStyle='#e7fbfd'; roundedRect(ctx, pillX, pillY, pillW, pillH, r); ctx.fill();
+  ctx.save(); ctx.setLineDash([12,10]); ctx.lineWidth=3; ctx.strokeStyle='rgba(14,155,164,1)'; roundedRect(ctx, pillX, pillY, pillW, pillH, r); ctx.stroke(); ctx.restore();
   ctx.font='800 36px Montserrat, sans-serif'; ctx.fillStyle='#151515'; ctx.fillText(code, W/2, pillY+50);
 
   const url=canvas.toDataURL('image/png');
@@ -1390,6 +1654,9 @@ function drawCircle(ctx,x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx
 function loadImage(src){
   return new Promise((res,rej)=>{ const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>res(im); im.onerror=rej; im.src=src; });
 }
+
+/* Hook typeahead to followups when rendered */
+const origRenderButtons = renderButtons;
 </script>
 </body>
 </html>
