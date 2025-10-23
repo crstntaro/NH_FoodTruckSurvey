@@ -141,12 +141,13 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
   padding:0 14px; border-radius:12px; font:800 14px var(--font); cursor:pointer;
   min-height:48px; overflow:hidden; word-break:break-word; white-space:normal; transition:.12s var(--ease);
 }
-.opt.opt-branch{flex-direction:column; gap:8px; padding:16px 14px; min-height:94px}
-.opt.opt-branch .opt-brand-row{display:flex; align-items:center; gap:8px}
-.opt.opt-branch .opt-brand-row .opt-logo{display:grid; place-items:center; height:26px; width:26px; border-radius:50%; background:#f0f9fa; padding:4px}
-.opt.opt-branch .opt-brand-row .opt-logo img{max-height:18px; width:auto; object-fit:contain}
-.opt.opt-branch .opt-brand-text{font:800 11px/1 var(--font); text-transform:uppercase; letter-spacing:.14em; color:#0f172a}
-.opt.opt-branch .opt-branch-name{font:700 16px/1.2 var(--font); color:#0f172a}
+.opt.opt-brand{flex-direction:column; gap:6px; padding:12px 14px; min-height:92px; align-items:center}
+.opt.opt-brand img{width:56px; height:auto; object-fit:contain}
+.opt.opt-brand .opt-brand-name{font:800 12px/1.1 var(--font); color:#0f172a; letter-spacing:.12em; text-transform:uppercase; display:grid; gap:2px; text-align:center}
+.opt.opt-brand .opt-brand-name span{display:block}
+.opt.opt-branch{flex-direction:row; gap:10px; padding:10px 14px; min-height:58px; align-items:center; justify-content:flex-start}
+.opt.opt-branch img{width:34px; height:auto; object-fit:contain}
+.opt.opt-branch .opt-branch-name{font:700 15px/1.2 var(--font); color:#0f172a}
 .opt::after{content:""; position:absolute; inset:0; z-index:-1; background:var(--accent); transform:scaleX(0); transform-origin:left center; transition:transform .28s ease; border-radius:inherit}
 .opt:hover{transform:translateY(-1px)}
 .opt:hover::after{transform:scaleX(1)}
@@ -184,12 +185,12 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .slider-theme-nps .nps-slider-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent) 0%,#55c7cf 100%);transition:width .2s var(--ease)}
 .slider-theme-nps .nps-slider-thumb{
   position:absolute;top:50%;transform:translate(-50%,-50%);
-  --thumb-size:clamp(38px,10vw,52px);
+  --thumb-size:clamp(52px,12vw,76px);
   width:var(--thumb-size);height:var(--thumb-size);border-radius:50%;
-  background:var(--accent);border:4px solid #fff;box-shadow:0 14px 28px rgba(14,155,164,.22);
-  display:grid;place-items:center;transition:transform .18s var(--ease);overflow:hidden
+  background:transparent;border:none;box-shadow:none;
+  display:grid;place-items:center;transition:transform .18s var(--ease);overflow:visible
 }
-.slider-theme-nps .nps-slider-thumb img{width:68%;height:68%;object-fit:contain}
+.slider-theme-nps .nps-slider-thumb img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 14px 28px rgba(14,155,164,.28))}
 .slider-theme-nps .nps-slider-thumb .thumb-value,
 .slider-theme-rating .rating-slider-thumb .thumb-value{display:none}
 .slider-theme-nps .nps-slider-thumb:active{transform:translate(-50%,-50%) scale(1.05)}
@@ -223,12 +224,12 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .slider-theme-rating .rating-slider-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent) 0%,rgba(14,155,164,.65) 100%);transition:width .22s var(--ease)}
 .slider-theme-rating .rating-slider-thumb{
   position:absolute;top:50%;transform:translate(-50%,-50%);
-  --thumb-size:clamp(38px,10vw,52px);
+  --thumb-size:clamp(52px,12vw,76px);
   width:var(--thumb-size);height:var(--thumb-size);border-radius:50%;
-  background:var(--accent);border:4px solid #fff;box-shadow:0 14px 28px rgba(14,155,164,.22);
-  display:grid;place-items:center;transition:transform .18s var(--ease);overflow:hidden
+  background:transparent;border:none;box-shadow:none;
+  display:grid;place-items:center;transition:transform .18s var(--ease);overflow:visible
 }
-.slider-theme-rating .rating-slider-thumb img{width:68%;height:68%;object-fit:contain;opacity:.95}
+.slider-theme-rating .rating-slider-thumb img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 14px 28px rgba(14,155,164,.28))}
 .slider-theme-rating .rating-slider-thumb:active{transform:translate(-50%,-50%) scale(1.04)}
 .slider-theme-rating .rating-slider input[type="range"]{position:absolute;inset:-24px 26px -16px 26px;opacity:0;cursor:pointer;height:calc(100% + 40px)}
 .slider-theme-rating .rating-ticks{width:100%;display:flex;justify-content:space-between;gap:6px;padding:0 26px;font:700 11px/1.2 var(--font);color:#6b7b8f;text-transform:none;letter-spacing:.08em;max-width:800px;margin:0 auto}
@@ -482,7 +483,9 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
   {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Official Website","Official Social Media Pages","Content Creator / Influencer","Friend or Family","On-site Discovery","Mall or Event Poster","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
 
   {"id":"q3","type":"buttons","prompt":"Have you been to one of our branches before?","options":["Yes","No"]},
-  {"id":"q3a","type":"buttons","prompt":"Which branch did you go to?","options":["Cebu","Ortigas","Pasay","Rockwell","Alabang","Panay","Katipunan","None / Not applicable"],"showIf":{"id":"q3","equals":"Yes"}},
+  {"id":"q3a","type":"buttons","prompt":"Which brand did you visit?","options":["Mendokoro Ramenba","Ramen Yushoken"],"showIf":{"id":"q3","equals":"Yes"}},
+  {"id":"q3a_mendo","type":"buttons","prompt":"Which Mendokoro branch?","options":["Alabang","BGC","Cebu","Katipunan","Makati","Pasay"],"showIf":{"id":"q3a","equals":"Mendokoro Ramenba"}},
+  {"id":"q3a_yusho","type":"buttons","prompt":"Which Yushoken branch?","options":["Alabang","Cebu","Ortigas","Panay","Rockwell"],"showIf":{"id":"q3a","equals":"Ramen Yushoken"}},
 
   {"id":"q4","type":"buttons","prompt":"Where do you want to see our Blue Truck next?","options":["City","Mall"],"followups":[
       {"when":"City","id":"q4_city","type":"text","placeholder":"Type a city in the Philippines","suggestKey":"cities","required":true},
@@ -693,43 +696,24 @@ const PH_MALLS = [
 ];
 
 const BRANCH_LOGO_INFO = {
-  "Cebu":{
-    label:"Cebu",
-    brandLabel:"Ramen Yushoken",
-    logos:[{src:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"}]
+  brand: {
+    "Mendokoro Ramenba": {logo:"./assets/img/mendokorologo.png", alt:"Mendokoro Ramenba", lines:["Mendokoro","Ramenba"]},
+    "Ramen Yushoken": {logo:"./assets/img/yushokenlogo.png", alt:"Ramen Yushoken", lines:["Ramen","Yushoken"]}
   },
-  "Ortigas":{
-    label:"Ortigas",
-    brandLabel:"Mendokoro Ramenba",
-    logos:[{src:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"}]
+  mendokoro:{
+    "Alabang":{logo:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"},
+    "BGC":{logo:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"},
+    "Cebu":{logo:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"},
+    "Katipunan":{logo:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"},
+    "Makati":{logo:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"},
+    "Pasay":{logo:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"}
   },
-  "Pasay":{
-    label:"Pasay",
-    brandLabel:"Mendokoro Ramenba",
-    logos:[{src:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"}]
-  },
-  "Rockwell":{
-    label:"Rockwell",
-    brandLabel:"Mendokoro Ramenba",
-    logos:[{src:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"}]
-  },
-  "Alabang":{
-    label:"Alabang",
-    brandLabel:"Mendokoro · Yushoken",
-    logos:[
-      {src:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"},
-      {src:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"}
-    ]
-  },
-  "Panay":{
-    label:"Panay",
-    brandLabel:"Mendokoro Ramenba",
-    logos:[{src:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"}]
-  },
-  "Katipunan":{
-    label:"Katipunan",
-    brandLabel:"Mendokoro Ramenba",
-    logos:[{src:"./assets/img/mendokorologo.png",alt:"Mendokoro Ramenba"}]
+  yushoken:{
+    "Alabang":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"},
+    "Cebu":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"},
+    "Ortigas":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"},
+    "Panay":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"},
+    "Rockwell":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"}
   }
 };
 
@@ -1083,12 +1067,28 @@ function renderButtons(q){
     const value = typeof opt==='string' ? opt : String(opt?.value ?? opt);
     const b=document.createElement('button'); b.type='button'; b.className='opt'; b.dataset.value=value;
     if(q.id==='q3a'){
-      const info=BRANCH_LOGO_INFO[value];
+      const info=BRANCH_LOGO_INFO.brand?.[value];
+      b.classList.add('opt-brand');
       if(info){
-        b.classList.add('opt-branch');
-        const logos=(info.logos||[]).map(logo=>`<span class="opt-logo"><img src="${logo.src}" alt="${logo.alt || info.brandLabel || 'Branch logo'}"></span>`).join('');
-        const brandText=info.brandLabel ? `<span class="opt-brand-text">${info.brandLabel}</span>` : '';
-        b.innerHTML=`<div class="opt-brand-row">${logos}${brandText}</div><div class="opt-branch-name">${info.label || value}</div>`;
+        const lines=info.lines || value.split(' ');
+        const lineMarkup=lines.map(txt=>`<span>${txt}</span>`).join('');
+        b.innerHTML=`<img src="${info.logo}" alt="${info.alt}"><span class="opt-brand-name">${lineMarkup}</span>`;
+      }else{
+        b.textContent=value;
+      }
+    }else if(q.id==='q3a_mendo'){
+      const info=BRANCH_LOGO_INFO.mendokoro?.[value];
+      b.classList.add('opt-branch');
+      if(info){
+        b.innerHTML=`<img src="${info.logo}" alt="${info.alt}"><span class="opt-branch-name">${value}</span>`;
+      }else{
+        b.textContent=value;
+      }
+    }else if(q.id==='q3a_yusho'){
+      const info=BRANCH_LOGO_INFO.yushoken?.[value];
+      b.classList.add('opt-branch');
+      if(info){
+        b.innerHTML=`<img src="${info.logo}" alt="${info.alt}"><span class="opt-branch-name">${value}</span>`;
       }else{
         b.textContent=value;
       }
@@ -1308,7 +1308,7 @@ function renderSlider(q, displayIndex){
     laneEl=lane;
     sliderFill=document.createElement('div'); sliderFill.className='nps-slider-fill'; lane.appendChild(sliderFill);
     sliderThumb=document.createElement('div'); sliderThumb.className='nps-slider-thumb';
-    const thumbImg=document.createElement('img'); thumbImg.src='./assets/img/ramen-icon.svg'; thumbImg.alt='Ramen icon';
+    const thumbImg=document.createElement('img'); thumbImg.src='./assets/img/ramenbowl.png'; thumbImg.alt='Ramen bowl';
     thumbValueEl=document.createElement('span'); thumbValueEl.className='thumb-value';
     sliderThumb.appendChild(thumbImg);
     sliderThumb.appendChild(thumbValueEl);
@@ -1360,7 +1360,7 @@ function renderSlider(q, displayIndex){
     laneEl=lane;
     sliderFill=document.createElement('div'); sliderFill.className='rating-slider-fill'; lane.appendChild(sliderFill);
     sliderThumb=document.createElement('div'); sliderThumb.className='rating-slider-thumb';
-    const thumbImg=document.createElement('img'); thumbImg.src='./assets/img/ramen-icon.svg'; thumbImg.alt='Ramen icon';
+    const thumbImg=document.createElement('img'); thumbImg.src='./assets/img/ramenbowl.png'; thumbImg.alt='Ramen bowl';
     thumbValueEl=document.createElement('span'); thumbValueEl.className='thumb-value';
     sliderThumb.appendChild(thumbImg);
     sliderThumb.appendChild(thumbValueEl);
@@ -1446,25 +1446,14 @@ function renderSlider(q, displayIndex){
     const range = max>min ? max-min : 1;
     const ratioRaw = (safeVal - min)/range;
     const ratio = Number.isFinite(ratioRaw) ? Math.max(0, Math.min(1, ratioRaw)) : 0;
-    const fillPct = ratio*100;
-    let pct = ratio*100;
-    if(laneEl && sliderThumb){
-      const laneWidth = laneEl.clientWidth;
-      const thumbWidth = sliderThumb.offsetWidth;
-      if(laneWidth>0 && thumbWidth>0){
-        const minCenter = thumbWidth/2;
-        const maxCenter = laneWidth - thumbWidth/2;
-        const rawCenter = ratio * laneWidth;
-        const clampedCenter = Math.min(maxCenter, Math.max(minCenter, rawCenter));
-        pct = (clampedCenter / laneWidth) * 100;
-      }
-    }
+    const pctRaw = ratio*100;
+    const pct = Math.max(0, Math.min(100, pctRaw));
     input.value=String(val);
     input.style.setProperty('--pct', `${pct}%`);
 
     if(isNps){
       if(scoreEl) scoreEl.textContent=describe(val);
-      if(sliderFill) sliderFill.style.width=`${fillPct}%`;
+      if(sliderFill) sliderFill.style.width=`${pct}%`;
       if(sliderThumb) sliderThumb.style.left=`${pct}%`;
       if(thumbValueEl){
         thumbValueEl.textContent=String(val);
@@ -1482,7 +1471,7 @@ function renderSlider(q, displayIndex){
         scoreEl.textContent=String(displayVal);
         scoreEl.classList.toggle('is-empty', !answered);
       }
-      if(sliderFill) sliderFill.style.width=answered?`${fillPct}%`:'0%';
+      if(sliderFill) sliderFill.style.width=answered?`${pct}%`:'0%';
       if(sliderThumb) sliderThumb.style.left=`${pct}%`;
       if(thumbValueEl){
         thumbValueEl.textContent=String(displayVal);
