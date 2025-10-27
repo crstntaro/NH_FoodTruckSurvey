@@ -485,7 +485,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
   {"id":"q3","type":"buttons","prompt":"Have you been to one of our branches before?","options":["Yes","No"]},
   {"id":"q3a","type":"buttons","prompt":"Which brand did you visit?","options":["Mendokoro Ramenba","Ramen Yushoken"],"showIf":{"id":"q3","equals":"Yes"}},
   {"id":"q3a_mendo","type":"buttons","prompt":"Which Mendokoro branch?","options":["Alabang","BGC","Cebu","Katipunan","Makati","Pasay"],"showIf":{"id":"q3a","equals":"Mendokoro Ramenba"}},
-  {"id":"q3a_yusho","type":"buttons","prompt":"Which Yushoken branch?","options":["Alabang","Cebu","Ortigas","Panay","Rockwell"],"showIf":{"id":"q3a","equals":"Ramen Yushoken"}},
+  {"id":"q3a_yusho","type":"buttons","prompt":"Which Yushoken branch?","options":["Alabang","Cebu","Ortigas","Panay"],"showIf":{"id":"q3a","equals":"Ramen Yushoken"}},
 
   {"id":"q4","type":"buttons","prompt":"Where do you want to see our Blue Truck next?","options":["City","Mall"],"followups":[
       {"when":"City","id":"q4_city","type":"text","placeholder":"Type a city in the Philippines","suggestKey":"cities","required":true},
@@ -497,7 +497,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
       {"when":"Living","id":"q5_place","type":"text","placeholder":"Which village / subdivision?","suggestKey":"places","required":true}
   ]},
 
-  {"id":"q7_food","type":"slider","prompt":"How would you rate our food today?","min":1,"max":10,"step":1,"theme":"rating",
+  {"id":"q7_food","type":"slider","prompt":"How would you rate our food?","min":1,"max":10,"step":1,"theme":"rating",
     "scaleLabels":{"1":"1","10":"10"},
     "buckets":[
       {"id":"q7_food_low","min":1,"max":4,"label":"What went wrong with the food?","placeholder":"Let us know what to improve."},
@@ -505,7 +505,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
       {"id":"q7_food_high","min":8,"max":10,"label":"Awesome! What did you love most?","placeholder":"Tell us your highlight…"}
     ]},
 
-  {"id":"q7_service","type":"slider","prompt":"How would you rate our service today?","min":1,"max":10,"step":1,"theme":"rating",
+  {"id":"q7_service","type":"slider","prompt":"How would you rate our service?","min":1,"max":10,"step":1,"theme":"rating",
     "scaleLabels":{"1":"1","10":"10"},
     "buckets":[
       {"id":"q7_service_low","min":1,"max":4,"label":"What went wrong with the service?","placeholder":"Let us know what to improve."},
@@ -513,7 +513,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
       {"id":"q7_service_high","min":8,"max":10,"label":"Amazing! What stood out in our service?","placeholder":"Tell us your highlight…"}
     ]},
 
-  {"id":"q7_price","type":"slider","prompt":"How would you rate the value for price today?","min":1,"max":10,"step":1,"theme":"rating",
+  {"id":"q7_price","type":"slider","prompt":"How would you rate the value for price?","min":1,"max":10,"step":1,"theme":"rating",
     "scaleLabels":{"1":"1","10":"10"},
     "buckets":[
       {"id":"q7_price_low","min":1,"max":4,"label":"What felt off about the value?","placeholder":"Tell us what didn’t feel worth it."},
@@ -712,8 +712,7 @@ const BRANCH_LOGO_INFO = {
     "Alabang":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"},
     "Cebu":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"},
     "Ortigas":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"},
-    "Panay":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"},
-    "Rockwell":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"}
+    "Panay":{logo:"./assets/img/yushokenlogo.png",alt:"Ramen Yushoken"}
   }
 };
 
