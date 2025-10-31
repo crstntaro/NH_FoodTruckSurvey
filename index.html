@@ -102,9 +102,9 @@ body:not(.lock){ overflow-y:auto }
 .grid{display:grid; gap:12px}
 label{display:block;font:800 14px/1 var(--font);margin:16px 0 6px}
 .req{ color:var(--accent); margin-left:4px }
-input[type="text"], input[type="email"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);font-size:15px;background:#fff}
+input[type="text"], input[type="email"], input[type="tel"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);font-size:15px;background:#fff}
 input::placeholder{color:#9aa2ae}
-input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(14,155,164,.15)}
+input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(14,155,164,.15)}
 .row{display:flex; gap:12px; flex-wrap:wrap}
 .row .col{flex:1 1 240px}
 .small-hint{color:#6b7280; font-size:12px}
@@ -167,11 +167,16 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 .slider-track input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(14,155,164,.25);cursor:pointer;transition:transform .18s var(--ease)}
 .slider-track input[type="range"]::-moz-range-thumb:hover{transform:scale(1.06)}
 .slider-track input[type="range"]::-ms-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(14,155,164,.25);cursor:pointer}
-.slider-comment,.comment-wrap{width:100%;max-width:640px;display:none;gap:6px;margin-top:14px}
+.slider-comment,.comment-wrap{width:100%;max-width:640px;gap:6px}
+.slider-comment{display:none}
+.comment-wrap{display:grid;margin-top:0;opacity:0;transform:translateY(6px);max-height:0;overflow:hidden;pointer-events:none;transition:opacity .24s var(--ease),transform .24s var(--ease),max-height .3s var(--ease),margin-top .3s var(--ease)}
+.comment-wrap.show{margin-top:14px;opacity:1;transform:none;max-height:320px;pointer-events:auto}
 .slider-comment label,.comment-wrap label{font:700 13px/1.3 var(--font);color:#0f172a}
 .slider-comment textarea,.comment-wrap textarea{width:100%;min-height:96px;border-radius:12px;border:1px solid var(--line);padding:12px 14px;font:400 14px/1.5 var(--font);resize:vertical;transition:border-color .18s var(--ease), box-shadow .18s var(--ease)}
 .slider-comment textarea:focus,.comment-wrap textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,155,164,.15);outline:none}
 .slider-comment textarea::placeholder,.comment-wrap textarea::placeholder{color:#9aa2ae}
+.other-field textarea{width:100%;min-height:96px;border-radius:12px;border:1px solid var(--line);padding:12px 14px;font:400 14px/1.5 var(--font);resize:vertical;transition:border-color .18s var(--ease), box-shadow .18s var(--ease)}
+.other-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,155,164,.15);outline:none}
 .slider-value.placeholder{color:#94a3b8}
 
 /* NPS (teal now) */
@@ -396,6 +401,15 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
             <input id="email" name="email" type="email" placeholder="you@example.com" required>
           </div>
           <div class="col">
+            <label for="phone">Contact Number<span class="req" aria-hidden="true">*</span></label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="13"
+                   placeholder="+63 9XX 123 4567" aria-describedby="phoneErr" required>
+            <div id="phoneErr" class="err">Enter a 12-digit PH mobile number beginning with +63.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
             <label for="name">Name <span class="hint">(optional)</span></label>
             <input id="name" name="name" type="text" placeholder="Juan Dela Cruz">
           </div>
@@ -478,7 +492,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
 
 <!-- QUESTIONS (updated) -->
 <script id="QUESTIONS_JSON" type="application/json">[
-  {"id":"q1","type":"buttons","prompt":"Did you enjoy your Blue Truck Pop-up experience?","options":["Yes","No"]},
+  {"id":"q1","type":"buttons","prompt":"Did you enjoy your Blue Truck Pop-up experience?","options":["Yes","No"],"commentId":"q1_comment","commentPlaceholder":"Optional: tell us what made it great or how we can improve.","commentPrompt":"Tell us more (optional)","commentPrompts":{"Yes":"Tell us more about what you enjoyed.","No":"Sorry to hear that. What went wrong?"},"commentPlaceholders":{"Yes":"Share the highlights of your visit.","No":"Let us know what needs improvement."}},
 
   {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Official Website","Official Social Media Pages","Content Creator / Influencer","Friend or Family","On-site Discovery","Mall or Event Poster","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
 
@@ -496,6 +510,8 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
       {"when":"Working","id":"q5_place","type":"text","placeholder":"Which office / company?","suggestKey":"places","required":true},
       {"when":"Living","id":"q5_place","type":"text","placeholder":"Which village / subdivision?","suggestKey":"places","required":true}
   ]},
+
+  {"id":"q6_spend","type":"buttons","prompt":"On normal days, how much do you usually spend when dining out?","options":["Below PHP 300","PHP 300-500","PHP 500-800","PHP 800 and above"]},
 
   {"id":"q7_food","type":"slider","prompt":"How would you rate our food?","min":1,"max":10,"step":1,"theme":"rating",
     "scaleLabels":{"1":"1","10":"10"},
@@ -527,11 +543,7 @@ input[type="text"]:focus, input[type="email"]:focus{border-color:var(--accent); 
       {"id":"q8_promoter","min":9,"max":10,"label":"What is the main reason you would recommend us?","placeholder":"Your reason…"}
   ]},
 
-  {"id":"q10_return","type":"slider","prompt":"Based on your visit, how likely are you to dine with us again soon?","min":1,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Very Likely"},"theme":"nps","buckets":[
-      {"id":"q10_return_low","min":1,"max":4,"label":"What could we improve for next time?","placeholder":"Your feedback…"},
-      {"id":"q10_return_mid","min":5,"max":7,"label":"What would make you more eager to dine again?","placeholder":"Suggestions…"},
-      {"id":"q10_return_high","min":8,"max":10,"label":"Awesome! Any plans or dishes you're excited to try next?","placeholder":"Share with us…"}
-  ]},
+  {"id":"q10_return","type":"buttons","prompt":"Based on your visit, when do you think you’ll dine with us again?","options":["Within 1 week","Within 2 weeks","Within 3 weeks","After 1 month","I’m not sure yet","Others"],"otherText":true,"otherTextarea":true,"otherId":"q10_return_other","otherPlaceholder":"Let us know your thoughts!"},
 
   {"id":"q9","type":"buttons","prompt":"Which cuisines are you most interested in?","options":["Filipino","Chinese","Italian","Mexican","South American","Japanese"],"multi":true,"otherText":true,"otherId":"q9_other","otherPlaceholder":"Other cuisine (please specify)","commentId":"q9_comment","commentPlaceholder":"Optional: tell us about your favorite dishes."},
 
@@ -565,15 +577,15 @@ document.getElementById('startBtn').addEventListener('click',e=>{
 
 /* ---------- Gate logic ---------- */
 const gateForm=document.getElementById('gateForm');
-const receiptEl=document.getElementById('receipt'), emailEl=document.getElementById('email'), nameEl=document.getElementById('name');
+const receiptEl=document.getElementById('receipt'), emailEl=document.getElementById('email'), phoneEl=document.getElementById('phone'), nameEl=document.getElementById('name');
 const dpaEl=document.getElementById('dpa'), promoEl=document.getElementById('promo');
-const continueBtn=document.getElementById('continueBtn'), stateMsg=document.getElementById('stateMsg'), receiptErr=document.getElementById('receiptErr');
+const continueBtn=document.getElementById('continueBtn'), stateMsg=document.getElementById('stateMsg'), receiptErr=document.getElementById('receiptErr'), phoneErr=document.getElementById('phoneErr');
 const overlay=document.getElementById('overlay');
 
 (function(){
   const prefix='FTPU-';
   const pattern = /^FTPU-\d{6}-\d{6}$/;
-  let receiptDirty=false;
+  let receiptDirty=false, phoneDirty=false;
 
   function ensurePrefix(val){
     return val.startsWith(prefix) ? val : prefix + val.replace(/^FTPU-?/, '');
@@ -651,13 +663,97 @@ const overlay=document.getElementById('overlay');
     }
   });
 
+  const phonePrefix = '+63';
+  const phonePrefixDigits = '63';
+  const phoneTotalDigits = 12;
+  const phoneBodyDigits = phoneTotalDigits - phonePrefixDigits.length;
+
+  const digitsOnly = (str)=> (str||'').replace(/\D/g,'');
+  function localPhoneDigits(raw){
+    let digits = digitsOnly(raw);
+    if(digits.startsWith(phonePrefixDigits)){
+      digits = digits.slice(phonePrefixDigits.length);
+    }
+    if(digits.startsWith('0')){
+      digits = digits.slice(1);
+    }
+    return digits.slice(0, phoneBodyDigits);
+  }
+  function formatPhone(raw){
+    return phonePrefix + localPhoneDigits(raw);
+  }
+  function setPhoneValue(raw, caretPos){
+    const formatted = formatPhone(raw);
+    phoneEl.value = formatted;
+    if(document.activeElement === phoneEl){
+      const digitsBefore = localPhoneDigits((raw||'').slice(0, caretPos ?? raw.length));
+      const caret = phonePrefix.length + Math.min(digitsBefore.length, formatted.length - phonePrefix.length);
+      phoneEl.setSelectionRange(caret, caret);
+    }
+    return formatted;
+  }
+  function normalizePhone(raw){
+    const digits = localPhoneDigits(raw);
+    if(digits.length === phoneBodyDigits && /^9\d{9}$/.test(digits)){
+      return phonePrefix + digits;
+    }
+    return '';
+  }
+
+  setPhoneValue(phoneEl.value || phonePrefix);
+  validatePhone();
+
+  function validatePhone(forceShow=false){
+    const normalized = normalizePhone(phoneEl.value);
+    const ok = Boolean(normalized);
+    phoneEl.setCustomValidity(ok ? '' : 'Provide a PH mobile number in +63 format (e.g., +639XX1234567).');
+    phoneErr.classList.toggle('show', (forceShow || phoneDirty) && !ok);
+    phoneEl.dataset.normalized = normalized;
+    return { ok, normalized };
+  }
+
+  phoneEl.addEventListener('focus', ()=>{
+    if(phoneEl.selectionStart < phonePrefix.length){
+      phoneEl.setSelectionRange(phonePrefix.length, phonePrefix.length);
+    }
+  });
+  phoneEl.addEventListener('keydown', e=>{
+    const start = phoneEl.selectionStart ?? 0;
+    const end = phoneEl.selectionEnd ?? 0;
+    if((e.key === 'Backspace' && start <= phonePrefix.length && end <= phonePrefix.length) ||
+       (e.key === 'Delete' && start < phonePrefix.length && end <= phonePrefix.length)){
+      e.preventDefault();
+      phoneEl.setSelectionRange(phonePrefix.length, phonePrefix.length);
+    }
+  });
+  phoneEl.addEventListener('input', ()=>{
+    phoneDirty = true;
+    const caretPos = phoneEl.selectionStart ?? phoneEl.value.length;
+    const rawValue = phoneEl.value;
+    setPhoneValue(rawValue, caretPos);
+    validatePhone();
+    updateGate();
+  });
+  phoneEl.addEventListener('blur', ()=>{
+    phoneDirty = true;
+    setPhoneValue(phoneEl.value);
+    const { ok, normalized } = validatePhone(true);
+    if(ok){
+      phoneEl.value = normalized;
+    }else if(!phoneEl.value.startsWith(phonePrefix)){
+      phoneEl.value = phonePrefix;
+    }
+    updateGate();
+  });
+
   dpaEl.addEventListener('change', updateGate);
 
   function updateGate(){
     const okRec = validateReceipt();
     const okEmail = emailEl.validity.valid;
+    const { ok: okPhone } = validatePhone();
     const okDpa = dpaEl.checked;
-    const ok = okRec && okEmail && okDpa;
+    const ok = okRec && okEmail && okPhone && okDpa;
     continueBtn.disabled = !ok;
     if(ok){
       stateMsg.textContent = 'All set! You can now start your survey.';
@@ -665,6 +761,7 @@ const overlay=document.getElementById('overlay');
       const issues=[];
       if(!okRec) issues.push('your receipt number');
       if(!okEmail) issues.push('a valid email');
+      if(!okPhone) issues.push('your contact number');
       if(!okDpa) issues.push('the privacy consent checkbox');
       const formatIssues = (items)=>{
         if(items.length<=1) return items[0] || '';
@@ -866,6 +963,7 @@ function normalizeAnswers(raw) {
     })?.id || null;
   };
   out.q1 = (raw.q1?.choice || raw.q1 || "").toString();
+  out.q1_comment = (raw.q1_comment || "").toString().trim() || null;
   out.q2_choice = (raw.q2?.choice || "").toString();
   out.q2_other  = (raw.q2_other || "").trim();
   out.q3 = (raw.q3?.choice || raw.q3 || "").toString();
@@ -875,6 +973,7 @@ function normalizeAnswers(raw) {
   out.q4_mall = (raw.q4_mall || "").trim();
   out.q5 = (raw.q5?.choice || raw.q5 || "").toString();
   out.q5_place = (raw.q5_place || "").trim();
+  out.q6_spend = (raw.q6_spend?.choice || raw.q6_spend || "").toString();
 
   out.q7_food = sliderVal(raw.q7_food);
   out.q7_service = sliderVal(raw.q7_service);
@@ -909,25 +1008,21 @@ function normalizeAnswers(raw) {
   out.q7_price_comment_type = q7PriceBucket;
 
   out.q8_nps = sliderVal(raw.q8);
-  out.q10_return = sliderVal(raw.q10_return);
+  out.q10_return = (raw.q10_return?.choice || raw.q10_return || "").toString();
+  const q10ReturnOther = (raw.q10_return_other || "").trim();
+  out.q10_return_other = q10ReturnOther || null;
 
   const q8BucketId = determineBucket(out.q8_nps, [
     {id:'q8_detractor',min:0,max:6},
     {id:'q8_passive',min:7,max:8},
     {id:'q8_promoter',min:9,max:10}
   ]);
-  const q10BucketId = determineBucket(out.q10_return, [
-    {id:'q10_return_low',min:1,max:4},
-    {id:'q10_return_mid',min:5,max:7},
-    {id:'q10_return_high',min:8,max:10}
-  ]);
 
   const npsComment = q8BucketId ? (raw[q8BucketId] ?? '').toString().trim() : '';
-  const returnComment = q10BucketId ? (raw[q10BucketId] ?? '').toString().trim() : '';
   out.q8_comment = npsComment || null;
   out.q8_comment_type = q8BucketId;
-  out.q10_return_comment = returnComment || null;
-  out.q10_return_comment_type = q10BucketId;
+  out.q10_return_comment = null;
+  out.q10_return_comment_type = null;
 
   // Cuisines (multi)
   const q9Obj = raw.q9 && typeof raw.q9==='object' ? raw.q9 : {};
@@ -1130,18 +1225,25 @@ function renderButtons(q){
 
   // "Others" textbox
   if(q.otherText){
-    const holder=document.createElement('div'); holder.style.marginTop='10px';
-    const input=document.createElement('input');
-    input.type='text'; input.placeholder=q.otherPlaceholder||'Please specify'; input.id=q.otherId;
-    input.value = surveyState.answers[q.otherId] || '';
-    input.addEventListener('input',()=>{ surveyState.answers[q.otherId]=input.value; updateStepButtons(); });
-    holder.appendChild(input);
+    const holder=document.createElement('div'); holder.className='other-field'; holder.style.marginTop='10px';
+    const field = q.otherTextarea ? document.createElement('textarea') : document.createElement('input');
+    if(!q.otherTextarea){
+      field.type='text';
+    }
+    field.placeholder=q.otherPlaceholder||'Please specify';
+    field.id=q.otherId;
+    field.value = surveyState.answers[q.otherId] || '';
+    field.addEventListener('input',()=>{
+      surveyState.answers[q.otherId]=field.value;
+      updateStepButtons();
+    });
+    holder.appendChild(field);
     const hint=document.createElement('div'); hint.className='small-hint'; hint.textContent='Shown only if “Others” is chosen.'; holder.appendChild(hint);
     wrap.appendChild(holder);
     function toggleOthers(){
       const selected=getSelected();
       const isOthers=q.multi ? selected.includes('Others') : selected==='Others';
-      holder.style.display = isOthers ? 'block' : 'none';
+      holder.style.display = isOthers ? 'grid' : 'none';
     }
     toggleOthers(); wrap.toggleOthers=toggleOthers;
   }
@@ -1224,10 +1326,19 @@ function renderButtons(q){
     toggleComment=()=>{
       const selected=getSelected();
       const hasChoice=q.multi ? selected.length>0 : !!selected;
-      commentWrap.style.display = hasChoice ? 'grid' : 'none';
-      if(!hasChoice){
+      if(hasChoice){
+        const key = q.multi ? (Array.isArray(selected) ? selected[0] : '') : selected;
+        const prompts = q.commentPrompts || {};
+        const placeholders = q.commentPlaceholders || {};
+        label.textContent = prompts[key] || q.commentPrompt || 'Additional comments (optional)';
+        textarea.placeholder = placeholders[key] || q.commentPlaceholder || 'Optional comment';
+        commentWrap.classList.add('show');
+      }else{
         textarea.value='';
         delete surveyState.answers[q.commentId];
+        label.textContent = q.commentPrompt || 'Additional comments (optional)';
+        textarea.placeholder = q.commentPlaceholder || 'Optional comment';
+        commentWrap.classList.remove('show');
       }
     };
     toggleComment();
@@ -1555,12 +1666,13 @@ gateForm.addEventListener('submit', async (e)=>{
   overlay.classList.add('show');
 
   let gateRowId = null;
+  const contactNumber = phoneEl.dataset.normalized || phoneEl.value.trim();
   try{
     if(sb){
       const { data, error } = await sb.from('submissions').insert([{
         brand:'Mendokoro/Yushoken', flow:'with_receipt', has_receipt:true,
         receipt_no:receiptEl.value.trim(), email:emailEl.value.trim(), name:nameEl.value.trim()||null,
-        consent:dpaEl.checked, subscribed:promoEl.checked
+        contact_number:contactNumber, consent:dpaEl.checked, subscribed:promoEl.checked
       }]).select().single();
       if(error) throw error;
       gateRowId = data?.id || null;
@@ -1613,14 +1725,15 @@ submitBtn.onclick=async()=>{
 
     if(sb){
       const gateId = stepSurvey.dataset.gateId || null;
-      const payload = { answers:answersClean, reward_code:code, ...answersClean };
+      const contactNumber = phoneEl.dataset.normalized || phoneEl.value.trim();
+      const payload = { answers:answersClean, reward_code:code, contact_number:contactNumber, ...answersClean };
       if(gateId){
         await sb.from('submissions').update(payload).eq('id', gateId);
       }else{
         await sb.from('submissions').insert([{
           brand:'Mendokoro/Yushoken', flow:'with_receipt', has_receipt:true,
           receipt_no:receiptEl.value.trim(), email:emailEl.value.trim(), name:nameEl.value.trim()||null,
-          consent:dpaEl.checked, subscribed:promoEl.checked, ...payload
+          contact_number:contactNumber, consent:dpaEl.checked, subscribed:promoEl.checked, ...payload
         }]);
       }
     }
