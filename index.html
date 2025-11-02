@@ -400,18 +400,18 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus{bor
             <label for="email">Email<span class="req" aria-hidden="true">*</span></label>
             <input id="email" name="email" type="email" placeholder="you@example.com" required>
           </div>
-          <div class="col">
-            <label for="phone">Contact Number<span class="req" aria-hidden="true">*</span></label>
-            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="13"
-                   placeholder="+63 9XX 123 4567" aria-describedby="phoneErr" required>
-            <div id="phoneErr" class="err">Enter a 12-digit PH mobile number beginning with +63.</div>
-          </div>
         </div>
 
         <div class="row">
           <div class="col">
             <label for="name">Name <span class="hint">(optional)</span></label>
             <input id="name" name="name" type="text" placeholder="Juan Dela Cruz">
+          </div>
+          <div class="col">
+            <label for="phone">Contact Number <span class="hint">(optional)</span></label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="13"
+                   placeholder="+63 9XX 123 4567" aria-describedby="phoneErr">
+            <div id="phoneErr" class="err">Enter a 12-digit PH mobile number beginning with +63.</div>
           </div>
         </div>
 
@@ -680,44 +680,58 @@ const overlay=document.getElementById('overlay');
     return digits.slice(0, phoneBodyDigits);
   }
   function formatPhone(raw){
-    return phonePrefix + localPhoneDigits(raw);
+    const digits = localPhoneDigits(raw);
+    if(!digits.length) return '';
+    return phonePrefix + digits;
   }
   function setPhoneValue(raw, caretPos){
     const formatted = formatPhone(raw);
     phoneEl.value = formatted;
     if(document.activeElement === phoneEl){
       const digitsBefore = localPhoneDigits((raw||'').slice(0, caretPos ?? raw.length));
-      const caret = phonePrefix.length + Math.min(digitsBefore.length, formatted.length - phonePrefix.length);
+      const hasPrefix = formatted.startsWith(phonePrefix);
+      const prefixLen = hasPrefix ? phonePrefix.length : 0;
+      const maxDigits = hasPrefix ? Math.max(0, formatted.length - prefixLen) : formatted.length;
+      const caret = prefixLen + Math.min(digitsBefore.length, maxDigits);
       phoneEl.setSelectionRange(caret, caret);
     }
     return formatted;
   }
   function normalizePhone(raw){
     const digits = localPhoneDigits(raw);
+    if(!digits.length) return null;
     if(digits.length === phoneBodyDigits && /^9\d{9}$/.test(digits)){
       return phonePrefix + digits;
     }
     return '';
   }
 
-  setPhoneValue(phoneEl.value || phonePrefix);
+  setPhoneValue(phoneEl.value || '');
   validatePhone();
 
   function validatePhone(forceShow=false){
     const normalized = normalizePhone(phoneEl.value);
-    const ok = Boolean(normalized);
-    phoneEl.setCustomValidity(ok ? '' : 'Provide a PH mobile number in +63 format (e.g., +639XX1234567).');
-    phoneErr.classList.toggle('show', (forceShow || phoneDirty) && !ok);
-    phoneEl.dataset.normalized = normalized;
-    return { ok, normalized };
+    const provided = normalized !== null;
+    const ok = !provided || normalized !== '';
+    if(!provided){
+      phoneEl.setCustomValidity('');
+      phoneErr.classList.remove('show');
+    }else{
+      phoneEl.setCustomValidity(ok ? '' : 'Provide a PH mobile number in +63 format (e.g., +639XX1234567).');
+      phoneErr.classList.toggle('show', (forceShow || phoneDirty) && !ok);
+    }
+    phoneEl.dataset.normalized = normalized && normalized !== '' ? normalized : '';
+    phoneEl.dataset.provided = provided ? 'true' : 'false';
+    return { ok, normalized: phoneEl.dataset.normalized, provided };
   }
 
   phoneEl.addEventListener('focus', ()=>{
-    if(phoneEl.selectionStart < phonePrefix.length){
+    if(phoneEl.value.startsWith(phonePrefix) && phoneEl.selectionStart < phonePrefix.length){
       phoneEl.setSelectionRange(phonePrefix.length, phonePrefix.length);
     }
   });
   phoneEl.addEventListener('keydown', e=>{
+    if(!phoneEl.value.startsWith(phonePrefix)) return;
     const start = phoneEl.selectionStart ?? 0;
     const end = phoneEl.selectionEnd ?? 0;
     if((e.key === 'Backspace' && start <= phonePrefix.length && end <= phonePrefix.length) ||
@@ -751,7 +765,7 @@ const overlay=document.getElementById('overlay');
   function updateGate(){
     const okRec = validateReceipt();
     const okEmail = emailEl.validity.valid;
-    const { ok: okPhone } = validatePhone();
+    const { ok: okPhone, provided: phoneProvided } = validatePhone();
     const okDpa = dpaEl.checked;
     const ok = okRec && okEmail && okPhone && okDpa;
     continueBtn.disabled = !ok;
@@ -761,7 +775,7 @@ const overlay=document.getElementById('overlay');
       const issues=[];
       if(!okRec) issues.push('your receipt number');
       if(!okEmail) issues.push('a valid email');
-      if(!okPhone) issues.push('your contact number');
+      if(phoneProvided && !okPhone) issues.push('your contact number');
       if(!okDpa) issues.push('the privacy consent checkbox');
       const formatIssues = (items)=>{
         if(items.length<=1) return items[0] || '';
@@ -1666,7 +1680,8 @@ gateForm.addEventListener('submit', async (e)=>{
   overlay.classList.add('show');
 
   let gateRowId = null;
-  const contactNumber = phoneEl.dataset.normalized || phoneEl.value.trim();
+  const normalizedPhone = phoneEl.dataset.normalized || '';
+  const contactNumber = normalizedPhone || null;
   try{
     if(sb){
       const { data, error } = await sb.from('submissions').insert([{
@@ -1725,7 +1740,8 @@ submitBtn.onclick=async()=>{
 
     if(sb){
       const gateId = stepSurvey.dataset.gateId || null;
-      const contactNumber = phoneEl.dataset.normalized || phoneEl.value.trim();
+      const normalizedPhone = phoneEl.dataset.normalized || '';
+      const contactNumber = normalizedPhone || null;
       const payload = { answers:answersClean, reward_code:code, contact_number:contactNumber, ...answersClean };
       if(gateId){
         await sb.from('submissions').update(payload).eq('id', gateId);
