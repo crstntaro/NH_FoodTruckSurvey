@@ -492,67 +492,369 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus{bor
 
 <!-- QUESTIONS (updated) -->
 <script id="QUESTIONS_JSON" type="application/json">[
-  {"id":"q1","type":"buttons","prompt":"Did you enjoy your Blue Truck Pop-up experience?","options":["Yes","No"],"commentId":"q1_comment","commentPlaceholder":"Optional: tell us what made it great or how we can improve.","commentPrompt":"Tell us more (optional)","commentPrompts":{"Yes":"Tell us more about what you enjoyed.","No":"Sorry to hear that. What went wrong?"},"commentPlaceholders":{"Yes":"Share the highlights of your visit.","No":"Let us know what needs improvement."}},
-
-  {"id":"q2","type":"buttons","prompt":"Where did you hear about our Blue Truck Pop-up?","options":["Official Website","Official Social Media Pages","Content Creator / Influencer","Friend or Family","On-site Discovery","Mall or Event Poster","Others"],"otherText":true,"otherId":"q2_other","otherPlaceholder":"Please specify"},
-
-  {"id":"q3","type":"buttons","prompt":"Have you been to one of our branches before?","options":["Yes","No"]},
-  {"id":"q3a","type":"buttons","prompt":"Which brand did you visit?","options":["Mendokoro Ramenba","Ramen Yushoken"],"showIf":{"id":"q3","equals":"Yes"}},
-  {"id":"q3a_mendo","type":"buttons","prompt":"Which Mendokoro branch?","options":["Alabang","BGC","Cebu","Katipunan","Makati","Pasay"],"showIf":{"id":"q3a","equals":"Mendokoro Ramenba"}},
-  {"id":"q3a_yusho","type":"buttons","prompt":"Which Yushoken branch?","options":["Alabang","Cebu","Ortigas","Panay"],"showIf":{"id":"q3a","equals":"Ramen Yushoken"}},
-
-  {"id":"q4","type":"buttons","prompt":"Where do you want to see our Blue Truck next?","options":["City","Mall"],"followups":[
-      {"when":"City","id":"q4_city","type":"text","placeholder":"Type a city in the Philippines","suggestKey":"cities","required":true},
-      {"when":"Mall","id":"q4_mall","type":"text","placeholder":"Which mall?","suggestKey":"malls","required":true}
-  ]},
-
-  {"id":"q5","type":"buttons","prompt":"Are you working near or living near here?","options":["Working","Living"],"followups":[
-      {"when":"Working","id":"q5_place","type":"text","placeholder":"Which office / company?","suggestKey":"places","required":true},
-      {"when":"Living","id":"q5_place","type":"text","placeholder":"Which village / subdivision?","suggestKey":"places","required":true}
-  ]},
-
-  {"id":"q6_spend","type":"buttons","prompt":"On normal days, how much do you usually spend when dining out?","options":["Below PHP 300","PHP 300-500","PHP 500-800","PHP 800 and above"]},
-
-  {"id":"q7_food","type":"slider","prompt":"How would you rate our food?","min":1,"max":10,"step":1,"theme":"rating",
-    "scaleLabels":{"1":"1","10":"10"},
-    "buckets":[
-      {"id":"q7_food_low","min":1,"max":4,"label":"What went wrong with the food?","placeholder":"Let us know what to improve."},
-      {"id":"q7_food_mid","min":5,"max":7,"label":"What could make the food better?","placeholder":"Share your suggestions…"},
-      {"id":"q7_food_high","min":8,"max":10,"label":"Awesome! What did you love most?","placeholder":"Tell us your highlight…"}
-    ]},
-
-  {"id":"q7_service","type":"slider","prompt":"How would you rate our service?","min":1,"max":10,"step":1,"theme":"rating",
-    "scaleLabels":{"1":"1","10":"10"},
-    "buckets":[
-      {"id":"q7_service_low","min":1,"max":4,"label":"What went wrong with the service?","placeholder":"Let us know what to improve."},
-      {"id":"q7_service_mid","min":5,"max":7,"label":"How can we serve you better?","placeholder":"Share your suggestions…"},
-      {"id":"q7_service_high","min":8,"max":10,"label":"Amazing! What stood out in our service?","placeholder":"Tell us your highlight…"}
-    ]},
-
-  {"id":"q7_price","type":"slider","prompt":"How would you rate the value for price?","min":1,"max":10,"step":1,"theme":"rating",
-    "scaleLabels":{"1":"1","10":"10"},
-    "buckets":[
-      {"id":"q7_price_low","min":1,"max":4,"label":"What felt off about the value?","placeholder":"Tell us what didn’t feel worth it."},
-      {"id":"q7_price_mid","min":5,"max":7,"label":"How could we give you better value?","placeholder":"Share your ideas…"},
-      {"id":"q7_price_high","min":8,"max":10,"label":"Great! What made it worth it?","placeholder":"We’d love to know."}
-    ]},
-
-  {"id":"q8","type":"slider","prompt":"How likely is it that you would recommend this pop-up to others?","min":1,"max":10,"step":1,"labels":{"min":"Not Likely","max":"Extremely Likely"},"theme":"nps","buckets":[
-      {"id":"q8_detractor","min":0,"max":6,"label":"What can we do better to improve your satisfaction?","placeholder":"Your feedback…"},
-      {"id":"q8_passive","min":7,"max":8,"label":"What would make you more likely to recommend us?","placeholder":"Price, portion, taste, service…"},
-      {"id":"q8_promoter","min":9,"max":10,"label":"What is the main reason you would recommend us?","placeholder":"Your reason…"}
-  ]},
-
-  {"id":"q10_return","type":"buttons","prompt":"Based on your visit, when do you think you’ll dine with us again?","options":["Within 1 week","Within 2 weeks","Within 3 weeks","After 1 month","I’m not sure yet","Others"],"otherText":true,"otherTextarea":true,"otherId":"q10_return_other","otherPlaceholder":"Let us know your thoughts!"},
-
-  {"id":"q9","type":"buttons","prompt":"Which cuisines are you most interested in?","options":["Filipino","Chinese","Italian","Mexican","South American","Japanese"],"multi":true,"otherText":true,"otherId":"q9_other","otherPlaceholder":"Other cuisine (please specify)","commentId":"q9_comment","commentPlaceholder":"Optional: tell us about your favorite dishes."},
-
-  {"id":"q10","type":"buttons","prompt":"Would you love to hear more about us and where we are headed?","options":["Yes","No"],"followups":[
-      {"when":"Yes","type":"links","text":"Follow us for updates:","links":[
-        {"label":"Facebook","href":"https://www.facebook.com/mendokororamen"},
-        {"label":"Instagram","href":"https://www.instagram.com/mendokoro_ramenba"}
-      ]}
-  ]}
+  {
+    "id": "q1",
+    "type": "buttons",
+    "prompt": "Did you enjoy your Blue Truck Pop-up experience?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "commentId": "q1_comment",
+    "commentPlaceholder": "Optional: tell us what made it great or how we can improve.",
+    "commentPrompt": "Tell us more (optional)",
+    "commentPrompts": {
+      "Yes": "Tell us more about what you enjoyed.",
+      "No": "Sorry to hear that. What went wrong?"
+    },
+    "commentPlaceholders": {
+      "Yes": "Share the highlights of your visit.",
+      "No": "Let us know what needs improvement."
+    }
+  },
+  {
+    "id": "q2",
+    "type": "buttons",
+    "prompt": "Where did you hear about our Blue Truck Pop-up?",
+    "options": [
+      "Official Website",
+      "Official Social Media Pages",
+      "Content Creator / Influencer",
+      "Friend or Family",
+      "On-site Discovery",
+      "Mall or Event Poster",
+      "Others"
+    ],
+    "otherText": true,
+    "otherId": "q2_other",
+    "otherPlaceholder": "Please specify"
+  },
+  {
+    "id": "q3",
+    "type": "buttons",
+    "prompt": "Have you been to one of our branches before?",
+    "options": [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    "id": "q3a",
+    "type": "buttons",
+    "prompt": "Which brand did you visit?",
+    "options": [
+      "Mendokoro Ramenba",
+      "Ramen Yushoken"
+    ],
+    "showIf": {
+      "id": "q3",
+      "equals": "Yes"
+    }
+  },
+  {
+    "id": "q3a_mendo",
+    "type": "buttons",
+    "prompt": "Which Mendokoro branch?",
+    "options": [
+      "Alabang",
+      "BGC",
+      "Cebu",
+      "Katipunan",
+      "Makati",
+      "Pasay"
+    ],
+    "showIf": {
+      "id": "q3a",
+      "equals": "Mendokoro Ramenba"
+    }
+  },
+  {
+    "id": "q3a_yusho",
+    "type": "buttons",
+    "prompt": "Which Yushoken branch?",
+    "options": [
+      "Alabang",
+      "Cebu",
+      "Ortigas",
+      "Panay"
+    ],
+    "showIf": {
+      "id": "q3a",
+      "equals": "Ramen Yushoken"
+    }
+  },
+  {
+    "id": "q4",
+    "type": "buttons",
+    "prompt": "Where do you want to see our Blue Truck next?",
+    "options": [
+      "City",
+      "Mall"
+    ],
+    "followups": [
+      {
+        "when": "City",
+        "id": "q4_city",
+        "type": "text",
+        "placeholder": "Type a city in the Philippines",
+        "suggestKey": "cities",
+        "required": true
+      },
+      {
+        "when": "Mall",
+        "id": "q4_mall",
+        "type": "text",
+        "placeholder": "Which mall?",
+        "suggestKey": "malls",
+        "required": true
+      }
+    ]
+  },
+  {
+    "id": "q5",
+    "type": "buttons",
+    "prompt": "Are you working near or living near here?",
+    "options": [
+      "Working",
+      "Living"
+    ],
+    "followups": [
+      {
+        "when": "Working",
+        "id": "q5_place",
+        "type": "text",
+        "placeholder": "Which office / company?",
+        "suggestKey": "places",
+        "required": true
+      },
+      {
+        "when": "Living",
+        "id": "q5_place",
+        "type": "text",
+        "placeholder": "Which village / subdivision?",
+        "suggestKey": "places",
+        "required": true
+      }
+    ]
+  },
+  {
+    "id": "q6_spend",
+    "type": "buttons",
+    "prompt": "On normal days, how much do you usually spend when dining out?",
+    "options": [
+      "Below PHP 300",
+      "PHP 300-500",
+      "PHP 500-800",
+      "PHP 800 and above"
+    ]
+  },
+  {
+    "id": "q7_food",
+    "type": "slider",
+    "prompt": "How would you rate our food?",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "theme": "rating",
+    "scaleLabels": {
+      "1": "1",
+      "10": "10"
+    },
+    "buckets": [
+      {
+        "id": "q7_food_low",
+        "min": 1,
+        "max": 6,
+        "label": "What went wrong with the food?",
+        "placeholder": "Let us know what to improve."
+      },
+      {
+        "id": "q7_food_mid",
+        "min": 7,
+        "max": 8,
+        "label": "What could make the food better?",
+        "placeholder": "Share your suggestions…"
+      },
+      {
+        "id": "q7_food_high",
+        "min": 9,
+        "max": 10,
+        "label": "Awesome! What did you love most?",
+        "placeholder": "Tell us your highlight…"
+      }
+    ]
+  },
+  {
+    "id": "q7_service",
+    "type": "slider",
+    "prompt": "How would you rate our service?",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "theme": "rating",
+    "scaleLabels": {
+      "1": "1",
+      "10": "10"
+    },
+    "buckets": [
+      {
+        "id": "q7_service_low",
+        "min": 1,
+        "max": 6,
+        "label": "What went wrong with the service?",
+        "placeholder": "Let us know what to improve."
+      },
+      {
+        "id": "q7_service_mid",
+        "min": 7,
+        "max": 8,
+        "label": "How can we serve you better?",
+        "placeholder": "Share your suggestions…"
+      },
+      {
+        "id": "q7_service_high",
+        "min": 9,
+        "max": 10,
+        "label": "Amazing! What stood out in our service?",
+        "placeholder": "Tell us your highlight…"
+      }
+    ]
+  },
+  {
+    "id": "q7_price",
+    "type": "slider",
+    "prompt": "How would you rate the value for price?",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "theme": "rating",
+    "scaleLabels": {
+      "1": "1",
+      "10": "10"
+    },
+    "buckets": [
+      {
+        "id": "q7_price_low",
+        "min": 1,
+        "max": 6,
+        "label": "What felt off about the value?",
+        "placeholder": "Tell us what didn’t feel worth it."
+      },
+      {
+        "id": "q7_price_mid",
+        "min": 7,
+        "max": 8,
+        "label": "How could we give you better value?",
+        "placeholder": "Share your ideas…"
+      },
+      {
+        "id": "q7_price_high",
+        "min": 9,
+        "max": 10,
+        "label": "Great! What made it worth it?",
+        "placeholder": "We’d love to know."
+      }
+    ]
+  },
+  {
+    "id": "q8",
+    "type": "slider",
+    "prompt": "How likely is it that you would recommend this pop-up to others?",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "labels": {
+      "min": "Not Likely",
+      "max": "Extremely Likely"
+    },
+    "theme": "nps",
+    "buckets": [
+      {
+        "id": "q8_detractor",
+        "min": 0,
+        "max": 6,
+        "label": "What can we do better to improve your satisfaction?",
+        "placeholder": "Your feedback…"
+      },
+      {
+        "id": "q8_passive",
+        "min": 7,
+        "max": 8,
+        "label": "What would make you more likely to recommend us?",
+        "placeholder": "Price, portion, taste, service…"
+      },
+      {
+        "id": "q8_promoter",
+        "min": 9,
+        "max": 10,
+        "label": "What is the main reason you would recommend us?",
+        "placeholder": "Your reason…"
+      }
+    ],
+    "default": 1
+  },
+  {
+    "id": "q10_return",
+    "type": "buttons",
+    "prompt": "Based on your visit, when do you think you’ll dine with us again?",
+    "options": [
+      "Within 1 week",
+      "Within 2 weeks",
+      "Within 3 weeks",
+      "After 1 month",
+      "I’m not sure yet",
+      "Others"
+    ],
+    "otherText": true,
+    "otherTextarea": true,
+    "otherId": "q10_return_other",
+    "otherPlaceholder": "Let us know your thoughts!"
+  },
+  {
+    "id": "q9",
+    "type": "buttons",
+    "prompt": "Which cuisines are you most interested in?",
+    "options": [
+      "Filipino",
+      "Chinese",
+      "Italian",
+      "Mexican",
+      "South American",
+      "Japanese"
+    ],
+    "multi": true,
+    "otherText": true,
+    "otherId": "q9_other",
+    "otherPlaceholder": "Other cuisine (please specify)",
+    "commentId": "q9_comment",
+    "commentPlaceholder": "Optional: tell us about your favorite dishes."
+  },
+  {
+    "id": "q10",
+    "type": "buttons",
+    "prompt": "Would you love to hear more about us and where we are headed?",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "followups": [
+      {
+        "when": "Yes",
+        "type": "links",
+        "text": "Follow us for updates:",
+        "links": [
+          {
+            "label": "Facebook",
+            "href": "https://www.facebook.com/mendokororamen"
+          },
+          {
+            "label": "Instagram",
+            "href": "https://www.instagram.com/mendokoro_ramenba"
+          }
+        ]
+      }
+    ]
+  }
 ]</script>
 
 <script>
@@ -994,19 +1296,19 @@ function normalizeAnswers(raw) {
   out.q7_price = sliderVal(raw.q7_price);
 
   const q7FoodBucket = determineBucket(out.q7_food, [
-    {id:'q7_food_low',min:1,max:2},
-    {id:'q7_food_mid',min:3,max:4},
-    {id:'q7_food_high',min:5,max:5}
+    {id:'q7_food_low',min:1,max:6},
+    {id:'q7_food_mid',min:7,max:8},
+    {id:'q7_food_high',min:9,max:10}
   ]);
   const q7ServiceBucket = determineBucket(out.q7_service, [
-    {id:'q7_service_low',min:1,max:2},
-    {id:'q7_service_mid',min:3,max:4},
-    {id:'q7_service_high',min:5,max:5}
+    {id:'q7_service_low',min:1,max:6},
+    {id:'q7_service_mid',min:7,max:8},
+    {id:'q7_service_high',min:9,max:10}
   ]);
   const q7PriceBucket = determineBucket(out.q7_price, [
-    {id:'q7_price_low',min:1,max:2},
-    {id:'q7_price_mid',min:3,max:4},
-    {id:'q7_price_high',min:5,max:5}
+    {id:'q7_price_low',min:1,max:6},
+    {id:'q7_price_mid',min:7,max:8},
+    {id:'q7_price_high',min:9,max:10}
   ]);
 
   const pickComment = (bucketId)=> (bucketId ? (raw[bucketId] ?? '').toString().trim() : '');
@@ -1385,7 +1687,10 @@ function renderSlider(q, displayIndex){
   if(storedVal!==null && (storedVal<min || storedVal>max)) storedVal=null;
 
   const mid=Math.round((min+max)/2);
-  const defaultVal=storedVal!==null?storedVal:(isNps?mid:min);
+  const qDefaultRaw=parseFloat(q.default ?? '');
+  const hasQuestionDefault=Number.isFinite(qDefaultRaw);
+  const questionDefault=hasQuestionDefault?Math.min(max, Math.max(min, qDefaultRaw)):null;
+  const defaultVal=storedVal!==null?storedVal:(questionDefault!==null?questionDefault:(isNps?mid:min));
   const ratingLabels=q.scaleLabels || {};
   const describe=val=>{
     if(isNps) return `${val}`;
