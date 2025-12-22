@@ -127,7 +127,12 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus{bor
 .bar{height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent-dk)); transition:width .25s var(--ease)}
 .cardQ{ margin-top:8px; padding:18px; border:1px solid var(--line); border-radius:16px; background:#fff;
   box-shadow:0 6px 16px rgba(0,0,0,.05); animation:stepIn .24s var(--ease); width:100%; max-width:var(--card-max); margin-left:auto; margin-right:auto; }
-.cardQ.card-nps,.cardQ.card-rating{padding:0;border:none;box-shadow:none;background:transparent}
+.cardQ.card-nps .nps-shell,
+.cardQ.card-rating .rating-shell{
+  width:100%; max-width:100%; padding:0; border:none; box-shadow:none; background:transparent;
+}
+.cardQ.card-nps .nps-question,
+.cardQ.card-rating .rating-question{display:none}
 @keyframes stepIn{ from{ opacity:0; transform:translateY(6px)} to{ opacity:1; transform:none}}
 .qnum{font:800 12px var(--font); color:#0b6f76; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px}
 .qtitle{margin:0 0 10px; font:800 clamp(18px,3.8vw,22px)/1.25 var(--font)}
@@ -181,7 +186,7 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus{bor
 .slider-value.placeholder{color:#94a3b8}
 
 /* NPS (teal now) */
-.slider-theme-nps{width:100%;justify-items:stretch;--nps-shell-max:760px;--nps-track-max:720px}
+.slider-theme-nps{width:100%;justify-items:stretch;--nps-shell-max:var(--card-max);--nps-track-max:680px}
 .slider-theme-nps .nps-shell{width:100%;max-width:var(--nps-shell-max);border-radius:28px;background:#fff;box-shadow:0 24px 60px rgba(14,155,164,.18);padding:28px 24px 30px;display:grid;gap:18px;border:1px solid rgba(14,155,164,.16);justify-items:center}
 .slider-theme-nps .nps-question{font:800 18px/1.35 var(--font);color:#0f172a;text-align:center;margin:0}
 .slider-theme-nps .nps-question-number{color:var(--accent);margin-right:6px}
@@ -217,7 +222,7 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus{bor
 .slider-theme-nps .nps-followup textarea::placeholder{color:#79bec3}
 
 /* Rating slider */
-.slider-theme-rating{width:100%;justify-items:stretch;--rating-shell-max:760px;--rating-track-max:720px}
+.slider-theme-rating{width:100%;justify-items:stretch;--rating-shell-max:var(--card-max);--rating-track-max:680px}
 .slider-theme-rating .rating-shell{width:100%;max-width:var(--rating-shell-max);border-radius:28px;background:#fff;box-shadow:0 24px 60px rgba(14,155,164,.18);padding:28px 24px 30px;border:1px solid rgba(14,155,164,.16);display:grid;gap:18px;justify-items:center}
 .slider-theme-rating .rating-question{margin:0;font:800 18px/1.35 var(--font);color:#0f172a;text-align:center}
 .slider-theme-rating .rating-question-number{color:var(--accent);margin-right:6px}
@@ -1956,10 +1961,10 @@ function renderQ(){
   if(isNps) card.classList.add('card-nps');
   if(isRating) card.classList.add('card-rating');
   const num=document.createElement('div'); num.className='qnum'; num.textContent=`Question ${position+1}`;
-  if(isNps || isRating) num.style.display='none';
+  if(isNps || isRating) num.style.display='block';
   const title=document.createElement('h3'); title.className='qtitle'; title.textContent=q.prompt;
   card.appendChild(num); card.appendChild(title);
-  if(isNps || isRating) title.style.display='none';
+  if(isNps || isRating) title.style.display='block';
 
   if(q.type==='buttons'){ card.appendChild(renderButtons(q)); }
   else if(q.type==='text'){ card.appendChild(renderText(q)); }
