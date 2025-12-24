@@ -137,6 +137,7 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus{bor
 .qnum{font:800 12px var(--font); color:#0b6f76; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px}
 .qtitle{margin:0 0 10px; font:800 clamp(18px,3.8vw,22px)/1.25 var(--font)}
 .qhelp{color:#6b7280; font-size:13px; margin:-2px 0 10px}
+.qbody{width:100%;max-width:680px;margin:0 auto}
 
 .opt-grid{ --col-min:140px; display:grid; gap:10px; margin-top:6px;
   grid-template-columns: repeat(auto-fit, minmax(var(--col-min), 1fr));
@@ -1960,15 +1961,17 @@ function renderQ(){
   const isRating = q.theme==='rating';
   if(isNps) card.classList.add('card-nps');
   if(isRating) card.classList.add('card-rating');
+  const body=document.createElement('div'); body.className='qbody';
   const num=document.createElement('div'); num.className='qnum'; num.textContent=`Question ${position+1}`;
   if(isNps || isRating) num.style.display='block';
   const title=document.createElement('h3'); title.className='qtitle'; title.textContent=q.prompt;
-  card.appendChild(num); card.appendChild(title);
+  body.appendChild(num); body.appendChild(title);
   if(isNps || isRating) title.style.display='block';
 
-  if(q.type==='buttons'){ card.appendChild(renderButtons(q)); }
-  else if(q.type==='text'){ card.appendChild(renderText(q)); }
-  else if(q.type==='slider'){ card.appendChild(renderSlider(q, position+1)); }
+  if(q.type==='buttons'){ body.appendChild(renderButtons(q)); }
+  else if(q.type==='text'){ body.appendChild(renderText(q)); }
+  else if(q.type==='slider'){ body.appendChild(renderSlider(q, position+1)); }
+  card.appendChild(body);
   qwrap.appendChild(card);
   updateStepButtons();
 }
