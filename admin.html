@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin Dashboard — Food Truck Survey</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --font:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --accent:#0e9ba4;
+  --accent-dk:#0c8a92;
+  --ink:#101010; --muted:#6b7280; --paper:#fff; --bg:#fff; --line:#e5e7eb;
+  --ease:cubic-bezier(.22,.61,.36,1); --header-h:64px;
+  --card-max:880px;
+  --ticket-open-bg: #fff1f2;
+  --ticket-open-border: #ffdfe2;
+  --ticket-open-ink: #b91c1c;
+  --nps-promoter-color: #15803d;
+  --nps-passive-color: #d97706;
+  --nps-detractor-color: var(--ticket-open-ink);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;width:100%;max-width:100%;overflow-x:hidden}
+body{
+  margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);
+  line-height:1.6;
+}
+
+/* ================== Subtle BG ================== */
+.bg{position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
+  background:radial-gradient(1200px 360px at 50% -120px, rgba(14,155,164,.10), transparent 65%);
+}
+.scroller{position:absolute; inset:0; width:200%; height:100%; display:flex; animation:fuji-x 90s linear infinite}
+@keyframes fuji-x{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+.belt{position:relative; width:50%; height:100%}
+.fuji{position:absolute; opacity:.08; filter:grayscale(1)}
+.f1{top:4%;left:8%;width:60px;transform:rotate(-9deg)} .f2{top:9%;left:32%;width:66px;transform:rotate(8deg)}
+.f3{top:2%;left:58%;width:62px;transform:rotate(-16deg)} .f4{top:8%;left:83%;width:68px;transform:rotate(12deg)}
+.f5{top:24%;left:13%;width:66px;transform:rotate(6deg)} .f6{top:21%;left:46%;width:72px;transform:rotate(-14deg)}
+.f7{top:23%;left:74%;width:56px;transform:rotate(14deg)} .f8{top:48%;left:9%;width:60px;transform:rotate(-7deg)}
+.f9{top:44%;left:37%;width:72px;transform:rotate(18deg)} .f10{top:41%;left:63%;width:80px;transform:rotate(-20deg)}
+.f11{top:46%;left:89%;width:62px;transform:rotate(10deg)} .f12{top:69%;left:16%;width:54px;transform:rotate(13deg)}
+.f13{top:63%;left:42%;width:74px;transform:rotate(-9deg)} .f14{top:66%;left:69%;width:66px;transform:rotate(7deg)}
+.f15{top:60%;left:93%;width:60px;transform:rotate(-15deg)} .f16{top:88%;left:27%;width:62px;transform:rotate(-8deg)}
+.f17{top:86%;left:53%;width:60px;transform:rotate(16deg)} .f18{top:90%;left:80%;width:68px;transform:rotate(-5deg)}
+
+/* Header */
+.site-header{
+  position:sticky;top:0;inset:0 0 auto 0;height:var(--header-h);display:flex;align-items:center;z-index:4;
+  background:#ffffffd9;border-bottom:1px solid var(--line);backdrop-filter:saturate(180%) blur(6px);
+}
+.nav{max-width:100%;margin:0 auto;padding:0 24px;width:100%;display:flex;justify-content:space-between;align-items:center;height:100%;gap:1rem;}
+.brand-img{height:32px}
+.nav-right { display: flex; align-items: center; gap: 24px; }
+.brand-text { text-align: right; }
+.brand-name{font:800 15px/1 var(--font)}
+.brand-sub{font:800 11px/1 var(--font); color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
+
+.header-tabs {
+    display: flex;
+    gap: 8px;
+    background: #eef2f3;
+    padding: 6px;
+    border-radius: 999px;
+}
+.header-tab {
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    text-decoration: none;
+    transition: .2s var(--ease);
+}
+.header-tab:hover {
+    color: var(--ink);
+}
+.header-tab.active {
+    background: #fff;
+    color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+
+.header-icon-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: var(--muted);
+    transition: .2s var(--ease);
+}
+.header-icon-btn:hover, .header-icon-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.header-icon-btn svg { width: 20px; height: 20px; }
+
+/* Side Navigation */
+.side-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: auto;
+    background: var(--paper);
+    border-right: 1px solid var(--line);
+    transform: translateX(-100%);
+    transition: transform .3s var(--ease);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+}
+.side-nav-header {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--line);
+}
+.side-nav-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 24px;
+    flex-grow: 1;
+}
+.side-nav-footer {
+    padding: 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.user-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.side-nav-footer .user-info {
+    display: none;
+}
+.user-name {
+    font-weight: 700;
+    font-size: 14px;
+}
+.user-email {
+    font-size: 12px;
+    color: var(--muted);
+}
+.side-nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    transition: .2s var(--ease);
+}
+.side-nav-tab:hover {
+    background: #f3f4f6;
+}
+.side-nav-tab.active {
+    background: var(--accent);
+    color: #fff;
+}
+.side-nav-tab.active .side-nav-icon {
+    color: #fff;
+}
+.side-nav-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--muted);
+}
+.side-nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s var(--ease);
+}
+.side-nav-open .side-nav {
+    transform: translateX(0);
+}
+.side-nav-open .side-nav-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.main-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: center;
+}
+.search-bar {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 16px;
+}
+.search-bar svg {
+    width: 20px;
+    height: 20px;
+    color: var(--muted);
+    margin-right: 8px;
+}
+.search-bar input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    font-size: 15px;
+}
+.search-bar input:focus {
+    outline: none;
+}
+
+.container{padding:24px;max-width:100%;margin:0 auto; position: relative; z-index: 1;}
+.page-title{font:800 clamp(22px, 4vw, 28px)/1.2 var(--font); margin:0 0 24px;}
+
+.filter-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .35s ease-in-out;
+}
+.filter-panel.open {
+    max-height: 500px; /* rough estimate */
+}
+.filters{
+  display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px;
+  align-items:flex-end;
+}
+.filter-group{display:grid; gap:6px;}
+.filter-group label{font:700 12px var(--font); color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
+.filter-group input, .filter-group select{
+  min-width:180px;
+  padding:8px 12px; border-radius:10px; border:1px solid var(--line); background:#fff; font-size:14px;
+}
+.filter-group.search-filter{ flex:1 1 240px; }
+
+.btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s var(--ease);
+}
+.btn:hover {
+    background: var(--accent-dk);
+}
+
+.charts-grid{
+    display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; margin-bottom:24px;
+}
+.chart-container{
+    background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px;
+    position: relative;
+    height: 320px;
+}
+.chart-title{
+    margin:0 0 16px; font:800 16px var(--font);
+}
+
+.summary-cards{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:24px;
+}
+.card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px;
+  display:grid; gap:4px;
+}
+.card-title{font:700 13px var(--font); color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin:0;}
+.card-value{font:800 28px/1.1 var(--font); color:var(--ink); margin:0;}
+
+.card.card-important {
+    background: var(--ticket-open-bg);
+    border-color: var(--ticket-open-ink);
+}
+.card.card-important .card-title,
+.card.card-important .card-value {
+    color: var(--ticket-open-ink);
+}
+
+.table-wrap{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow-x:auto;
+}
+.table-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+}
+.table-title {
+    margin: 0;
+    font: 800 18px var(--font);
+}
+table{
+  width:100%; border-collapse:collapse;
+}
+thead tr{ border-bottom:1px solid var(--line); }
+th{
+  padding:12px 16px; text-align:left;
+  font:700 12px var(--font); color:var(--muted); text-transform:uppercase; letter-spacing:.05em; white-space:nowrap;
+}
+tbody tr{ border-bottom:1px solid var(--line); transition: background .15s ease; }
+tbody tr:last-child{ border-bottom:none; }
+tbody tr.ticket-open{
+    background:var(--ticket-open-bg);
+    border-color:var(--ticket-open-border);
+    font-weight: 700;
+}
+tbody tr.ticket-open:hover{ background: #fee5e7; }
+tbody tr:not(.ticket-open):hover{ background:#f9fafb; }
+
+td{ padding:14px 16px; font-size:14px; vertical-align:top; }
+.nps-detractor{ color:var(--nps-detractor-color); font-weight:700; }
+.nps-passive{ color:var(--nps-passive-color); }
+.nps-promoter{ color:var(--nps-promoter-color); }
+
+.status-open { color: var(--ticket-open-ink); font-weight: 700; text-transform: capitalize; }
+.status-resolved { color: var(--nps-promoter-color); text-transform: capitalize; }
+
+.comment-cell{ min-width:250px; }
+.comment-text{
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  font-size:13px; color:#4b5563; line-height:1.5;
+  white-space:pre-wrap;
+}
+.actions-cell button{
+    background:transparent; border:none; padding:4px; cursor:pointer;
+}
+.actions-cell svg{ width:16px; height:16px; color:var(--muted); }
+.actions-cell button:hover svg{ color:var(--ink); }
+
+@media(min-width: 1025px) {
+
+    .site-header {
+
+        padding-left: 260px;
+
+    }
+
+    .side-nav {
+
+        display: flex;
+
+        transform: translateX(0);
+
+        width: 260px; /* Explicitly set width for larger screens */
+
+    }
+
+    .container {
+
+        padding-left: 260px;
+
+    }
+
+    #menu-toggle,
+
+    .side-nav-overlay {
+
+        display: none;
+
+    }
+
+    .side-nav-header .brand-text {
+
+        display: flex; /* Show brand text on larger screens */
+
+    }
+
+    .side-nav-tab span {
+
+        display: inline; /* Show tab text on larger screens */
+
+    }
+
+    .side-nav-footer .user-info {
+
+        display: flex; /* Show user info on larger screens */
+
+    }
+
+    .side-nav-header {
+
+        justify-content: flex-start; /* Align to start on larger screens */
+
+    }
+
+    .side-nav-tab {
+
+        justify-content: flex-start; /* Align to start on larger screens */
+
+    }
+
+    .side-nav-footer {
+
+        justify-content: flex-start; /* Align to start on larger screens */
+
+    }
+
+}
+
+
+
+@media(max-width: 1024px) {
+
+    .side-nav {
+
+        display: none; /* Hide side-nav by default on screens <= 1024px */
+
+        width: 100px; /* Set a default width for potential display */
+
+    }
+
+    .site-header {
+
+        padding-left: 100px;
+
+    }
+
+    .container {
+
+        padding-left: 100px;
+
+    }
+
+    .brand-text {
+
+        display: none; /* Hide brand-text on main nav for screens <= 1024px */
+
+    }
+
+    .side-nav-header .brand-text {
+
+        display: none;
+
+    }
+
+    .side-nav-tab span {
+
+        display: none;
+
+    }
+
+    .side-nav-footer .user-info {
+
+        display: none;
+
+    }
+
+    .side-nav-header {
+
+        justify-content: center;
+
+    }
+
+    .side-nav-tab {
+
+        justify-content: center;
+
+    }
+
+    .side-nav-footer {
+
+        justify-content: center;
+
+    }
+
+}
+
+
+
+@media(max-width: 768px){
+
+    .charts-grid{ grid-template-columns:1fr; }
+
+    .side-nav-open .side-nav {
+
+        display: flex;
+
+        width: 100%;
+
+    }
+
+    .nav-right { display: none; }
+
+    .nav { justify-content: space-between; }
+
+    .site-header {
+
+        padding-left: 0;
+
+    }
+
+    .container {
+
+        padding-left: 0;
+
+    }
+
+    .side-nav-tab span {
+
+        display: inline;
+
+    }
+
+    .side-nav-footer .user-info {
+
+        display: flex;
+
+    }
+
+    .side-nav-tab {
+
+        justify-content: flex-start;
+
+    }
+
+    .side-nav-footer {
+
+        justify-content: flex-start;
+
+    }
+
+    .brand-text {
+
+        display: flex;
+
+    }
+
+    .brand-img {
+
+        display: none;
+
+    }
+
+}
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg" aria-hidden="true">
+  <div class="scroller">
+    <div class="belt">
+      <img class="fuji f1" src="./assets/img/mtfuji.png" alt=""><img class="fuji f2" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f3" src="./assets/img/mtfuji.png" alt=""><img class="fuji f4" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f5" src="./assets/img/mtfuji.png" alt=""><img class="fuji f6" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f7" src="./assets/img/mtfuji.png" alt=""><img class="fuji f8" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f9" src="./assets/img/mtfuji.png" alt=""><img class="fuji f10" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f11" src="./assets/img/mtfuji.png" alt=""><img class="fuji f12" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f13" src="./assets/img/mtfuji.png" alt=""><img class="fuji f14" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f15" src="./assets/img/mtfuji.png" alt=""><img class="fuji f16" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f17" src="./assets/img/mtfuji.png" alt=""><img class="fuji f18" src="./assets/img/mtfuji.png" alt="">
+    </div>
+    <div class="belt">
+      <img class="fuji f1" src="./assets/img/mtfuji.png" alt=""><img class="fuji f2" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f3" src="./assets/img/mtfuji.png" alt=""><img class="fuji f4" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f5" src="./assets/img/mtfuji.png" alt=""><img class="fuji f6" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f7" src="./assets/img/mtfuji.png" alt=""><img class="fuji f8" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f9" src="./assets/img/mtfuji.png" alt=""><img class="fuji f10" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f11" src="./assets/img/mtfuji.png" alt=""><img class="fuji f12" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f13" src="./assets/img/mtfuji.png" alt=""><img class="fuji f14" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f15" src="./assets/img/mtfuji.png" alt=""><img class="fuji f16" src="./assets/img/mtfuji.png" alt="">
+      <img class="fuji f17" src="./assets/img/mtfuji.png" alt=""><img class="fuji f18" src="./assets/img/mtfuji.png" alt="">
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <nav class="nav">
+    <button id="menu-toggle" class="header-icon-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+        </svg>
+    </button>
+    <div class="brand-text">
+        <div class="brand-name">Admin Dashboard</div>
+        <div class="brand-sub">Food Truck Survey</div>
+    </div>
+    <img class="brand-img" src="./assets/img/nhlogo.png" alt="Nippon Hasha">
+  </nav>
+</header>
+
+<!-- Side Navigation -->
+<div id="side-nav-overlay" class="side-nav-overlay"></div>
+<nav id="side-nav" class="side-nav">
+    <div class="side-nav-header">
+        <img class="brand-img" src="./assets/img/nhlogo.png" alt="Nippon Hasha">
+    </div>
+    <div class="side-nav-tabs">
+        <a href="#" class="side-nav-tab active">
+            <svg xmlns="http://www.w3.org/2000/svg" class="side-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+            <span>Dashboard</span>
+        </a>
+        <a href="#" class="side-nav-tab">
+            <svg xmlns="http://www.w3.org/2000/svg" class="side-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3.5 3A1.5 1.5 0 002 4.5v3.879a1.5 1.5 0 00.44 1.06l7.5 7.5a1.5 1.5 0 002.12 0l3.879-3.879a1.5 1.5 0 000-2.12l-7.5-7.5A1.5 1.5 0 003.5 3zm4 4.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
+            <span>Tickets</span>
+        </a>
+        <a href="#" class="side-nav-tab">
+            <svg xmlns="http://www.w3.org/2000/svg" class="side-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" /><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" /></svg>
+            <span>Analytics</span>
+        </a>
+    </div>
+    <div class="side-nav-footer">
+    </div>
+</nav>
+
+<main class="container">
+  <h1 class="page-title">Survey Dashboard</h1>
+
+  <div class="main-controls">
+    <div class="search-bar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
+        <input type="search" id="filter-search" name="filter-search" placeholder="Search reasons...">
+    </div>
+    <button id="filter-toggle" class="header-icon-btn" title="Advanced Filters">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path d="M3 4.75A.75.75 0 013.75 4h12.5a.75.75 0 010 1.5H3.75A.75.75 0 013 4.75zM3 9.75A.75.75 0 013.75 9h12.5a.75.75 0 010 1.5H3.75A.75.75 0 013 9.75zM3 14.75A.75.75 0 013.75 14h12.5a.75.75 0 010 1.5H3.75A.75.75 0 013 14.75z" /></svg>
+    </button>
+  </div>
+
+  <div id="filter-panel" class="filter-panel">
+    <div class="filters">
+        <div class="filter-group">
+            <label for="filter-date-start">Start Date</label>
+            <input type="date" id="filter-date-start" name="filter-date-start">
+        </div>
+        <div class="filter-group">
+            <label for="filter-date-end">End Date</label>
+            <input type="date" id="filter-date-end" name="filter-date-end">
+        </div>
+        <div class="filter-group">
+            <label for="filter-ticket-status">Ticket Status</label>
+            <select id="filter-ticket-status" name="filter-ticket-status">
+                <option value="all">All</option>
+                <option value="open">Open</option>
+                <option value="resolved">Resolved</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filter-nps">NPS Score</label>
+            <select id="filter-nps" name="filter-nps">
+                <option value="all">All Scores</option>
+                <option value="detractors">Detractors (0-6)</option>
+                <option value="passives">Passives (7-8)</option>
+                <option value="promoters">Promoters (9-10)</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filter-branch">Branch</label>
+            <select id="filter-branch" name="filter-branch">
+                <option value="all">All Branches</option>
+                <option value="Mendokoro Ramenba">Mendokoro Ramenba</option>
+                <option value="Ramen Yushoken">Ramen Yushoken</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <button id="apply-filters" class="btn">Apply Filters</button>
+        </div>
+    </div>
+</div>
+
+<div class="summary-cards">
+  <div class="card">
+    <h3 class="card-title">Total Responses</h3>
+    <p id="total-responses" class="card-value">0</p>
+  </div>
+  <div class="card">
+    <h3 class="card-title">Overall NPS</h3>
+    <p id="overall-nps" class="card-value">0</p>
+  </div>
+  <div class="card">
+    <h3 class="card-title">Promoters</h3>
+    <p id="total-promoters" class="card-value">0</p>
+  </div>
+  <div class="card">
+    <h3 class="card-title">Passives</h3>
+    <p id="total-passives" class="card-value">0</p>
+  </div>
+  <div class="card card-important">
+    <h3 class="card-title">Open Tickets</h3>
+    <p id="total-tickets" class="card-value">0</p>
+  </div>
+  <div class="card">
+    <h3 class="card-title">Detractors</h3>
+    <p id="total-detractors" class="card-value">0</p>
+  </div>
+</div>
+
+<div class="charts-grid">
+    <div class="chart-container">
+        <h2 class="chart-title">NPS Distribution</h2>
+        <canvas id="nps-chart"></canvas>
+    </div>
+    <div class="chart-container">
+        <h2 class="chart-title">Responses by Branch</h2>
+        <canvas id="branch-chart"></canvas>
+    </div>
+</div>
+
+<div class="table-wrap">
+    <div class="table-header">
+        <h2 class="table-title">All Responses</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Receipt</th>
+          <th>Branch</th>
+          <th>NPS</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="responses-table-body">
+      </tbody>
+    </table>
+</div>
+</main>
+
+<script src="admin.js"></script>
+</body>
+</html>
