@@ -127,9 +127,9 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1
 .nps-stat-label{font-size:11px;color:rgba(255,255,255,.7)}
 
 /* ===== NPS Category Filter Buttons ===== */
-.nps-category-filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.nps-category-filters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .nps-cat-btn{
-  display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:10px;
   border:2px solid var(--line);background:var(--paper);cursor:pointer;
   font-family:var(--font);font-weight:700;font-size:14px;color:var(--muted);
   transition:all var(--dur-fast) var(--ease);position:relative;
@@ -263,6 +263,7 @@ td{padding:14px 16px;font-size:14px;vertical-align:top}
   .mobile-header{display:flex!important}
   .charts-grid{grid-template-columns:1fr}
   .kpis{grid-template-columns:repeat(2,1fr)}
+  .nps-category-filters{grid-template-columns:1fr}
   .modal .detail-grid{grid-template-columns:1fr}
 }
 
