@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Admin Dashboard — Food Truck Survey</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,34 +11,26 @@
 <style>
 :root{
   --font:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --accent:#0e9ba4;
-  --accent-dk:#0c8a92;
-  --ink:#101010; --muted:#6b7280; --paper:#fff; --bg:#fff; --line:#e5e7eb;
-  --ease:cubic-bezier(.22,.61,.36,1); --header-h:64px;
-  --card-max:880px;
-  --ticket-open-bg: #fff1f2;
-  --ticket-open-border: #ffdfe2;
-  --ticket-open-ink: #b91c1c;
-  --nps-promoter-color: #15803d;
-  --nps-passive-color: #d97706;
-  --nps-detractor-color: var(--ticket-open-ink);
+  --accent:#0e9ba4; --accent-dk:#0c8a92; --accent-light:rgba(14,155,164,.08);
+  --ink:#101010; --muted:#6b7280; --paper:#fff; --bg:#f8fafb; --line:#e5e7eb;
+  --ok:#15803d; --warn:#d97706; --bad:#b91c1c; --info:#1f6feb;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --dur-fast:.18s;
+  --sidebar-w:240px;
+  --elev-1:0 2px 8px rgba(0,0,0,.08);
+  --elev-2:0 4px 16px rgba(0,0,0,.12);
 }
-
-*{box-sizing:border-box}
+*{box-sizing:border-box; margin:0; padding:0}
 html,body{height:100%;width:100%;max-width:100%;overflow-x:hidden}
-body{
-  margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);
-  line-height:1.6;
-}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6}
 
-/* ================== Subtle BG ================== */
-.bg{position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
-  background:radial-gradient(1200px 360px at 50% -120px, rgba(14,155,164,.10), transparent 65%);
-}
-.scroller{position:absolute; inset:0; width:200%; height:100%; display:flex; animation:fuji-x 90s linear infinite}
+/* ===== Animated Mountain BG ===== */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  background:radial-gradient(1200px 360px at 50% -120px, rgba(14,155,164,.10), transparent 65%)}
+.scroller{position:absolute;inset:0;width:200%;height:100%;display:flex;animation:fuji-x 90s linear infinite}
 @keyframes fuji-x{from{transform:translateX(0)} to{transform:translateX(-50%)}}
-.belt{position:relative; width:50%; height:100%}
-.fuji{position:absolute; opacity:.08; filter:grayscale(1)}
+.belt{position:relative;width:50%;height:100%}
+.fuji{position:absolute;opacity:.08;filter:grayscale(1)}
 .f1{top:4%;left:8%;width:60px;transform:rotate(-9deg)} .f2{top:9%;left:32%;width:66px;transform:rotate(8deg)}
 .f3{top:2%;left:58%;width:62px;transform:rotate(-16deg)} .f4{top:8%;left:83%;width:68px;transform:rotate(12deg)}
 .f5{top:24%;left:13%;width:66px;transform:rotate(6deg)} .f6{top:21%;left:46%;width:72px;transform:rotate(-14deg)}
@@ -50,520 +41,256 @@ body{
 .f15{top:60%;left:93%;width:60px;transform:rotate(-15deg)} .f16{top:88%;left:27%;width:62px;transform:rotate(-8deg)}
 .f17{top:86%;left:53%;width:60px;transform:rotate(16deg)} .f18{top:90%;left:80%;width:68px;transform:rotate(-5deg)}
 
-/* Header */
-.site-header{
-  position:sticky;top:0;inset:0 0 auto 0;height:var(--header-h);display:flex;align-items:center;z-index:4;
+/* ===== Layout ===== */
+.app-shell{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== Sidebar ===== */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9;opacity:0;visibility:hidden;transition:all .3s var(--ease)}
+.sidebar-overlay.visible{opacity:1;visibility:visible}
+.sidebar{
+  width:var(--sidebar-w);min-height:100vh;background:linear-gradient(180deg,#0d2f32 0%,#0a2225 100%);
+  display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:10;
+  transition:transform .3s var(--ease);
+}
+.sidebar-header{
+  padding:20px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.sidebar-header img{height:32px}
+.sidebar-header .brand{font:700 13px var(--font);color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+.sidebar-close{
+  display:none;position:absolute;right:12px;top:12px;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.1);border:none;color:#fff;font-size:18px;cursor:pointer;
+  place-items:center;
+}
+.sidebar-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.sidebar-tab{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  background:transparent;border:none;border-radius:10px;
+  color:rgba(255,255,255,.7);font:600 14px var(--font);text-align:left;
+  cursor:pointer;transition:all var(--dur-fast) var(--ease);
+}
+.sidebar-tab:hover{background:rgba(255,255,255,.1);color:#fff}
+.sidebar-tab.active{background:var(--accent);color:#fff}
+.sidebar-tab svg{width:18px;height:18px;flex-shrink:0}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1)}
+.sidebar-footer .btn{
+  background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;width:100%;
+  padding:10px 16px;border-radius:10px;font:600 13px var(--font);cursor:pointer;
+  transition:all var(--dur-fast) var(--ease);
+}
+.sidebar-footer .btn:hover{background:rgba(255,255,255,.1)}
+
+/* ===== Main Content ===== */
+.main{flex:1;margin-left:var(--sidebar-w);padding:24px;position:relative;z-index:1}
+.tabpanel{display:none}
+.tabpanel.active{display:block}
+
+/* ===== Cards & KPIs ===== */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.kpi{
+  border:1px solid var(--line);border-radius:14px;padding:16px;
+  background:var(--paper);position:relative;overflow:hidden;
+  transition:transform var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease);
+}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--elev-1)}
+.kpi .v{font:800 28px/1 var(--font);color:var(--ink)}
+.kpi .l{color:var(--muted);font-size:12px;margin-top:4px;font-weight:600}
+.kpi.critical{border-left:4px solid var(--bad);background:rgba(185,28,28,.05)}
+.kpi.critical .v{color:var(--bad)}
+.kpi.warning{border-left:4px solid var(--warn);background:rgba(217,119,6,.05)}
+.kpi.warning .v{color:var(--warn)}
+.kpi.success{border-left:4px solid var(--ok);background:rgba(21,128,61,.05)}
+.kpi.success .v{color:var(--ok)}
+.kpi.info{border-left:4px solid var(--info);background:rgba(31,111,235,.05)}
+.kpi.info .v{color:var(--info)}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.card h3{font:800 18px var(--font);margin-bottom:4px}
+.card .subtitle{color:var(--muted);font-size:13px;margin-bottom:16px}
+
+/* ===== NPS Summary Card ===== */
+.nps-summary{
+  background:linear-gradient(135deg,#0d2f32 0%,#0a2225 100%);
+  border-radius:14px;padding:20px;margin-bottom:16px;color:#fff;
+}
+.nps-summary-inner{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+.nps-main .nps-label{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.1em;margin-bottom:4px}
+.nps-main .nps-value{font-size:48px;font-weight:800;line-height:1}
+.nps-main .nps-sublabel{font-size:12px;color:rgba(255,255,255,.7);margin-top:4px}
+.nps-breakdown{display:flex;gap:24px;flex-wrap:wrap}
+.nps-stat{text-align:center}
+.nps-stat-value{font-size:24px;font-weight:800}
+.nps-stat-value.promoter{color:var(--ok)}
+.nps-stat-value.passive{color:var(--warn)}
+.nps-stat-value.detractor{color:var(--bad)}
+.nps-stat-label{font-size:11px;color:rgba(255,255,255,.7)}
+
+/* ===== NPS Category Filter Buttons ===== */
+.nps-category-filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.nps-cat-btn{
+  display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;
+  border:2px solid var(--line);background:var(--paper);cursor:pointer;
+  font-family:var(--font);font-weight:700;font-size:14px;color:var(--muted);
+  transition:all var(--dur-fast) var(--ease);position:relative;
+}
+.nps-cat-btn:hover{transform:translateY(-1px);box-shadow:var(--elev-1)}
+.nps-cat-btn .nps-cat-icon{
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:900;font-size:14px;
+}
+.nps-cat-btn .nps-cat-count{background:var(--line);border-radius:20px;padding:2px 8px;font-size:12px;font-weight:800}
+.nps-cat-btn.detractor{border-color:rgba(185,28,28,.3)}
+.nps-cat-btn.detractor .nps-cat-icon{background:rgba(185,28,28,.15);color:var(--bad)}
+.nps-cat-btn.detractor.active{background:rgba(185,28,28,.08);border-color:var(--bad);color:var(--bad)}
+.nps-cat-btn.detractor.active .nps-cat-count{background:rgba(185,28,28,.2);color:var(--bad)}
+.nps-cat-btn.passive{border-color:rgba(217,119,6,.3)}
+.nps-cat-btn.passive .nps-cat-icon{background:rgba(217,119,6,.15);color:var(--warn)}
+.nps-cat-btn.passive.active{background:rgba(217,119,6,.08);border-color:var(--warn);color:var(--warn)}
+.nps-cat-btn.passive.active .nps-cat-count{background:rgba(217,119,6,.2);color:var(--warn)}
+.nps-cat-btn.promoter{border-color:rgba(21,128,61,.3)}
+.nps-cat-btn.promoter .nps-cat-icon{background:rgba(21,128,61,.15);color:var(--ok)}
+.nps-cat-btn.promoter.active{background:rgba(21,128,61,.08);border-color:var(--ok);color:var(--ok)}
+.nps-cat-btn.promoter.active .nps-cat-count{background:rgba(21,128,61,.2);color:var(--ok)}
+
+/* ===== Tables ===== */
+.table-wrap{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow-x:auto;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:1px solid var(--line)}
+th{padding:12px 16px;text-align:left;font:700 12px var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--line);transition:background .15s ease}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f9fafb}
+td{padding:14px 16px;font-size:14px;vertical-align:top}
+.empty{text-align:center;padding:32px;color:var(--muted)}
+.empty-icon{font-size:32px;margin-bottom:8px}
+
+/* ===== NPS Badges ===== */
+.nps-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:32px;padding:4px 10px;border-radius:8px;font:800 13px var(--font);
+}
+.nps-badge.promoter{background:rgba(21,128,61,.15);color:var(--ok)}
+.nps-badge.passive{background:rgba(217,119,6,.15);color:var(--warn)}
+.nps-badge.detractor{background:rgba(185,28,28,.15);color:var(--bad)}
+
+/* ===== Priority/Aging Badges ===== */
+.aging-badge{
+  display:inline-flex;padding:3px 10px;border-radius:6px;font:700 11px var(--font);
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.aging-badge.urgent{background:rgba(185,28,28,.12);color:var(--bad)}
+.aging-badge.old{background:rgba(217,119,6,.12);color:var(--warn)}
+.aging-badge.recent{background:rgba(21,128,61,.12);color:var(--ok)}
+
+/* ===== Status Selects ===== */
+.statusSel{
+  padding:6px 10px;border-radius:8px;border:1px solid var(--line);font:600 12px var(--font);
+  cursor:pointer;background:var(--paper);
+}
+.statusSel.open{border-color:var(--bad);color:var(--bad);background:rgba(185,28,28,.05)}
+.statusSel.in_progress{border-color:var(--warn);color:var(--warn);background:rgba(217,119,6,.05)}
+.statusSel.resolved{border-color:var(--ok);color:var(--ok);background:rgba(21,128,61,.05)}
+.statusSel.voc{border-color:var(--info);color:var(--info);background:rgba(31,111,235,.05)}
+.statusSel.inactive{border-color:#888;color:#888;background:rgba(0,0,0,.03)}
+
+/* ===== Buttons ===== */
+.btn{
+  background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:10px;
+  font:700 13px var(--font);cursor:pointer;transition:all var(--dur-fast) var(--ease);
+}
+.btn:hover{background:var(--accent-dk)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn-outline:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+
+/* ===== Filters ===== */
+.filters-bar{
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;
+}
+.filter-group{display:grid;gap:4px}
+.filter-group label{font:700 11px var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.filter-group input,.filter-group select{
+  min-width:150px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);
+  background:#fff;font:400 13px var(--font);
+}
+.filter-group input:focus,.filter-group select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,155,164,.15)}
+.filter-group.search{flex:1 1 200px}
+
+/* ===== Charts ===== */
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:16px}
+.chart-card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative}
+.chart-card h4{font:800 14px var(--font);margin-bottom:12px}
+.chart-container{position:relative;height:280px}
+
+/* ===== Export ===== */
+.export-preview{
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:16px;
+  font:400 13px var(--font);color:var(--muted);
+}
+
+/* ===== Modal ===== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;
+  align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--paper);border-radius:20px;max-width:640px;width:100%;
+  max-height:90vh;overflow-y:auto;padding:28px;position:relative;
+  box-shadow:0 24px 60px rgba(0,0,0,.25);
+}
+.modal-close{
+  position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
+  background:var(--bg);border:1px solid var(--line);cursor:pointer;font-size:16px;
+  display:grid;place-items:center;color:var(--muted);
+}
+.modal-close:hover{background:var(--accent-light);color:var(--accent)}
+.modal h3{font:800 20px var(--font);margin-bottom:16px}
+.modal .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal .detail-item{padding:10px;background:var(--bg);border-radius:10px}
+.modal .detail-item .dl{font:700 11px var(--font);color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+.modal .detail-item .dv{font:600 14px var(--font);color:var(--ink)}
+.modal .detail-full{grid-column:1/-1}
+
+/* ===== Responsive ===== */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);width:280px;max-width:85vw}
+  .sidebar.open{transform:translateX(0)!important}
+  .sidebar-close{display:grid}
+  .sidebar-overlay{display:block}
+  .main{margin-left:0}
+  .mobile-header{display:flex!important}
+  .charts-grid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .modal .detail-grid{grid-template-columns:1fr}
+}
+
+/* ===== Mobile Header ===== */
+.mobile-header{
+  display:none;position:sticky;top:0;z-index:5;padding:12px 16px;
   background:#ffffffd9;border-bottom:1px solid var(--line);backdrop-filter:saturate(180%) blur(6px);
+  align-items:center;gap:12px;
 }
-.nav{max-width:100%;margin:0 auto;padding:0 24px;width:100%;display:flex;justify-content:space-between;align-items:center;height:100%;gap:1rem;}
-.brand-img{height:32px}
-.nav-right { display: flex; align-items: center; gap: 24px; }
-.brand-text { text-align: right; }
-.brand-name{font:800 15px/1 var(--font)}
-.brand-sub{font:800 11px/1 var(--font); color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
-
-.header-tabs {
-    display: flex;
-    gap: 8px;
-    background: #eef2f3;
-    padding: 6px;
-    border-radius: 999px;
+.mobile-header .menu-btn{
+  width:40px;height:40px;border-radius:10px;background:transparent;
+  border:1px solid var(--line);cursor:pointer;display:grid;place-items:center;
 }
-.header-tab {
-    padding: 6px 16px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--muted);
-    text-decoration: none;
-    transition: .2s var(--ease);
-}
-.header-tab:hover {
-    color: var(--ink);
-}
-.header-tab.active {
-    background: #fff;
-    color: var(--accent);
-    box-shadow: 0 2px 8px rgba(0,0,0,.07);
-}
-
-.header-icon-btn {
-    background: transparent;
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    color: var(--muted);
-    transition: .2s var(--ease);
-}
-.header-icon-btn:hover, .header-icon-btn.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-}
-.header-icon-btn svg { width: 20px; height: 20px; }
-
-/* Side Navigation */
-.side-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: auto;
-    background: var(--paper);
-    border-right: 1px solid var(--line);
-    transform: translateX(-100%);
-    transition: transform .3s var(--ease);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-}
-.side-nav-header {
-    padding: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid var(--line);
-}
-.side-nav-tabs {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 0 24px;
-    flex-grow: 1;
-}
-.side-nav-footer {
-    padding: 24px;
-    border-top: 1px solid var(--line);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-}
-.user-avatar img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-.side-nav-footer .user-info {
-    display: none;
-}
-.user-name {
-    font-weight: 700;
-    font-size: 14px;
-}
-.user-email {
-    font-size: 12px;
-    color: var(--muted);
-}
-.side-nav-tab {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--ink);
-    text-decoration: none;
-    transition: .2s var(--ease);
-}
-.side-nav-tab:hover {
-    background: #f3f4f6;
-}
-.side-nav-tab.active {
-    background: var(--accent);
-    color: #fff;
-}
-.side-nav-tab.active .side-nav-icon {
-    color: #fff;
-}
-.side-nav-icon {
-    width: 20px;
-    height: 20px;
-    color: var(--muted);
-}
-.side-nav-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 5;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .3s var(--ease);
-}
-.side-nav-open .side-nav {
-    transform: translateX(0);
-}
-.side-nav-open .side-nav-overlay {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.main-controls {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-    align-items: center;
-}
-.search-bar {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 4px 16px;
-}
-.search-bar svg {
-    width: 20px;
-    height: 20px;
-    color: var(--muted);
-    margin-right: 8px;
-}
-.search-bar input {
-    width: 100%;
-    border: none;
-    background: transparent;
-    padding: 8px 0;
-    font-size: 15px;
-}
-.search-bar input:focus {
-    outline: none;
-}
-
-.container{padding:24px;max-width:100%;margin:0 auto; position: relative; z-index: 1;}
-.page-title{font:800 clamp(22px, 4vw, 28px)/1.2 var(--font); margin:0 0 24px;}
-
-.filter-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height .35s ease-in-out;
-}
-.filter-panel.open {
-    max-height: 500px; /* rough estimate */
-}
-.filters{
-  display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;
-  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px;
-  align-items:flex-end;
-}
-.filter-group{display:grid; gap:6px;}
-.filter-group label{font:700 12px var(--font); color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
-.filter-group input, .filter-group select{
-  min-width:180px;
-  padding:8px 12px; border-radius:10px; border:1px solid var(--line); background:#fff; font-size:14px;
-}
-.filter-group.search-filter{ flex:1 1 240px; }
-
-.btn {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: .2s var(--ease);
-}
-.btn:hover {
-    background: var(--accent-dk);
-}
-
-.charts-grid{
-    display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; margin-bottom:24px;
-}
-.chart-container{
-    background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px;
-    position: relative;
-    height: 320px;
-}
-.chart-title{
-    margin:0 0 16px; font:800 16px var(--font);
-}
-
-.summary-cards{
-  display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:24px;
-}
-.card{
-  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px;
-  display:grid; gap:4px;
-}
-.card-title{font:700 13px var(--font); color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin:0;}
-.card-value{font:800 28px/1.1 var(--font); color:var(--ink); margin:0;}
-
-.card.card-important {
-    background: var(--ticket-open-bg);
-    border-color: var(--ticket-open-ink);
-}
-.card.card-important .card-title,
-.card.card-important .card-value {
-    color: var(--ticket-open-ink);
-}
-
-.table-wrap{
-  background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow-x:auto;
-}
-.table-header {
-    padding: 16px;
-    border-bottom: 1px solid var(--line);
-}
-.table-title {
-    margin: 0;
-    font: 800 18px var(--font);
-}
-table{
-  width:100%; border-collapse:collapse;
-}
-thead tr{ border-bottom:1px solid var(--line); }
-th{
-  padding:12px 16px; text-align:left;
-  font:700 12px var(--font); color:var(--muted); text-transform:uppercase; letter-spacing:.05em; white-space:nowrap;
-}
-tbody tr{ border-bottom:1px solid var(--line); transition: background .15s ease; }
-tbody tr:last-child{ border-bottom:none; }
-tbody tr.ticket-open{
-    background:var(--ticket-open-bg);
-    border-color:var(--ticket-open-border);
-    font-weight: 700;
-}
-tbody tr.ticket-open:hover{ background: #fee5e7; }
-tbody tr:not(.ticket-open):hover{ background:#f9fafb; }
-
-td{ padding:14px 16px; font-size:14px; vertical-align:top; }
-.nps-detractor{ color:var(--nps-detractor-color); font-weight:700; }
-.nps-passive{ color:var(--nps-passive-color); }
-.nps-promoter{ color:var(--nps-promoter-color); }
-
-.status-open { color: var(--ticket-open-ink); font-weight: 700; text-transform: capitalize; }
-.status-resolved { color: var(--nps-promoter-color); text-transform: capitalize; }
-
-.comment-cell{ min-width:250px; }
-.comment-text{
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
-  font-size:13px; color:#4b5563; line-height:1.5;
-  white-space:pre-wrap;
-}
-.actions-cell button{
-    background:transparent; border:none; padding:4px; cursor:pointer;
-}
-.actions-cell svg{ width:16px; height:16px; color:var(--muted); }
-.actions-cell button:hover svg{ color:var(--ink); }
-
-@media(min-width: 1025px) {
-
-    .site-header {
-
-        padding-left: 260px;
-
-    }
-
-    .side-nav {
-
-        display: flex;
-
-        transform: translateX(0);
-
-        width: 260px; /* Explicitly set width for larger screens */
-
-    }
-
-    .container {
-
-        padding-left: 260px;
-
-    }
-
-    #menu-toggle,
-
-    .side-nav-overlay {
-
-        display: none;
-
-    }
-
-    .side-nav-header .brand-text {
-
-        display: flex; /* Show brand text on larger screens */
-
-    }
-
-    .side-nav-tab span {
-
-        display: inline; /* Show tab text on larger screens */
-
-    }
-
-    .side-nav-footer .user-info {
-
-        display: flex; /* Show user info on larger screens */
-
-    }
-
-    .side-nav-header {
-
-        justify-content: flex-start; /* Align to start on larger screens */
-
-    }
-
-    .side-nav-tab {
-
-        justify-content: flex-start; /* Align to start on larger screens */
-
-    }
-
-    .side-nav-footer {
-
-        justify-content: flex-start; /* Align to start on larger screens */
-
-    }
-
-}
-
-
-
-@media(max-width: 1024px) {
-
-    .side-nav {
-
-        display: none; /* Hide side-nav by default on screens <= 1024px */
-
-        width: 100px; /* Set a default width for potential display */
-
-    }
-
-    .site-header {
-
-        padding-left: 100px;
-
-    }
-
-    .container {
-
-        padding-left: 100px;
-
-    }
-
-    .brand-text {
-
-        display: none; /* Hide brand-text on main nav for screens <= 1024px */
-
-    }
-
-    .side-nav-header .brand-text {
-
-        display: none;
-
-    }
-
-    .side-nav-tab span {
-
-        display: none;
-
-    }
-
-    .side-nav-footer .user-info {
-
-        display: none;
-
-    }
-
-    .side-nav-header {
-
-        justify-content: center;
-
-    }
-
-    .side-nav-tab {
-
-        justify-content: center;
-
-    }
-
-    .side-nav-footer {
-
-        justify-content: center;
-
-    }
-
-}
-
-
-
-@media(max-width: 768px){
-
-    .charts-grid{ grid-template-columns:1fr; }
-
-    .side-nav-open .side-nav {
-
-        display: flex;
-
-        width: 100%;
-
-    }
-
-    .nav-right { display: none; }
-
-    .nav { justify-content: space-between; }
-
-    .site-header {
-
-        padding-left: 0;
-
-    }
-
-    .container {
-
-        padding-left: 0;
-
-    }
-
-    .side-nav-tab span {
-
-        display: inline;
-
-    }
-
-    .side-nav-footer .user-info {
-
-        display: flex;
-
-    }
-
-    .side-nav-tab {
-
-        justify-content: flex-start;
-
-    }
-
-    .side-nav-footer {
-
-        justify-content: flex-start;
-
-    }
-
-    .brand-text {
-
-        display: flex;
-
-    }
-
-    .brand-img {
-
-        display: none;
-
-    }
-
-}
+.mobile-header .menu-btn svg{width:20px;height:20px;color:var(--muted)}
+.mobile-header .title{font:700 15px var(--font);flex:1}
+
+/* ===== Priority row highlights ===== */
+tr.priority-critical{background:rgba(185,28,28,.04)}
+tr.priority-urgent{background:rgba(217,119,6,.04)}
+
+/* ===== Loading Spinner ===== */
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- Background -->
+<!-- Animated Mountain Background -->
 <div class="bg" aria-hidden="true">
   <div class="scroller">
     <div class="belt">
@@ -591,157 +318,265 @@ td{ padding:14px 16px; font-size:14px; vertical-align:top; }
   </div>
 </div>
 
-<!-- Header -->
-<header class="site-header">
-  <nav class="nav">
-    <button id="menu-toggle" class="header-icon-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-        </svg>
-    </button>
-    <div class="brand-text">
-        <div class="brand-name">Admin Dashboard</div>
-        <div class="brand-sub">Food Truck Survey</div>
-    </div>
-    <img class="brand-img" src="./assets/img/nhlogo.png" alt="Nippon Hasha">
-  </nav>
-</header>
+<!-- Mobile Header -->
+<div class="mobile-header">
+  <button class="menu-btn" id="menuToggle">
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+  </button>
+  <span class="title">Food Truck Admin</span>
+</div>
 
-<!-- Side Navigation -->
-<div id="side-nav-overlay" class="side-nav-overlay"></div>
-<nav id="side-nav" class="side-nav">
-    <div class="side-nav-header">
-        <img class="brand-img" src="./assets/img/nhlogo.png" alt="Nippon Hasha">
-    </div>
-    <div class="side-nav-tabs">
-        <a href="#" class="side-nav-tab active">
-            <svg xmlns="http://www.w3.org/2000/svg" class="side-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-            <span>Dashboard</span>
-        </a>
-        <a href="#" class="side-nav-tab">
-            <svg xmlns="http://www.w3.org/2000/svg" class="side-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3.5 3A1.5 1.5 0 002 4.5v3.879a1.5 1.5 0 00.44 1.06l7.5 7.5a1.5 1.5 0 002.12 0l3.879-3.879a1.5 1.5 0 000-2.12l-7.5-7.5A1.5 1.5 0 003.5 3zm4 4.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
-            <span>Tickets</span>
-        </a>
-        <a href="#" class="side-nav-tab">
-            <svg xmlns="http://www.w3.org/2000/svg" class="side-nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" /><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" /></svg>
-            <span>Analytics</span>
-        </a>
-    </div>
-    <div class="side-nav-footer">
-    </div>
-</nav>
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<main class="container">
-  <h1 class="page-title">Survey Dashboard</h1>
-
-  <div class="main-controls">
-    <div class="search-bar">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
-        <input type="search" id="filter-search" name="filter-search" placeholder="Search reasons...">
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="./assets/img/nhlogo.png" alt="Logo">
+      <span class="brand">ADMIN</span>
+      <button class="sidebar-close" id="sidebarClose">&#x2715;</button>
     </div>
-    <button id="filter-toggle" class="header-icon-btn" title="Advanced Filters">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path d="M3 4.75A.75.75 0 013.75 4h12.5a.75.75 0 010 1.5H3.75A.75.75 0 013 4.75zM3 9.75A.75.75 0 013.75 9h12.5a.75.75 0 010 1.5H3.75A.75.75 0 013 9.75zM3 14.75A.75.75 0 013.75 14h12.5a.75.75 0 010 1.5H3.75A.75.75 0 013 14.75z" /></svg>
-    </button>
-  </div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-tab active" data-tab="overview">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        Overview
+      </button>
+      <button class="sidebar-tab" data-tab="responses">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+        Responses
+      </button>
+      <button class="sidebar-tab" data-tab="analytics">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/></svg>
+        Analytics
+      </button>
+      <button class="sidebar-tab" data-tab="export">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        Export
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="https://crstntaro.github.io/NH_Survey/admin.html" target="_blank" rel="noopener" class="btn" style="text-decoration:none;text-align:center;display:block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        NH Survey Admin
+      </a>
+    </div>
+  </aside>
 
-  <div id="filter-panel" class="filter-panel">
-    <div class="filters">
-        <div class="filter-group">
-            <label for="filter-date-start">Start Date</label>
-            <input type="date" id="filter-date-start" name="filter-date-start">
+  <!-- Main Content -->
+  <main class="main" id="mainContent">
+
+    <!-- ===== OVERVIEW TAB ===== -->
+    <section class="tabpanel active" id="tab-overview">
+      <div class="card">
+        <h3>NPS Dashboard</h3>
+        <p class="subtitle">Monitor all NPS categories. Detractors are prioritized for win-back.</p>
+
+        <div class="kpis" id="overviewKpis">
+          <div class="kpi critical">
+            <div class="v" id="kpiCritical">-</div>
+            <div class="l">Critical (NPS 0-3)</div>
+          </div>
+          <div class="kpi warning">
+            <div class="v" id="kpiDetractors">-</div>
+            <div class="l">Detractors (NPS 4-6)</div>
+          </div>
+          <div class="kpi info">
+            <div class="v" id="kpiOpenTickets">-</div>
+            <div class="l">Open Tickets</div>
+          </div>
+          <div class="kpi success">
+            <div class="v" id="kpiPromoterCount">-</div>
+            <div class="l">Promoters (NPS 9-10)</div>
+          </div>
+          <div class="kpi">
+            <div class="v" id="kpiAvgFood">-</div>
+            <div class="l">Avg Food Rating</div>
+          </div>
         </div>
-        <div class="filter-group">
-            <label for="filter-date-end">End Date</label>
-            <input type="date" id="filter-date-end" name="filter-date-end">
+
+        <!-- NPS Summary -->
+        <div class="nps-summary">
+          <div class="nps-summary-inner">
+            <div class="nps-main">
+              <div class="nps-label">OVERALL NPS SCORE</div>
+              <div class="nps-value" id="overviewNpsScore">-</div>
+              <div class="nps-sublabel">Net Promoter Score</div>
+            </div>
+            <div class="nps-breakdown">
+              <div class="nps-stat">
+                <div class="nps-stat-value promoter" id="overviewPromotersPct">-</div>
+                <div class="nps-stat-label">Promoters (9-10)</div>
+              </div>
+              <div class="nps-stat">
+                <div class="nps-stat-value passive" id="overviewPassivesPct">-</div>
+                <div class="nps-stat-label">Passives (7-8)</div>
+              </div>
+              <div class="nps-stat">
+                <div class="nps-stat-value detractor" id="overviewDetractorsPct">-</div>
+                <div class="nps-stat-label">Detractors (0-6)</div>
+              </div>
+              <div class="nps-stat">
+                <div class="nps-stat-value" id="overviewTotal">-</div>
+                <div class="nps-stat-label">Total Responses</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="filter-group">
-            <label for="filter-ticket-status">Ticket Status</label>
-            <select id="filter-ticket-status" name="filter-ticket-status">
-                <option value="all">All</option>
-                <option value="open">Open</option>
-                <option value="resolved">Resolved</option>
+
+        <!-- NPS Category Buttons -->
+        <div class="nps-category-filters">
+          <button class="nps-cat-btn active detractor" data-nps-cat="detractors" id="btnDetractors">
+            <span class="nps-cat-icon">!</span>
+            <span class="nps-cat-label">Detractors</span>
+            <span class="nps-cat-count" id="btnDetractorsCount">0</span>
+          </button>
+          <button class="nps-cat-btn passive" data-nps-cat="passives" id="btnPassives">
+            <span class="nps-cat-icon">~</span>
+            <span class="nps-cat-label">Passives</span>
+            <span class="nps-cat-count" id="btnPassivesCount">0</span>
+          </button>
+          <button class="nps-cat-btn promoter" data-nps-cat="promoters" id="btnPromoters">
+            <span class="nps-cat-icon">&#x2713;</span>
+            <span class="nps-cat-label">Promoters</span>
+            <span class="nps-cat-count" id="btnPromotersCount">0</span>
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table id="overviewTable">
+            <thead id="overviewTableHead">
+              <tr><th>Age</th><th>NPS</th><th>Branch</th><th>Customer</th><th>Feedback</th><th>Priority</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="overviewBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RESPONSES TAB ===== -->
+    <section class="tabpanel" id="tab-responses">
+      <div class="card">
+        <h3>All Responses</h3>
+        <p class="subtitle">Browse and filter all completed survey responses.</p>
+
+        <div class="filters-bar">
+          <div class="filter-group search">
+            <label>Search</label>
+            <input type="search" id="respSearch" placeholder="Search feedback...">
+          </div>
+          <div class="filter-group">
+            <label>Start Date</label>
+            <input type="date" id="respDateStart">
+          </div>
+          <div class="filter-group">
+            <label>End Date</label>
+            <input type="date" id="respDateEnd">
+          </div>
+          <div class="filter-group">
+            <label>NPS Category</label>
+            <select id="respNps">
+              <option value="all">All</option>
+              <option value="detractor">Detractors (0-6)</option>
+              <option value="passive">Passives (7-8)</option>
+              <option value="promoter">Promoters (9-10)</option>
             </select>
-        </div>
-        <div class="filter-group">
-            <label for="filter-nps">NPS Score</label>
-            <select id="filter-nps" name="filter-nps">
-                <option value="all">All Scores</option>
-                <option value="detractors">Detractors (0-6)</option>
-                <option value="passives">Passives (7-8)</option>
-                <option value="promoters">Promoters (9-10)</option>
+          </div>
+          <div class="filter-group">
+            <label>Branch</label>
+            <select id="respBranch"><option value="all">All Branches</option></select>
+          </div>
+          <div class="filter-group">
+            <label>Status</label>
+            <select id="respStatus">
+              <option value="all">All</option>
+              <option value="open">Open</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+              <option value="voc">VOC</option>
             </select>
+          </div>
         </div>
-        <div class="filter-group">
-            <label for="filter-branch">Branch</label>
-            <select id="filter-branch" name="filter-branch">
-                <option value="all">All Branches</option>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>NPS</th><th>Branch</th><th>Customer</th><th>Feedback</th><th>Food</th><th>Service</th><th>Price</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="responsesBody"></tbody>
+          </table>
+        </div>
+        <div style="text-align:right;color:var(--muted);font-size:12px;margin-top:8px">
+          Showing <span id="respCount">0</span> responses
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ANALYTICS TAB ===== -->
+    <section class="tabpanel" id="tab-analytics">
+      <div class="card">
+        <h3>Analytics</h3>
+        <p class="subtitle">Visual breakdown of survey data and trends.</p>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h4>NPS Distribution</h4>
+          <div class="chart-container"><canvas id="chartNpsDist"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4>Responses by Branch</h4>
+          <div class="chart-container"><canvas id="chartBranch"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4>Average Ratings</h4>
+          <div class="chart-container"><canvas id="chartRatings"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4>Response Trend (Last 30 Days)</h4>
+          <div class="chart-container"><canvas id="chartTrend"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EXPORT TAB ===== -->
+    <section class="tabpanel" id="tab-export">
+      <div class="card">
+        <h3>Export Data</h3>
+        <p class="subtitle">Download survey responses as CSV.</p>
+
+        <div class="filters-bar" style="margin-bottom:16px">
+          <div class="filter-group">
+            <label>NPS Category</label>
+            <select id="exportNps">
+              <option value="all">All</option>
+              <option value="detractor">Detractors</option>
+              <option value="passive">Passives</option>
+              <option value="promoter">Promoters</option>
             </select>
+          </div>
+          <div class="filter-group">
+            <label>Branch</label>
+            <select id="exportBranch"><option value="all">All Branches</option></select>
+          </div>
+          <div class="filter-group" style="align-self:end">
+            <button class="btn" id="exportBtn">Download CSV</button>
+          </div>
         </div>
-        <div class="filter-group">
-            <button id="apply-filters" class="btn">Apply Filters</button>
-        </div>
-    </div>
+        <div class="export-preview" id="exportPreview">Select filters and click Download CSV. <strong>0</strong> responses will be exported.</div>
+      </div>
+    </section>
+
+  </main>
 </div>
 
-<div class="summary-cards">
-  <div class="card">
-    <h3 class="card-title">Total Responses</h3>
-    <p id="total-responses" class="card-value">0</p>
-  </div>
-  <div class="card">
-    <h3 class="card-title">Overall NPS</h3>
-    <p id="overall-nps" class="card-value">0</p>
-  </div>
-  <div class="card">
-    <h3 class="card-title">Promoters</h3>
-    <p id="total-promoters" class="card-value">0</p>
-  </div>
-  <div class="card">
-    <h3 class="card-title">Passives</h3>
-    <p id="total-passives" class="card-value">0</p>
-  </div>
-  <div class="card card-important">
-    <h3 class="card-title">Open Tickets</h3>
-    <p id="total-tickets" class="card-value">0</p>
-  </div>
-  <div class="card">
-    <h3 class="card-title">Detractors</h3>
-    <p id="total-detractors" class="card-value">0</p>
+<!-- Response Detail Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" id="modalClose">&#x2715;</button>
+    <h3 id="modalTitle">Response Detail</h3>
+    <div id="modalBody"></div>
   </div>
 </div>
-
-<div class="charts-grid">
-    <div class="chart-container">
-        <h2 class="chart-title">NPS Distribution</h2>
-        <canvas id="nps-chart"></canvas>
-    </div>
-    <div class="chart-container">
-        <h2 class="chart-title">Responses by Branch</h2>
-        <canvas id="branch-chart"></canvas>
-    </div>
-</div>
-
-<div class="table-wrap">
-    <div class="table-header">
-        <h2 class="table-title">All Responses</h2>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Receipt</th>
-          <th>Branch</th>
-          <th>NPS</th>
-          <th>Reason</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="responses-table-body">
-      </tbody>
-    </table>
-</div>
-</main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="admin.js"></script>
