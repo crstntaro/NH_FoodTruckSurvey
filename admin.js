@@ -1,16 +1,26 @@
 // ============================================================
 //  Food Truck Survey — Admin Dashboard
-//  Connects to Supabase, renders overview, responses,
-//  analytics, and export tabs with full NPS management.
+//  Auth-gated dashboard with NPS management + reward validator.
+//  Reads survey data via Supabase (anon + RLS); privileged
+//  actions (login, validate, redeem) go through admin-auth.
 // ============================================================
 
 const SUPABASE_URL = 'https://xkzicpfxlvgovugumspr.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhremljcGZ4bHZnb3Z1Z3Vtc3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyODI1MzAsImV4cCI6MjA3Mjg1ODUzMH0.8xykX92QwVWccQyOz60ONb_CirdbGcKvQD8FjO8RJrA';
+const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
 
 let sb = null;
 let allResponses = [];
 let overviewNpsCat = 'detractors';
 let charts = {};
+let currentUser = null;
+let currentValidationRecord = null;
+let dashboardLoaded = false;
+
+// Which tabs each role may see. Anything not listed = all tabs.
+const ROLE_TABS = {
+    validator: ['validator', 'overview', 'responses'],
+};
 
 // ============================================================
 //  Utilities
@@ -36,14 +46,11 @@ function npsBadge(score) {
     return `<span class="nps-badge ${cat}">${score}</span>`;
 }
 
-function humanAgo(dateStr) {
+function fmtDate(dateStr) {
     if (!dateStr) return '-';
-    const ms = Date.now() - new Date(dateStr).getTime();
-    const days = Math.floor(ms / 86400000);
-    const hours = Math.floor((ms % 86400000) / 3600000);
-    if (days > 0) return `${days}d`;
-    if (hours > 0) return `${hours}h`;
-    return '<1h';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '-';
+    return d.toLocaleDateString('en', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function agingBadge(dateStr, status) {
@@ -77,6 +84,82 @@ function debounce(func, delay) {
 }
 
 // ============================================================
+//  Auth
+// ============================================================
+
+const Auth = {
+    token: () => localStorage.getItem('ft_admin_token'),
+    getUser() {
+        try { return JSON.parse(localStorage.getItem('ft_admin_user') || 'null'); }
+        catch { return null; }
+    },
+    save(data) {
+        if (data.token) localStorage.setItem('ft_admin_token', data.token);
+        if (data.refresh_token) localStorage.setItem('ft_admin_refresh', data.refresh_token);
+        if (data.user) localStorage.setItem('ft_admin_user', JSON.stringify(data.user));
+    },
+    clear() {
+        localStorage.removeItem('ft_admin_token');
+        localStorage.removeItem('ft_admin_refresh');
+        localStorage.removeItem('ft_admin_user');
+    },
+    async login(email, password) {
+        const res = await fetch(`${FUNCTIONS_URL}/admin-auth/login`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || data.message || 'Invalid email or password');
+        }
+        this.save(data);
+        return data.user;
+    },
+    async verify() {
+        const token = this.token();
+        if (!token) return null;
+        try {
+            const res = await fetch(`${FUNCTIONS_URL}/admin-auth/verify`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: '{}',
+            });
+            if (!res.ok) return null;
+            const data = await res.json().catch(() => ({}));
+            return data.valid ? data.user : null;
+        } catch {
+            return null;
+        }
+    },
+    async logout() {
+        const token = this.token();
+        if (token) {
+            try {
+                await fetch(`${FUNCTIONS_URL}/admin-auth/logout`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: '{}',
+                });
+            } catch { /* ignore network errors on logout */ }
+        }
+        this.clear();
+    },
+};
+
+// Authenticated call to an admin-auth sub-route.
+async function adminApi(path, body) {
+    const res = await fetch(`${FUNCTIONS_URL}/admin-auth/${path}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${Auth.token()}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body || {}),
+    });
+    let data = null;
+    try { data = await res.json(); } catch { /* non-json */ }
+    return { ok: res.ok, status: res.status, data };
+}
+
+// ============================================================
 //  Data Transformation
 // ============================================================
 
@@ -85,7 +168,6 @@ function transformRow(row) {
     const nps = sd.q8_nps !== undefined && sd.q8_nps !== null ? Number(sd.q8_nps) : null;
     const branch = sd.q3_branch || row.brand || 'Unknown';
 
-    // Determine ticket status: use DB column if exists, else derive from NPS
     let ticketStatus = row.ticket_status;
     if (!ticketStatus) {
         ticketStatus = (nps !== null && nps <= 6) ? 'open' : 'resolved';
@@ -95,11 +177,11 @@ function transformRow(row) {
         id: row.id,
         date: row.completed_at ? row.completed_at.slice(0, 10) : (row.created_at ? row.created_at.slice(0, 10) : '-'),
         completedAt: row.completed_at || row.created_at,
-        receipt: row.receipt_no || '-',
+        receipt: row.receipt_number || '-',
         branch: branch,
         name: row.name || '-',
         email: row.email || '',
-        phone: row.contact_number || '',
+        phone: row.phone || '',
         nps: nps,
         npsComment: sd.q8_comment || '',
         npsCommentType: sd.q8_comment_type || '',
@@ -118,6 +200,8 @@ function transformRow(row) {
         cuisines: sd.q9 || '',
         returnIntention: sd.q10_return || '',
         followUpdates: sd.q10 || '',
+        rewardCode: row.reward_code || '',
+        rewardClaimed: !!row.reward_claimed,
         ticketStatus: ticketStatus,
         raw: row
     };
@@ -154,7 +238,6 @@ async function updateTicketStatus(id, newStatus) {
         return true;
     } catch (err) {
         console.warn('Failed to update ticket status:', err?.message);
-        // Still update locally even if DB update fails (column might not exist yet)
         return true;
     }
 }
@@ -238,18 +321,15 @@ function paintOverview() {
     const passives = allResponses.filter(r => r.nps !== null && r.nps >= 7 && r.nps <= 8);
     const openTickets = allResponses.filter(r => r.ticketStatus === 'open' || !r.ticketStatus);
 
-    // Avg food rating
     const foodRatings = allResponses.filter(r => r.food !== null).map(r => r.food);
     const avgFood = foodRatings.length > 0 ? (foodRatings.reduce((a, b) => a + b, 0) / foodRatings.length).toFixed(1) : '-';
 
-    // KPIs
     document.getElementById('kpiCritical').textContent = critical.length;
     document.getElementById('kpiDetractors').textContent = detractors.length - critical.length;
     document.getElementById('kpiOpenTickets').textContent = openTickets.length;
     document.getElementById('kpiPromoterCount').textContent = promoters.length;
     document.getElementById('kpiAvgFood').textContent = avgFood;
 
-    // NPS Summary
     const npsData = calculateNPS(allResponses);
     const npsScoreEl = document.getElementById('overviewNpsScore');
     npsScoreEl.textContent = npsData.score;
@@ -260,7 +340,6 @@ function paintOverview() {
     document.getElementById('overviewDetractorsPct').textContent = `${npsData.total ? Math.round((npsData.detractors / npsData.total) * 100) : 0}%`;
     document.getElementById('overviewTotal').textContent = npsData.total;
 
-    // Button counts
     document.getElementById('btnDetractorsCount').textContent = detractors.length;
     document.getElementById('btnPassivesCount').textContent = passives.length;
     document.getElementById('btnPromotersCount').textContent = promoters.length;
@@ -278,7 +357,7 @@ function paintOverviewTable() {
 
     if (overviewNpsCat === 'detractors') {
         rows = getDetractors(allResponses);
-        emptyMsg = 'No detractors found! Great job!';
+        emptyMsg = 'No detractors found. Great job!';
         thead.innerHTML = '<tr><th>Age</th><th>NPS</th><th>Branch</th><th>Customer</th><th>Feedback</th><th>Priority</th><th>Status</th><th>Actions</th></tr>';
     } else if (overviewNpsCat === 'passives') {
         rows = allResponses.filter(r => r.nps !== null && r.nps >= 7 && r.nps <= 8)
@@ -306,14 +385,14 @@ function paintOverviewTable() {
             if (r.nps <= 3) tr.className = 'priority-critical';
             else if (daysOld > 7) tr.className = 'priority-urgent';
             tr.innerHTML = `
-                <td>${agingBadge(r.completedAt, r.ticketStatus)}</td>
-                <td>${npsBadge(r.nps)}</td>
-                <td>${escapeHtml(r.branch)}</td>
-                <td>${escapeHtml(r.name)}<br><small style="color:var(--muted)">${escapeHtml(r.email)}</small></td>
-                <td style="max-width:200px">${escapeHtml(r.npsComment) || '-'}</td>
-                <td><span class="aging-badge ${priorityBadgeClass(priority)}">${priority}</span></td>
-                <td>${statusSelectHtml(r.ticketStatus, r.id)}</td>
-                <td><button class="btn btn-sm btn-outline" data-view="${escapeHtml(r.id)}">View</button></td>
+                <td data-label="Age">${agingBadge(r.completedAt, r.ticketStatus)}</td>
+                <td data-label="NPS">${npsBadge(r.nps)}</td>
+                <td data-label="Branch">${escapeHtml(r.branch)}</td>
+                <td data-label="Customer">${escapeHtml(r.name)}<br><small style="color:var(--muted)">${escapeHtml(r.email)}</small></td>
+                <td data-label="Feedback" class="cell-feedback">${escapeHtml(r.npsComment) || '-'}</td>
+                <td data-label="Priority"><span class="aging-badge ${priorityBadgeClass(priority)}">${priority}</span></td>
+                <td data-label="Status">${statusSelectHtml(r.ticketStatus, r.id)}</td>
+                <td data-label="Actions"><button class="btn btn-sm btn-outline" data-view="${escapeHtml(r.id)}">View</button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -321,13 +400,13 @@ function paintOverviewTable() {
         rows.forEach(r => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${agingBadge(r.completedAt, r.ticketStatus)}</td>
-                <td>${npsBadge(r.nps)}</td>
-                <td>${escapeHtml(r.branch)}</td>
-                <td>${escapeHtml(r.name)}<br><small style="color:var(--muted)">${escapeHtml(r.email)}</small></td>
-                <td style="max-width:200px">${escapeHtml(r.npsComment) || '-'}</td>
-                <td>${statusSelectHtml(r.ticketStatus, r.id)}</td>
-                <td><button class="btn btn-sm btn-outline" data-view="${escapeHtml(r.id)}">View</button></td>
+                <td data-label="Age">${agingBadge(r.completedAt, r.ticketStatus)}</td>
+                <td data-label="NPS">${npsBadge(r.nps)}</td>
+                <td data-label="Branch">${escapeHtml(r.branch)}</td>
+                <td data-label="Customer">${escapeHtml(r.name)}<br><small style="color:var(--muted)">${escapeHtml(r.email)}</small></td>
+                <td data-label="Feedback" class="cell-feedback">${escapeHtml(r.npsComment) || '-'}</td>
+                <td data-label="Status">${statusSelectHtml(r.ticketStatus, r.id)}</td>
+                <td data-label="Actions"><button class="btn btn-sm btn-outline" data-view="${escapeHtml(r.id)}">View</button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -373,16 +452,16 @@ function paintResponses() {
     filtered.forEach(r => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${escapeHtml(r.date)}</td>
-            <td>${npsBadge(r.nps)}</td>
-            <td>${escapeHtml(r.branch)}</td>
-            <td>${escapeHtml(r.name)}<br><small style="color:var(--muted)">${escapeHtml(r.email)}</small></td>
-            <td style="max-width:180px">${escapeHtml(r.npsComment) || '-'}</td>
-            <td>${r.food !== null ? `<strong>${r.food}</strong>/10` : '-'}</td>
-            <td>${r.service !== null ? `<strong>${r.service}</strong>/10` : '-'}</td>
-            <td>${r.price !== null ? `<strong>${r.price}</strong>/10` : '-'}</td>
-            <td>${statusSelectHtml(r.ticketStatus, r.id)}</td>
-            <td><button class="btn btn-sm btn-outline" data-view="${escapeHtml(r.id)}">View</button></td>
+            <td data-label="Date">${escapeHtml(r.date)}</td>
+            <td data-label="NPS">${npsBadge(r.nps)}</td>
+            <td data-label="Branch">${escapeHtml(r.branch)}</td>
+            <td data-label="Customer">${escapeHtml(r.name)}<br><small style="color:var(--muted)">${escapeHtml(r.email)}</small></td>
+            <td data-label="Feedback" class="cell-feedback">${escapeHtml(r.npsComment) || '-'}</td>
+            <td data-label="Food">${r.food !== null ? `<strong>${r.food}</strong>/10` : '-'}</td>
+            <td data-label="Service">${r.service !== null ? `<strong>${r.service}</strong>/10` : '-'}</td>
+            <td data-label="Price">${r.price !== null ? `<strong>${r.price}</strong>/10` : '-'}</td>
+            <td data-label="Status">${statusSelectHtml(r.ticketStatus, r.id)}</td>
+            <td data-label="Actions"><button class="btn btn-sm btn-outline" data-view="${escapeHtml(r.id)}">View</button></td>
         `;
         tbody.appendChild(tr);
     });
@@ -404,13 +483,11 @@ function paintAnalytics() {
 
     const npsData = calculateNPS(allResponses);
 
-    // NPS Distribution Doughnut
     renderChart('chartNpsDist', 'doughnut', {
         labels: ['Promoters', 'Passives', 'Detractors'],
         datasets: [{ data: [npsData.promoters, npsData.passives, npsData.detractors], backgroundColor: [ok, warn, bad], borderWidth: 0 }]
     }, { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } });
 
-    // Responses by Branch
     const branches = [...new Set(allResponses.map(r => r.branch))];
     const branchCounts = branches.map(b => allResponses.filter(r => r.branch === b).length);
     renderChart('chartBranch', 'bar', {
@@ -418,7 +495,6 @@ function paintAnalytics() {
         datasets: [{ label: 'Responses', data: branchCounts, backgroundColor: accent + 'b3' }]
     }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } });
 
-    // Average Ratings Radar
     const avgOf = (arr) => arr.length > 0 ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : 0;
     const foods = allResponses.filter(r => r.food !== null).map(r => r.food);
     const services = allResponses.filter(r => r.service !== null).map(r => r.service);
@@ -428,7 +504,6 @@ function paintAnalytics() {
         datasets: [{ label: 'Average Rating', data: [avgOf(foods), avgOf(services), avgOf(prices)], backgroundColor: accent + '33', borderColor: accent, pointBackgroundColor: accent, borderWidth: 2 }]
     }, { responsive: true, maintainAspectRatio: false, scales: { r: { beginAtZero: true, max: 10 } }, plugins: { legend: { display: false } } });
 
-    // Response Trend (Last 30 days)
     const now = new Date();
     const labels = [];
     const counts = [];
@@ -479,7 +554,7 @@ function downloadCSV() {
     const filtered = getExportFiltered();
     if (filtered.length === 0) return;
 
-    const headers = ['Date', 'Receipt', 'Branch', 'Name', 'Email', 'Phone', 'NPS', 'NPS Category', 'NPS Comment', 'Food Rating', 'Food Comment', 'Service Rating', 'Service Comment', 'Price Rating', 'Price Comment', 'Enjoy Experience', 'Discovery', 'Spend', 'Cuisines', 'Return Intention', 'Ticket Status'];
+    const headers = ['Date', 'Receipt', 'Branch', 'Name', 'Email', 'Phone', 'NPS', 'NPS Category', 'NPS Comment', 'Food Rating', 'Food Comment', 'Service Rating', 'Service Comment', 'Price Rating', 'Price Comment', 'Enjoy Experience', 'Discovery', 'Spend', 'Cuisines', 'Return Intention', 'Reward Code', 'Reward Claimed', 'Ticket Status'];
 
     const csvRows = [headers.join(',')];
     filtered.forEach(r => {
@@ -491,7 +566,7 @@ function downloadCSV() {
             r.price, `"${(r.priceComment || '').replace(/"/g, '""')}"`,
             r.enjoyExperience, r.discovery, r.spend,
             `"${(r.cuisines || '').replace(/"/g, '""')}"`,
-            r.returnIntention, r.ticketStatus
+            r.returnIntention, r.rewardCode, r.rewardClaimed ? 'Yes' : 'No', r.ticketStatus
         ];
         csvRows.push(row.join(','));
     });
@@ -503,6 +578,122 @@ function downloadCSV() {
     a.download = `food-truck-survey-export-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+}
+
+// ============================================================
+//  Validator Tab
+// ============================================================
+
+function resetValidator() {
+    currentValidationRecord = null;
+    document.getElementById('validatorStatus').textContent = 'Enter a reward code or receipt number to validate.';
+    document.getElementById('validatorStatus').className = 'val-status';
+    document.getElementById('validatorDetails').style.display = 'none';
+    document.getElementById('validatorActions').style.display = 'none';
+}
+
+async function runValidate() {
+    const input = document.getElementById('validatorInput');
+    const query = input.value.trim();
+    const statusEl = document.getElementById('validatorStatus');
+    const detailsEl = document.getElementById('validatorDetails');
+    const actionsEl = document.getElementById('validatorActions');
+
+    if (!query) {
+        statusEl.textContent = 'Please enter a code or receipt number.';
+        statusEl.className = 'val-status invalid';
+        detailsEl.style.display = 'none';
+        actionsEl.style.display = 'none';
+        return;
+    }
+
+    statusEl.textContent = 'Searching…';
+    statusEl.className = 'val-status';
+    detailsEl.style.display = 'none';
+    actionsEl.style.display = 'none';
+
+    let resp;
+    try {
+        resp = await adminApi('validate-reward', { query });
+    } catch {
+        statusEl.textContent = '⚠️ Network error. Please try again.';
+        statusEl.className = 'val-status invalid';
+        return;
+    }
+
+    if (!resp.ok || !resp.data || resp.data.success === false || !resp.data.data) {
+        statusEl.textContent = '❌ No matching record found.';
+        statusEl.className = 'val-status invalid';
+        currentValidationRecord = null;
+        return;
+    }
+
+    const rec = resp.data.data;
+    currentValidationRecord = rec;
+    const sd = rec.survey_data || {};
+    const nps = sd.q8_nps !== undefined && sd.q8_nps !== null ? Number(sd.q8_nps) : null;
+
+    document.getElementById('valCustomer').textContent = rec.name || '-';
+    document.getElementById('valNps').innerHTML = npsBadge(nps);
+    document.getElementById('valReceipt').textContent = rec.receipt_number || '-';
+    document.getElementById('valCode').textContent = rec.reward_code || '-';
+    document.getElementById('valDate').textContent = fmtDate(rec.completed_at || rec.created_at);
+
+    if (rec.reward_claimed) {
+        statusEl.textContent = '⚠️ Reward already claimed';
+        statusEl.className = 'val-status claimed';
+        let info = `Claimed on ${fmtDate(rec.reward_claimed_at)}`;
+        document.getElementById('valRewardStatus').innerHTML = `<span style="color:var(--warn)">${escapeHtml(info)}</span>`;
+        actionsEl.style.display = 'none';
+    } else {
+        statusEl.textContent = '✅ Valid — reward available';
+        statusEl.className = 'val-status valid';
+        document.getElementById('valRewardStatus').innerHTML = '<span style="color:var(--ok)">Unclaimed</span>';
+        const btn = document.getElementById('markRedeemedBtn');
+        btn.disabled = false;
+        btn.textContent = 'Mark as Redeemed';
+        actionsEl.style.display = 'flex';
+    }
+
+    detailsEl.style.display = 'block';
+}
+
+async function runMarkRedeemed() {
+    if (!currentValidationRecord) return;
+    const btn = document.getElementById('markRedeemedBtn');
+    const statusEl = document.getElementById('validatorStatus');
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+
+    let resp;
+    try {
+        resp = await adminApi('mark-redeemed', { id: currentValidationRecord.id });
+    } catch {
+        btn.disabled = false;
+        btn.textContent = 'Mark as Redeemed';
+        statusEl.textContent = '⚠️ An error occurred. Please try again.';
+        statusEl.className = 'val-status invalid';
+        return;
+    }
+
+    if (resp.ok && resp.data && resp.data.success !== false) {
+        const claimedAt = (resp.data.data && resp.data.data.reward_claimed_at) || new Date().toISOString();
+        btn.textContent = '✓ Redeemed';
+        statusEl.textContent = '✅ Reward successfully marked as redeemed!';
+        statusEl.className = 'val-status valid';
+        document.getElementById('valRewardStatus').innerHTML = `<span style="color:var(--warn)">Claimed on ${escapeHtml(fmtDate(claimedAt))}</span>`;
+        document.getElementById('validatorActions').style.display = 'none';
+        currentValidationRecord.reward_claimed = true;
+
+        // Keep local dashboard data in sync if this record is loaded.
+        const local = allResponses.find(r => r.id === currentValidationRecord.id);
+        if (local) local.rewardClaimed = true;
+    } else {
+        btn.disabled = false;
+        btn.textContent = 'Mark as Redeemed';
+        statusEl.textContent = '❌ Failed to mark as redeemed. Please try again.';
+        statusEl.className = 'val-status invalid';
+    }
 }
 
 // ============================================================
@@ -525,6 +716,8 @@ function showResponseDetail(id) {
             <div class="detail-item"><div class="dl">Email</div><div class="dv">${escapeHtml(r.email)}</div></div>
             <div class="detail-item"><div class="dl">Phone</div><div class="dv">${escapeHtml(r.phone) || '-'}</div></div>
             <div class="detail-item"><div class="dl">Status</div><div class="dv">${escapeHtml(r.ticketStatus)}</div></div>
+            <div class="detail-item"><div class="dl">Reward Code</div><div class="dv">${escapeHtml(r.rewardCode) || '-'}</div></div>
+            <div class="detail-item"><div class="dl">Reward</div><div class="dv">${r.rewardClaimed ? 'Claimed' : 'Unclaimed'}</div></div>
             <div class="detail-item detail-full"><div class="dl">NPS Feedback</div><div class="dv">${escapeHtml(r.npsComment) || '-'}</div></div>
             <div class="detail-item"><div class="dl">Food Rating</div><div class="dv">${r.food !== null ? r.food + '/10' : '-'}</div></div>
             <div class="detail-item"><div class="dl">Service Rating</div><div class="dv">${r.service !== null ? r.service + '/10' : '-'}</div></div>
@@ -554,11 +747,11 @@ function setTab(tabName) {
     const tab = document.querySelector(`.sidebar-tab[data-tab="${tabName}"]`);
     if (tab) tab.classList.add('active');
 
-    // Paint tab-specific content
     if (tabName === 'overview') paintOverview();
     if (tabName === 'responses') paintResponses();
     if (tabName === 'analytics') paintAnalytics();
     if (tabName === 'export') updateExportPreview();
+    if (tabName === 'validator') document.getElementById('validatorInput')?.focus();
 }
 
 // ============================================================
@@ -580,26 +773,116 @@ function populateBranchDropdowns() {
 }
 
 // ============================================================
+//  Role-based visibility
+// ============================================================
+
+function applyRoleVisibility(role) {
+    const allowed = ROLE_TABS[role];
+    document.querySelectorAll('.sidebar-tab[data-tab]').forEach(tab => {
+        const name = tab.dataset.tab;
+        const show = !allowed || allowed.includes(name);
+        tab.style.display = show ? '' : 'none';
+    });
+    // Pick a sensible default tab for the role.
+    const defaultTab = (allowed && !allowed.includes('overview')) ? allowed[0] : 'overview';
+    return defaultTab;
+}
+
+// ============================================================
+//  Screen switching (login vs app)
+// ============================================================
+
+function hideBootLoader() {
+    const bl = document.getElementById('bootLoader');
+    if (bl) bl.style.display = 'none';
+}
+
+function showLogin(message) {
+    hideBootLoader();
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appShell').style.display = 'none';
+    if (message) {
+        const err = document.getElementById('loginError');
+        err.textContent = message;
+        err.style.display = 'block';
+    }
+}
+
+async function showApp(user) {
+    currentUser = user;
+    hideBootLoader();
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appShell').style.display = 'flex';
+
+    // User badge + role
+    document.getElementById('userBadgeEmail').textContent = user.email || '';
+    document.getElementById('userBadgeAvatar').textContent = (user.email || '?').charAt(0);
+    const roleLabel = (user.role || '').replace('_', ' ');
+    document.getElementById('userBadgeRole').textContent = roleLabel;
+
+    const defaultTab = applyRoleVisibility(user.role);
+
+    if (!dashboardLoaded) {
+        document.getElementById('overviewBody').innerHTML = '<tr><td colspan="8"><div class="empty"><div class="spinner"></div><br>Loading responses…</div></td></tr>';
+        allResponses = await fetchResponses();
+        populateBranchDropdowns();
+        dashboardLoaded = true;
+    }
+
+    resetValidator();
+    setTab(defaultTab);
+}
+
+// ============================================================
 //  Init
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Supabase init
     if (window.supabase?.createClient) {
         sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
-    // Sidebar navigation
+    // ---- Login form ----
+    const loginForm = document.getElementById('loginForm');
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('loginBtn');
+        const err = document.getElementById('loginError');
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        err.style.display = 'none';
+        btn.disabled = true;
+        btn.classList.add('loading');
+        try {
+            const user = await Auth.login(email, password);
+            await showApp(user);
+        } catch (ex) {
+            err.textContent = ex.message || 'Login failed.';
+            err.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        }
+    });
+
+    // ---- Logout ----
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await Auth.logout();
+        dashboardLoaded = false;
+        allResponses = [];
+        location.reload();
+    });
+
+    // ---- Sidebar navigation ----
     document.querySelectorAll('.sidebar-tab[data-tab]').forEach(tab => {
         tab.addEventListener('click', () => {
             setTab(tab.dataset.tab);
-            // Close mobile sidebar
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('sidebarOverlay').classList.remove('visible');
         });
     });
 
-    // Mobile menu
+    // ---- Mobile menu ----
     document.getElementById('menuToggle').addEventListener('click', () => {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('sidebarOverlay').classList.add('visible');
@@ -613,7 +896,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('sidebarOverlay').classList.remove('visible');
     });
 
-    // NPS category buttons (overview)
+    // ---- NPS category buttons (overview) ----
     document.querySelectorAll('.nps-cat-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             overviewNpsCat = btn.dataset.npsCat;
@@ -623,20 +906,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Response filters
+    // ---- Response filters ----
     const debouncedPaint = debounce(paintResponses, 300);
     document.getElementById('respSearch').addEventListener('input', debouncedPaint);
     ['respDateStart', 'respDateEnd', 'respNps', 'respBranch', 'respStatus'].forEach(id => {
         document.getElementById(id).addEventListener('change', paintResponses);
     });
 
-    // Export
+    // ---- Export ----
     document.getElementById('exportBtn').addEventListener('click', downloadCSV);
     ['exportNps', 'exportBranch'].forEach(id => {
         document.getElementById(id).addEventListener('change', updateExportPreview);
     });
 
-    // Modal close
+    // ---- Validator ----
+    document.getElementById('validateBtn').addEventListener('click', runValidate);
+    document.getElementById('validatorInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); runValidate(); }
+    });
+    document.getElementById('markRedeemedBtn').addEventListener('click', runMarkRedeemed);
+    document.getElementById('validatorClearBtn').addEventListener('click', () => {
+        document.getElementById('validatorInput').value = '';
+        resetValidator();
+        document.getElementById('validatorInput').focus();
+    });
+
+    // ---- Modal close ----
     document.getElementById('modalClose').addEventListener('click', () => {
         document.getElementById('modalOverlay').classList.remove('show');
     });
@@ -646,18 +941,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Show loading
-    document.getElementById('overviewBody').innerHTML = '<tr><td colspan="8"><div class="empty"><div class="spinner"></div><br>Loading responses...</div></td></tr>';
-
-    // Fetch data
-    allResponses = await fetchResponses();
-    populateBranchDropdowns();
-
-    if (allResponses.length === 0 && !sb) {
-        document.getElementById('overviewBody').innerHTML = '<tr><td colspan="8"><div class="empty">Could not connect to database. Check Supabase configuration.</div></td></tr>';
-        return;
+    // ---- Auth check on load ----
+    const existingUser = await Auth.verify();
+    if (existingUser) {
+        await showApp(existingUser);
+    } else {
+        Auth.clear();
+        showLogin();
     }
-
-    // Paint default tab
-    setTab('overview');
 });

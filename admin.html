@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Admin Dashboard — Food Truck Survey</title>
+<link rel="icon" type="image/png" href="./assets/img/nhlogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -82,14 +83,14 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1
 .sidebar-footer .btn:hover{background:rgba(255,255,255,.1)}
 
 /* ===== Main Content ===== */
-.main{flex:1;margin-left:var(--sidebar-w);padding:24px;position:relative;z-index:1}
+.main{flex:1;min-width:0;margin-left:var(--sidebar-w);padding:24px;position:relative;z-index:1}
 .tabpanel{display:none}
 .tabpanel.active{display:block}
 
 /* ===== Cards & KPIs ===== */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
 .kpi{
-  border:1px solid var(--line);border-radius:14px;padding:16px;
+  border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0;
   background:var(--paper);position:relative;overflow:hidden;
   transition:transform var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease);
 }
@@ -259,12 +260,19 @@ td{padding:14px 16px;font-size:14px;vertical-align:top}
   .sidebar.open{transform:translateX(0)!important}
   .sidebar-close{display:grid}
   .sidebar-overlay{display:block}
-  .main{margin-left:0}
+  .main{margin-left:0;padding:16px}
   .mobile-header{display:flex!important}
   .charts-grid{grid-template-columns:1fr}
-  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .nps-category-filters{grid-template-columns:1fr}
+  .nps-summary-inner{flex-direction:column;align-items:flex-start;gap:16px}
+  .nps-breakdown{gap:16px}
   .modal .detail-grid{grid-template-columns:1fr}
+  .card{padding:16px}
+}
+
+@media(max-width:420px){
+  .kpis{grid-template-columns:1fr}
 }
 
 /* ===== Mobile Header ===== */
@@ -287,9 +295,139 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
 /* ===== Loading Spinner ===== */
 .spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== Boot Loader ===== */
+.boot-loader{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:var(--bg)}
+.boot-loader .spinner{width:34px;height:34px;border-width:4px}
+
+/* ===== Login Screen ===== */
+.login-screen{
+  position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;
+  padding:20px;background:linear-gradient(135deg,#0d2f32 0%,#0a2225 100%);
+}
+.login-card{
+  background:var(--paper);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.35);
+  width:100%;max-width:400px;padding:32px;position:relative;z-index:1;
+}
+.login-card .login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:8px}
+.login-card .login-logo img{height:40px}
+.login-card h1{font:800 22px var(--font);text-align:center;margin-bottom:4px}
+.login-card .login-sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:24px}
+.login-field{display:grid;gap:6px;margin-bottom:16px}
+.login-field label{font:700 12px var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.login-field input{
+  width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);
+  font:400 15px var(--font);background:#fff;
+}
+.login-field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,155,164,.15)}
+.login-btn{
+  width:100%;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:10px;
+  font:700 15px var(--font);cursor:pointer;transition:background var(--dur-fast) var(--ease);
+  display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;
+}
+.login-btn:hover{background:var(--accent-dk)}
+.login-btn:disabled{opacity:.7;cursor:not-allowed}
+.login-btn .spinner{display:none;border-color:rgba(255,255,255,.4);border-top-color:#fff;width:18px;height:18px}
+.login-btn.loading .spinner{display:inline-block}
+.login-btn.loading .login-btn-text{display:none}
+.login-error{
+  display:none;background:rgba(185,28,28,.08);border:1px solid rgba(185,28,28,.3);color:var(--bad);
+  border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;margin-bottom:16px;text-align:center;
+}
+
+/* ===== User Badge (sidebar) ===== */
+.user-badge{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.06);margin-bottom:12px}
+.user-badge .avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font:800 14px var(--font);flex-shrink:0;text-transform:uppercase}
+.user-badge .meta{min-width:0;flex:1}
+.user-badge .email{font:600 12px var(--font);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-badge .role{font:700 10px var(--font);color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.logout-btn{
+  width:100%;background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;
+  padding:10px 16px;border-radius:10px;font:600 13px var(--font);cursor:pointer;
+  transition:all var(--dur-fast) var(--ease);display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.logout-btn:hover{background:rgba(255,255,255,.12)}
+
+/* ===== Validator Tab ===== */
+.validator-wrap{max-width:560px}
+.validator-input-row{display:flex;gap:10px;margin-bottom:16px}
+.validator-input-row input{
+  flex:1;min-width:0;padding:12px 14px;border-radius:10px;border:1px solid var(--line);
+  font:600 15px var(--font);letter-spacing:.02em;background:#fff;
+}
+.validator-input-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,155,164,.15)}
+.val-status{
+  font:700 16px var(--font);padding:14px 16px;border-radius:12px;background:var(--bg);
+  border:1px solid var(--line);margin-bottom:16px;text-align:center;color:var(--muted);
+}
+.val-status.valid{background:rgba(21,128,61,.08);border-color:rgba(21,128,61,.3);color:var(--ok)}
+.val-status.claimed{background:rgba(217,119,6,.08);border-color:rgba(217,119,6,.3);color:var(--warn)}
+.val-status.invalid{background:rgba(185,28,28,.08);border-color:rgba(185,28,28,.3);color:var(--bad)}
+.val-details{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.val-details dl{display:grid;grid-template-columns:140px 1fr;gap:10px 16px;margin:0}
+.val-details dt{font:700 12px var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;align-self:center}
+.val-details dd{margin:0;font:600 14px var(--font);color:var(--ink)}
+.val-actions{display:flex;gap:10px}
+.val-actions .btn{flex:1;justify-content:center;min-height:46px}
+.btn.success{background:var(--ok)}
+.btn.success:hover{background:#126b33}
+
+/* ===== Mobile: tables become cards ===== */
+@media(max-width:640px){
+  .table-wrap{border:none;background:transparent;overflow:visible}
+  .table-wrap table,.table-wrap thead,.table-wrap tbody,.table-wrap tr,.table-wrap td{display:block;width:100%}
+  .table-wrap thead{display:none}
+  .table-wrap tr{
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;
+    margin-bottom:12px;padding:6px 4px;
+  }
+  .table-wrap tr:hover{background:var(--paper)}
+  .table-wrap td{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:8px 14px;border:none;text-align:right;min-width:0;overflow-wrap:anywhere;
+  }
+  .table-wrap td small{overflow-wrap:anywhere}
+  .table-wrap td::before{
+    content:attr(data-label);font:700 11px var(--font);color:var(--muted);
+    text-transform:uppercase;letter-spacing:.04em;text-align:left;flex-shrink:0;
+  }
+  .table-wrap td.cell-feedback{flex-direction:column;align-items:flex-start;text-align:left}
+  .table-wrap td.cell-feedback::before{margin-bottom:4px}
+  .table-wrap td .statusSel{width:auto}
+  .table-wrap td:empty,.empty{display:block}
+  .table-wrap td[colspan] .empty{text-align:center}
+  .val-details dl{grid-template-columns:1fr}
+  .val-details dt{margin-top:6px}
+  .validator-input-row{flex-direction:column}
+  .validator-input-row .btn{width:100%;justify-content:center;min-height:46px}
+}
 </style>
 </head>
 <body>
+
+<!-- Boot Loader -->
+<div class="boot-loader" id="bootLoader"><div class="spinner"></div></div>
+
+<!-- Login Screen -->
+<div class="login-screen" id="loginScreen">
+  <form class="login-card" id="loginForm" novalidate>
+    <div class="login-logo"><img src="./assets/img/nhlogo.png" alt="Nippon Hasha"></div>
+    <h1>Food Truck Admin</h1>
+    <p class="login-sub">Sign in to access the dashboard</p>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-field">
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" autocomplete="username" required placeholder="you@nipponhasha.com">
+    </div>
+    <div class="login-field">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="Enter your password">
+    </div>
+    <button type="submit" class="login-btn" id="loginBtn">
+      <span class="spinner"></span><span class="login-btn-text">Sign In</span>
+    </button>
+  </form>
+</div>
 
 <!-- Animated Mountain Background -->
 <div class="bg" aria-hidden="true">
@@ -330,7 +468,7 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div class="app-shell">
+<div class="app-shell" id="appShell" style="display:none">
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -342,6 +480,10 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
       <button class="sidebar-tab active" data-tab="overview">
         <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
         Overview
+      </button>
+      <button class="sidebar-tab" data-tab="validator">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+        Validator
       </button>
       <button class="sidebar-tab" data-tab="responses">
         <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
@@ -357,10 +499,17 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
       </button>
     </nav>
     <div class="sidebar-footer">
-      <a href="https://crstntaro.github.io/NH_Survey/admin.html" target="_blank" rel="noopener" class="btn" style="text-decoration:none;text-align:center;display:block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        NH Survey Admin
-      </a>
+      <div class="user-badge">
+        <div class="avatar" id="userBadgeAvatar"></div>
+        <div class="meta">
+          <div class="email" id="userBadgeEmail"></div>
+          <div class="role" id="userBadgeRole"></div>
+        </div>
+      </div>
+      <button type="button" class="logout-btn" id="logoutBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
     </div>
   </aside>
 
@@ -564,6 +713,37 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
           </div>
         </div>
         <div class="export-preview" id="exportPreview">Select filters and click Download CSV. <strong>0</strong> responses will be exported.</div>
+      </div>
+    </section>
+
+    <!-- ===== VALIDATOR TAB ===== -->
+    <section class="tabpanel" id="tab-validator">
+      <div class="card validator-wrap">
+        <h3>Reward Validator</h3>
+        <p class="subtitle">Validate a customer's reward code or receipt number, then mark it as redeemed.</p>
+
+        <div class="validator-input-row">
+          <input type="text" id="validatorInput" placeholder="Enter reward code or receipt number…" autocomplete="off" spellcheck="false">
+          <button class="btn" id="validateBtn">Validate</button>
+          <button class="btn btn-outline" id="validatorClearBtn">Clear</button>
+        </div>
+
+        <div class="val-status" id="validatorStatus">Enter a reward code or receipt number to validate.</div>
+
+        <div class="val-details" id="validatorDetails" style="display:none">
+          <dl>
+            <dt>Customer</dt><dd id="valCustomer">-</dd>
+            <dt>NPS</dt><dd id="valNps">-</dd>
+            <dt>Receipt</dt><dd id="valReceipt">-</dd>
+            <dt>Reward Code</dt><dd id="valCode">-</dd>
+            <dt>Survey Date</dt><dd id="valDate">-</dd>
+            <dt>Reward Status</dt><dd id="valRewardStatus">-</dd>
+          </dl>
+        </div>
+
+        <div class="val-actions" id="validatorActions" style="display:none">
+          <button class="btn success" id="markRedeemedBtn">Mark as Redeemed</button>
+        </div>
       </div>
     </section>
 
