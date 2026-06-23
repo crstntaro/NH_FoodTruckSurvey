@@ -54,11 +54,14 @@ body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1
   transition:transform .3s var(--ease);
 }
 .sidebar-header{
-  padding:20px;display:flex;align-items:center;gap:10px;
-  border-bottom:1px solid rgba(255,255,255,.1);
+  padding:22px 18px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,.1);position:relative;
 }
-.sidebar-header img{height:32px}
-.sidebar-header .brand{font:700 13px var(--font);color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+.sidebar-header img{width:100%;max-width:150px;height:auto;display:block}
+.sidebar-header .brand{
+  font:700 10px var(--font);color:var(--accent);letter-spacing:.22em;text-transform:uppercase;
+  background:rgba(14,155,164,.14);padding:3px 12px;border-radius:999px;
+}
 .sidebar-close{
   display:none;position:absolute;right:12px;top:12px;width:32px;height:32px;border-radius:50%;
   background:rgba(255,255,255,.1);border:none;color:#fff;font-size:18px;cursor:pointer;
@@ -349,28 +352,73 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
 .logout-btn:hover{background:rgba(255,255,255,.12)}
 
 /* ===== Validator Tab ===== */
-.validator-wrap{max-width:560px}
-.validator-input-row{display:flex;gap:10px;margin-bottom:16px}
+.validator-wrap{max-width:640px;margin:0 auto}
+.validator-input-row{display:flex;gap:10px;margin-bottom:18px}
 .validator-input-row input{
-  flex:1;min-width:0;padding:12px 14px;border-radius:10px;border:1px solid var(--line);
-  font:600 15px var(--font);letter-spacing:.02em;background:#fff;
+  flex:1;min-width:0;padding:13px 16px;border-radius:10px;border:1px solid var(--line);
+  font:600 16px var(--font);letter-spacing:.03em;background:#fff;
 }
 .validator-input-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,155,164,.15)}
+.validator-input-row .btn{min-height:48px;padding-left:20px;padding-right:20px}
 .val-status{
-  font:700 16px var(--font);padding:14px 16px;border-radius:12px;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font:800 17px var(--font);padding:16px;border-radius:12px;background:var(--bg);
   border:1px solid var(--line);margin-bottom:16px;text-align:center;color:var(--muted);
 }
 .val-status.valid{background:rgba(21,128,61,.08);border-color:rgba(21,128,61,.3);color:var(--ok)}
 .val-status.claimed{background:rgba(217,119,6,.08);border-color:rgba(217,119,6,.3);color:var(--warn)}
 .val-status.invalid{background:rgba(185,28,28,.08);border-color:rgba(185,28,28,.3);color:var(--bad)}
-.val-details{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
-.val-details dl{display:grid;grid-template-columns:140px 1fr;gap:10px 16px;margin:0}
-.val-details dt{font:700 12px var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;align-self:center}
-.val-details dd{margin:0;font:600 14px var(--font);color:var(--ink)}
+.val-details{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:6px 20px;margin-bottom:16px}
+.val-details dl{margin:0}
+.val-details .val-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--line)}
+.val-details .val-row:last-child{border-bottom:none}
+.val-details dt{font:700 12px var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0}
+.val-details dd{margin:0;font:700 15px var(--font);color:var(--ink);text-align:right;overflow-wrap:anywhere}
+.val-details dd.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.04em}
 .val-actions{display:flex;gap:10px}
-.val-actions .btn{flex:1;justify-content:center;min-height:46px}
+.val-actions .btn{flex:1;justify-content:center;min-height:48px;font-size:15px}
 .btn.success{background:var(--ok)}
 .btn.success:hover{background:#126b33}
+
+/* ===== Analytics: period selector ===== */
+.period-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.period-btn{
+  padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--paper);
+  font:700 13px var(--font);color:var(--muted);cursor:pointer;transition:all var(--dur-fast) var(--ease);
+}
+.period-btn:hover{border-color:var(--accent);color:var(--accent)}
+.period-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ===== Question Summaries ===== */
+.qs-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.qs-head h3{margin:0}
+.qs-pill{font:700 10px var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;background:var(--line);padding:4px 12px;border-radius:999px}
+.qs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px;margin-top:4px;align-items:start}
+.qs-card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0;overflow:hidden}
+.qs-card-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.qs-tag{font:700 10px var(--font);color:#fff;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.qs-q{font:800 13px var(--font);color:var(--ink)}
+.qs-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.qs-row:last-child{border-bottom:none}
+.qs-rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font:800 11px var(--font);flex-shrink:0;background:var(--line);color:var(--muted)}
+.qs-rank.r1{background:#d4af37;color:#fff}.qs-rank.r2{background:#9e9e9e;color:#fff}.qs-rank.r3{background:#cd7f32;color:#fff}
+.qs-label{flex:1;min-width:0}
+.qs-label .t{font:600 13px var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qs-label.top .t{font-weight:800}
+.qs-bar{margin-top:4px;height:5px;background:var(--line);border-radius:3px;overflow:hidden}
+.qs-bar > i{display:block;height:100%;border-radius:3px;background:#b0a88a}
+.qs-label.top .qs-bar > i{background:var(--accent)}
+.qs-count{font:800 14px var(--font);color:var(--ink);flex-shrink:0}
+.qs-pct{font:600 11px var(--font);color:var(--muted);width:40px;text-align:right;flex-shrink:0}
+.qs-empty{color:var(--muted);font-size:13px;padding:14px 0;text-align:center}
+.qs-rating-avg{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.qs-rating-avg .n{font:800 26px var(--font)}
+.qs-rating-avg .s{font:600 11px var(--font);color:var(--muted)}
+.qs-rrow{display:flex;align-items:center;gap:8px;margin:3px 0}
+.qs-rrow .sc{width:20px;text-align:right;font:700 11px var(--font);color:var(--muted)}
+.qs-rrow .bar{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.qs-rrow .bar > i{display:block;height:100%;border-radius:4px}
+.qs-rrow .ct{width:64px;text-align:right;font:600 11px var(--font);color:var(--muted)}
 
 /* ===== Mobile: tables become cards ===== */
 @media(max-width:640px){
@@ -396,8 +444,8 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
   .table-wrap td .statusSel{width:auto}
   .table-wrap td:empty,.empty{display:block}
   .table-wrap td[colspan] .empty{text-align:center}
-  .val-details dl{grid-template-columns:1fr}
-  .val-details dt{margin-top:6px}
+  .val-details .val-row{flex-direction:column;align-items:flex-start;gap:4px}
+  .val-details dd{text-align:left}
   .validator-input-row{flex-direction:column}
   .validator-input-row .btn{width:100%;justify-content:center;min-height:46px}
 }
@@ -472,8 +520,8 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <img src="./assets/img/nhlogo.png" alt="Logo">
-      <span class="brand">ADMIN</span>
+      <img src="./assets/img/nhlogo.png" alt="Nippon Hasha">
+      <span class="brand">Food Truck Admin</span>
       <button class="sidebar-close" id="sidebarClose">&#x2715;</button>
     </div>
     <nav class="sidebar-nav">
@@ -667,6 +715,21 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
       <div class="card">
         <h3>Analytics</h3>
         <p class="subtitle">Visual breakdown of survey data and trends.</p>
+
+        <div class="period-selector" id="periodSelector">
+          <button class="period-btn" data-period="7">Last 7 Days</button>
+          <button class="period-btn" data-period="30">Last 30 Days</button>
+          <button class="period-btn" data-period="90">Last 90 Days</button>
+          <button class="period-btn active" data-period="all">All Time</button>
+        </div>
+
+        <div class="kpis" id="analyticsKpis">
+          <div class="kpi"><div class="v" id="anNps">-</div><div class="l">NPS Score</div></div>
+          <div class="kpi success"><div class="v" id="anPromoters">-</div><div class="l">Promoters (9-10)</div></div>
+          <div class="kpi warning"><div class="v" id="anPassives">-</div><div class="l">Passives (7-8)</div></div>
+          <div class="kpi critical"><div class="v" id="anDetractors">-</div><div class="l">Detractors (0-6)</div></div>
+          <div class="kpi info"><div class="v" id="anTotal">-</div><div class="l">Total Responses</div></div>
+        </div>
       </div>
       <div class="charts-grid">
         <div class="chart-card">
@@ -685,6 +748,16 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
           <h4>Response Trend (Last 30 Days)</h4>
           <div class="chart-container"><canvas id="chartTrend"></canvas></div>
         </div>
+      </div>
+
+      <!-- Question Summaries -->
+      <div class="card">
+        <div class="qs-head">
+          <h3>Question Summaries</h3>
+          <span class="qs-pill">Every question summarized</span>
+        </div>
+        <p class="subtitle">Most common answer to each survey question. Free-text replies are grouped so variants (e.g. "SM" &amp; "SM Mall") count as one.</p>
+        <div id="questionSummaries" class="qs-grid"></div>
       </div>
     </section>
 
@@ -732,12 +805,12 @@ tr.priority-urgent{background:rgba(217,119,6,.04)}
 
         <div class="val-details" id="validatorDetails" style="display:none">
           <dl>
-            <dt>Customer</dt><dd id="valCustomer">-</dd>
-            <dt>NPS</dt><dd id="valNps">-</dd>
-            <dt>Receipt</dt><dd id="valReceipt">-</dd>
-            <dt>Reward Code</dt><dd id="valCode">-</dd>
-            <dt>Survey Date</dt><dd id="valDate">-</dd>
-            <dt>Reward Status</dt><dd id="valRewardStatus">-</dd>
+            <div class="val-row"><dt>Customer</dt><dd id="valCustomer">-</dd></div>
+            <div class="val-row"><dt>NPS</dt><dd id="valNps">-</dd></div>
+            <div class="val-row"><dt>Receipt</dt><dd id="valReceipt" class="mono">-</dd></div>
+            <div class="val-row"><dt>Reward Code</dt><dd id="valCode" class="mono">-</dd></div>
+            <div class="val-row"><dt>Survey Date</dt><dd id="valDate">-</dd></div>
+            <div class="val-row"><dt>Reward Status</dt><dd id="valRewardStatus">-</dd></div>
           </dl>
         </div>
 

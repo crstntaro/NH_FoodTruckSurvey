@@ -16,6 +16,7 @@ let charts = {};
 let currentUser = null;
 let currentValidationRecord = null;
 let dashboardLoaded = false;
+let analyticsPeriod = 'all';
 
 // Which tabs each role may see. Anything not listed = all tabs.
 const ROLE_TABS = {
@@ -474,31 +475,45 @@ function paintResponses() {
 //  Analytics Tab
 // ============================================================
 
+function getAnalyticsResponses() {
+    if (analyticsPeriod === 'all') return allResponses;
+    const cutoff = Date.now() - Number(analyticsPeriod) * 86400000;
+    return allResponses.filter(r => r.completedAt && new Date(r.completedAt).getTime() >= cutoff);
+}
+
 function paintAnalytics() {
+    const data = getAnalyticsResponses();
     const styles = getComputedStyle(document.documentElement);
     const ok = styles.getPropertyValue('--ok').trim() || '#15803d';
     const warn = styles.getPropertyValue('--warn').trim() || '#d97706';
     const bad = styles.getPropertyValue('--bad').trim() || '#b91c1c';
     const accent = styles.getPropertyValue('--accent').trim() || '#0e9ba4';
 
-    const npsData = calculateNPS(allResponses);
+    const npsData = calculateNPS(data);
+
+    // KPIs
+    document.getElementById('anNps').textContent = npsData.score;
+    document.getElementById('anPromoters').textContent = npsData.promoters;
+    document.getElementById('anPassives').textContent = npsData.passives;
+    document.getElementById('anDetractors').textContent = npsData.detractors;
+    document.getElementById('anTotal').textContent = npsData.total;
 
     renderChart('chartNpsDist', 'doughnut', {
         labels: ['Promoters', 'Passives', 'Detractors'],
         datasets: [{ data: [npsData.promoters, npsData.passives, npsData.detractors], backgroundColor: [ok, warn, bad], borderWidth: 0 }]
     }, { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } });
 
-    const branches = [...new Set(allResponses.map(r => r.branch))];
-    const branchCounts = branches.map(b => allResponses.filter(r => r.branch === b).length);
+    const branches = [...new Set(data.map(r => r.branch))];
+    const branchCounts = branches.map(b => data.filter(r => r.branch === b).length);
     renderChart('chartBranch', 'bar', {
         labels: branches,
         datasets: [{ label: 'Responses', data: branchCounts, backgroundColor: accent + 'b3' }]
     }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } });
 
     const avgOf = (arr) => arr.length > 0 ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : 0;
-    const foods = allResponses.filter(r => r.food !== null).map(r => r.food);
-    const services = allResponses.filter(r => r.service !== null).map(r => r.service);
-    const prices = allResponses.filter(r => r.price !== null).map(r => r.price);
+    const foods = data.filter(r => r.food !== null).map(r => r.food);
+    const services = data.filter(r => r.service !== null).map(r => r.service);
+    const prices = data.filter(r => r.price !== null).map(r => r.price);
     renderChart('chartRatings', 'radar', {
         labels: ['Food', 'Service', 'Price'],
         datasets: [{ label: 'Average Rating', data: [avgOf(foods), avgOf(services), avgOf(prices)], backgroundColor: accent + '33', borderColor: accent, pointBackgroundColor: accent, borderWidth: 2 }]
@@ -512,12 +527,230 @@ function paintAnalytics() {
         d.setDate(d.getDate() - i);
         const key = d.toISOString().slice(0, 10);
         labels.push(d.toLocaleDateString('en', { month: 'short', day: 'numeric' }));
-        counts.push(allResponses.filter(r => r.date === key).length);
+        counts.push(data.filter(r => r.date === key).length);
     }
     renderChart('chartTrend', 'line', {
         labels: labels,
         datasets: [{ label: 'Responses', data: counts, borderColor: accent, backgroundColor: accent + '1a', fill: true, tension: 0.3, borderWidth: 2, pointRadius: 2 }]
     }, { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 10 } } } });
+
+    renderQuestionSummaries(data);
+}
+
+// ============================================================
+//  Question Summaries (fuzzy-grouped per-question breakdown)
+// ============================================================
+
+const QUESTION_SUMMARIES = [
+    { key: 'q1',         q: 'Q1',  label: 'Enjoyed the pop-up experience?',     type: 'choice', tag: 'Experience' },
+    { key: 'q2_choice',  q: 'Q2',  label: 'Where did you hear about us?',       type: 'choice', tag: 'Discovery' },
+    { key: 'q9',         q: 'Q3',  label: 'Cuisine most interested in',         type: 'multi',  tag: 'Menu' },
+    { key: 'q3',         q: 'Q4',  label: 'Visited a branch before?',           type: 'choice', tag: 'Visit' },
+    { key: 'q3_branch',  q: 'Q5',  label: 'Which branch visited',               type: 'choice', tag: 'Visit' },
+    { key: 'q4',         q: 'Q6',  label: 'Where to bring the truck next',      type: 'choice', tag: 'Expansion' },
+    { key: 'q5',         q: 'Q7',  label: 'Working or living nearby?',          type: 'choice', tag: 'Audience' },
+    { key: 'q6_spend',   q: 'Q8',  label: 'Usual dining-out spend',            type: 'choice', tag: 'Spend' },
+    { key: 'q7_food',    q: 'Q9',  label: 'Food rating',                        type: 'rating', tag: 'Rating' },
+    { key: 'q7_service', q: 'Q10', label: 'Service rating',                     type: 'rating', tag: 'Rating' },
+    { key: 'q7_price',   q: 'Q11', label: 'Value for price rating',            type: 'rating', tag: 'Rating' },
+    { key: 'q8_nps',     q: 'Q12', label: 'Likelihood to recommend (NPS)',     type: 'rating', tag: 'NPS' },
+    { key: 'q10_return', q: 'Q13', label: 'Return intention',                   type: 'choice', tag: 'Loyalty' },
+    { key: 'q10',        q: 'Q14', label: 'Wants to hear more from us?',        type: 'choice', tag: 'Marketing' },
+    { key: 'q8_comment', q: 'Q12', label: 'NPS feedback comments',              type: 'text', fuzzy: true, skipNulls: true, tag: 'Voice of Customer' },
+];
+
+const QS_TAG_COLORS = {
+    Experience: '#0e9a5a', Discovery: '#1f6feb', Menu: '#b8860b', Visit: '#0e9a5a',
+    Expansion: '#1f6feb', Audience: '#7c6f9c', Spend: '#d97706', Rating: '#7c6f9c',
+    NPS: '#c41e3a', Loyalty: '#15803d', Marketing: '#0e9ba4', 'Voice of Customer': '#6b7280',
+};
+
+const FUZZY_STOPWORDS = new Set(['the', 'a', 'an', 'of', 'at', 'in', 'on', 'and', 'or', 'to', 'our', 'your', 'my', 'me', 'i', 'is', 'are', 'was', 'it', 'for', 'with', 'from', 'this', 'that', 'po', 'na', 'ng', 'sa', 'ang', 'yung', 'very', 'really', 'so', 'just', 'more', 'please', 'pls', 'also', 'would', 'will', 'be', 'have', 'has', 'had', 'they', 'we', 'you']);
+const TEXT_SKIP = new Set(['none', 'n/a', 'na', 'wala', 'nothing', 'no', 'nope', '-', '.', 'x', 'xx', 'xxx', 'test', 'asd', 'asdf', 'qwerty', 'none.', 'na.']);
+
+function getSD(r) { return (r.raw && r.raw.survey_data) || {}; }
+
+function fuzzyNormalize(s) {
+    return String(s).toLowerCase()
+        .normalize('NFKD').replace(/[̀-ͯ]/g, '')
+        .replace(/&/g, ' and ')
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ').trim();
+}
+
+function fuzzyTokens(s) {
+    return fuzzyNormalize(s).split(' ')
+        .filter(t => t && !FUZZY_STOPWORDS.has(t))
+        .map(t => (t.length > 3 && t.endsWith('s')) ? t.slice(0, -1) : t);
+}
+
+function levenshtein(a, b) {
+    if (a === b) return 0;
+    const m = a.length, n = b.length;
+    if (!m) return n; if (!n) return m;
+    let prev = Array.from({ length: n + 1 }, (_, i) => i);
+    let curr = new Array(n + 1);
+    for (let i = 1; i <= m; i++) {
+        curr[0] = i;
+        for (let j = 1; j <= n; j++) {
+            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+            curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+        }
+        [prev, curr] = [curr, prev];
+    }
+    return prev[n];
+}
+
+function fuzzySimilar(aTok, bTok) {
+    if (!aTok.length || !bTok.length) return false;
+    const aSet = new Set(aTok), bSet = new Set(bTok);
+    let inter = 0;
+    for (const t of aSet) if (bSet.has(t)) inter++;
+    const smaller = Math.min(aSet.size, bSet.size);
+    const union = aSet.size + bSet.size - inter;
+    if (inter > 0 && inter === smaller) return true;
+    if (inter > 0 && inter / union >= 0.5) return true;
+    if (aSet.size === 1 && bSet.size === 1) {
+        const x = [...aSet][0], y = [...bSet][0];
+        if (x.length >= 4 && y.length >= 4) {
+            const ratio = 1 - levenshtein(x, y) / Math.max(x.length, y.length);
+            if (ratio >= 0.8) return true;
+        }
+    }
+    return false;
+}
+
+function fuzzyGroup(values) {
+    const variants = new Map();
+    for (const raw of values) {
+        const display = String(raw).trim();
+        if (!display) continue;
+        const tokens = fuzzyTokens(display);
+        const sig = tokens.length ? tokens.join(' ') : fuzzyNormalize(display);
+        if (!sig) continue;
+        if (!variants.has(sig)) variants.set(sig, { tokens: tokens.length ? tokens : [sig], count: 0, displays: new Map() });
+        const v = variants.get(sig);
+        v.count++;
+        v.displays.set(display, (v.displays.get(display) || 0) + 1);
+    }
+    const entries = [...variants.values()].sort((a, b) => b.count - a.count);
+    const clusters = [];
+    for (const e of entries) {
+        let placed = false;
+        for (const c of clusters) {
+            if (fuzzySimilar(e.tokens, c.tokens)) {
+                c.count += e.count;
+                for (const [d, k] of e.displays) c.displays.set(d, (c.displays.get(d) || 0) + k);
+                placed = true;
+                break;
+            }
+        }
+        if (!placed) clusters.push({ tokens: e.tokens, count: e.count, displays: new Map(e.displays) });
+    }
+    return clusters.map(c => {
+        let bestD = '', bestN = -1;
+        for (const [d, k] of c.displays) if (k > bestN) { bestN = k; bestD = d; }
+        return { value: bestD, count: c.count };
+    }).sort((a, b) => b.count - a.count);
+}
+
+function qComputeTopN(responses, key, opts, n = 10) {
+    const { isArray = false, skipNulls = false, fuzzy = false } = opts || {};
+    const raw = [];
+    for (const r of responses) {
+        const val = getSD(r)[key];
+        if (val === null || val === undefined || val === '') continue;
+        const items = isArray ? (Array.isArray(val) ? val : String(val).split(',')) : [val];
+        for (const item of items) {
+            if (item === null || item === undefined) continue;
+            const s = String(item).trim();
+            if (!s || s === '-') continue;
+            if (skipNulls && TEXT_SKIP.has(s.toLowerCase())) continue;
+            raw.push(s);
+        }
+    }
+    let grouped;
+    if (fuzzy) {
+        grouped = fuzzyGroup(raw);
+    } else {
+        const counts = new Map();
+        for (const s of raw) {
+            const k = s.toLowerCase();
+            if (!counts.has(k)) counts.set(k, { value: s, count: 0 });
+            counts.get(k).count++;
+        }
+        grouped = [...counts.values()].sort((a, b) => b.count - a.count);
+    }
+    return grouped.slice(0, n).map((v, i) => ({ rank: i + 1, value: v.value, count: v.count }));
+}
+
+function qSummarizeRating(responses, key) {
+    const dist = new Map();
+    let sum = 0, count = 0;
+    for (const r of responses) {
+        const v = getSD(r)[key];
+        if (v === null || v === undefined || v === '') continue;
+        const num = Number(v);
+        if (!Number.isFinite(num)) continue;
+        dist.set(num, (dist.get(num) || 0) + 1);
+        sum += num; count++;
+    }
+    const rows = [...dist.entries()].sort((a, b) => b[0] - a[0]).map(([s, c]) => ({ value: String(s), count: c }));
+    return { rows, avg: count ? sum / count : 0, count };
+}
+
+function qsRankRows(data, total, emptyMsg) {
+    if (!data.length) return `<div class="qs-empty">${emptyMsg || 'No data yet.'}</div>`;
+    const max = data[0].count;
+    return data.map(row => {
+        const pct = total > 0 ? Math.round(row.count / total * 100) : 0;
+        const barW = Math.round(row.count / max * 100);
+        const top = row.rank <= 3;
+        const rcls = row.rank === 1 ? 'r1' : row.rank === 2 ? 'r2' : row.rank === 3 ? 'r3' : '';
+        return `<div class="qs-row">
+            <span class="qs-rank ${rcls}">${row.rank}</span>
+            <div class="qs-label ${top ? 'top' : ''}">
+                <div class="t" title="${escapeHtml(row.value)}">${escapeHtml(row.value)}</div>
+                <div class="qs-bar"><i style="width:${barW}%"></i></div>
+            </div>
+            <span class="qs-count">${row.count}</span>
+            <span class="qs-pct">${pct}%</span>
+        </div>`;
+    }).join('');
+}
+
+function qsRatingCard(responses, key) {
+    const { rows, avg, count } = qSummarizeRating(responses, key);
+    if (!count) return `<div class="qs-empty">No ratings yet.</div>`;
+    const max = Math.max(...rows.map(r => r.count));
+    const color = avg >= 8 ? 'var(--ok)' : avg >= 6 ? 'var(--warn)' : 'var(--bad)';
+    const bars = rows.map(r => {
+        const barW = Math.round(r.count / max * 100);
+        const pct = Math.round(r.count / count * 100);
+        return `<div class="qs-rrow"><span class="sc">${r.value}</span><div class="bar"><i style="width:${barW}%;background:${color}"></i></div><span class="ct">${r.count} · ${pct}%</span></div>`;
+    }).join('');
+    return `<div class="qs-rating-avg"><span class="n" style="color:${color}">${avg.toFixed(1)}</span><span class="s">avg · ${count} response${count === 1 ? '' : 's'}</span></div>${bars}`;
+}
+
+function renderQuestionSummaries(responses) {
+    const c = document.getElementById('questionSummaries');
+    if (!c) return;
+    const total = responses.length;
+    c.innerHTML = QUESTION_SUMMARIES.map(q => {
+        const color = QS_TAG_COLORS[q.tag] || '#0e9ba4';
+        let body;
+        if (q.type === 'rating') {
+            body = qsRatingCard(responses, q.key);
+        } else {
+            const rows = qComputeTopN(responses, q.key, { isArray: q.type === 'multi', skipNulls: !!q.skipNulls, fuzzy: !!q.fuzzy }, 10);
+            const empty = q.skipNulls ? 'No meaningful answers yet.' : 'No data yet.';
+            body = qsRankRows(rows, total, empty);
+        }
+        return `<div class="qs-card">
+            <div class="qs-card-head"><span class="qs-tag" style="background:${color}">${q.q} · ${q.tag}</span><span class="qs-q">${escapeHtml(q.label)}</span></div>
+            ${body}
+        </div>`;
+    }).join('');
 }
 
 function renderChart(canvasId, type, data, options) {
@@ -911,6 +1144,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('respSearch').addEventListener('input', debouncedPaint);
     ['respDateStart', 'respDateEnd', 'respNps', 'respBranch', 'respStatus'].forEach(id => {
         document.getElementById(id).addEventListener('change', paintResponses);
+    });
+
+    // ---- Analytics period selector ----
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            analyticsPeriod = btn.dataset.period;
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            paintAnalytics();
+        });
     });
 
     // ---- Export ----
